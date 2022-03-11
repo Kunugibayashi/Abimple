@@ -1,0 +1,188 @@
+@charset "utf-8";
+/* 各ページの基本となるCSS。
+ * 主にリセットと基本デザインのため、このCSSを編集するのはおすすめしません。
+ */
+
+/*!
+ * ress.css • v3.0.1
+ * MIT License
+ * github.com/filipelinhares/ress
+ */
+ html{box-sizing:border-box;-webkit-text-size-adjust:100%;word-break:normal;-moz-tab-size:4;tab-size:4}*,:after,:before{background-repeat:no-repeat;box-sizing:inherit}:after,:before{text-decoration:inherit;vertical-align:inherit}*{padding:0;margin:0}hr{overflow:visible;height:0}details,main{display:block}summary{display:list-item}small{font-size:80%}[hidden]{display:none}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}a{background-color:transparent}a:active,a:hover{outline-width:0}code,kbd,pre,samp{font-family:monospace,monospace}pre{font-size:1em}b,strong{font-weight:bolder}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}input{border-radius:0}[disabled]{cursor:default}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-decoration{-webkit-appearance:none}textarea{overflow:auto;resize:vertical}button,input,optgroup,select,textarea{font:inherit}optgroup{font-weight:700}button{overflow:visible}button,select{text-transform:none}[role=button],[type=button],[type=reset],[type=submit],button{cursor:pointer;color:inherit}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button:-moz-focusring{outline:1px dotted ButtonText}[type=reset],[type=submit],button,html [type=button]{-webkit-appearance:button}button,input,select,textarea{background-color:transparent;border-style:none}select{-moz-appearance:none;-webkit-appearance:none}select::-ms-expand{display:none}select::-ms-value{color:currentColor}legend{border:0;color:inherit;display:table;white-space:normal;max-width:100%}::-webkit-file-upload-button{-webkit-appearance:button;color:inherit;font:inherit}img{border-style:none}progress{vertical-align:baseline}@media screen{[hidden~=screen]{display:inherit}[hidden~=screen]:not(:active):not(:focus):not(:target){position:absolute!important;clip:rect(0 0 0 0)!important}}[aria-busy=true]{cursor:progress}[aria-controls]{cursor:pointer}[aria-disabled]{cursor:default}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+iframe {
+  border: unset;
+  height: 100%;
+  width: 100%;
+}
+
+h1, h2, h3, h4, h5 {
+  padding: 0;
+  margin: 0;
+}
+
+button {
+  background-color: #ffffff;
+  color: #000000;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.1));
+  background-origin: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.25em;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), inset 0 1px rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  display: inline-block;
+  line-height: 1.5;
+  padding: 0.25em 1em;
+  text-align: center;
+  white-space: nowrap;
+  filter: none;
+}
+button:hover {
+  opacity: 0.8;
+  filter: invert();
+}
+button:active{
+  position: relative;
+  color: white;
+  top: 3px;
+  box-shadow:inset 1px 1px 1px 1px black;
+  transition: 0s;
+  outline: none;
+}
+button[type="submit"],
+button[type="button"] {
+  color: #000000;
+  background-color: #ffffff;
+}
+
+select,
+textarea,
+input[type="file"],
+input[type="text"],
+input[type="password"] {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0.25em;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), inset 0 1px rgba(255, 255, 255, 0.1);
+  padding: 0.25em 0.5em;
+}
+select:focus,
+textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border: 1px solid #000000;
+  outline: none;
+}
+input[type="radio"],
+input[type="checkbox"] {
+  transform: scale(1.2);
+  margin: 0 0.2em 0 0;
+}
+input[type="color"] {
+  margin: 0 0 0 2px;
+  width: 2em;
+  height: 2em;
+}
+select {
+  line-height: 1.6;
+}
+div.select-wrap {
+  display: inline-block;
+  position: relative;
+}
+div.select-wrap::before{
+  content: '';
+  border-style: solid;
+  border-width: 0.8em 0.6em 0 0.6em;
+  border-color: #e3e3e3 transparent transparent transparent;
+  top: 0.8em;
+  right: 0.5em;
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+
+div.link,
+span.link,
+a {
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+div.link:hover,
+span.link:hover,
+a:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* フォームマーク */
+div.mandatory-mark{
+  margin-left: 0.5em;
+  line-height: 1;
+  padding: 2px 4px;
+  font-size: 0.5em;
+  border-radius: 5px;
+  font-weight: bold;
+  display: inline-block;
+  background-color: #8b0000;
+  color: #e3e2dc;
+}
+div.mandatory-mark:after {
+  content:"必須";
+}
+div.optional-mark{
+  margin-left: 0.5em;
+  line-height: 1;
+  padding: 2px 4px;
+  font-size: 0.5em;
+  border-radius: 5px;
+  font-weight: bold;
+  display: inline-block;
+  background-color: #61694d;
+  color: #e3e2dc;
+}
+div.optional-mark:after {
+  content:"任意";
+}
+div.htmltag-mark{
+  margin-left: 0.5em;
+  line-height: 1;
+  padding: 2px 4px;
+  font-size: 0.5em;
+  border-radius: 5px;
+  font-weight: bold;
+  display: inline-block;
+  background-color: #61694d;
+  color: #e3e2dc;
+  width: 7em;
+  text-align: center;
+
+  position: relative; /* htmltag-tooltip-wrap のための設定 */
+}
+div.htmltag-mark:after {
+  content:"HTML可";
+  cursor: help;
+}
+div.htmltag-tooltip-wrap {
+  background-color: #61694d;
+  color: #e3e2dc;
+  padding: 1rem;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: normal;
+  border-radius: 0.5rem;
+  width: 42rem;
+  /* 以下は浮き上がる注意書きのための設定 */
+  position: absolute;
+  top: 1rem;
+  left: 0;
+  line-height: 1.2rem;
+  text-align: left;
+}
