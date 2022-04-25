@@ -14,6 +14,7 @@ $inputParams = array();
 $inputParams['characterid'] = inputParam('characterid', 20);
 $inputParams['fullname'] = inputParam('fullname', 20);
 $inputParams['isfree'] = inputParam('isfree', 1);
+$inputParams['isframe'] = inputParam('isframe', 1);
 $inputParams['memo'] = inputParam('memo', 200);
 $inputParams['color'] = inputParam('color', 7) ? inputParam('color', 7) : '#000000';
 $inputParams['bgcolor'] = inputParam('bgcolor', 7) ? inputParam('bgcolor', 7) : '#ffffff';
@@ -170,10 +171,35 @@ outputPage:
   </div>
 
   <div class="chatroom-frame-wrap">
-    <iframe id="log-top" name="log" title="ルームログ"
-      src="./log.php">
-    </iframe>
+    <?php if ($chatroom['isframe']) {  /* フレームあり */ ?>
+      <iframe id="log-top" name="log" title="ルームログ"
+        src="./log.php">
+      </iframe>
+    <?php } ?>
   </div>
+  <?php if (!$chatroom['isframe']) { /* フレームなし */ ?>
+    <script>
+      // 自動画面更新
+      var lognum = 100;
+      var logsec = 25;
+      var logReload = function() {
+        var resultContents = jQuery('.chatroom-frame-wrap');
+        // log側のデフォルトと異なる場合に、画面表示と整合性を取るため、GETパラメータに指定する
+        jQuery.ajax({
+          url: './log.php?lognum=' + lognum + '&logsec=' + logsec,
+          dataType: 'HTML',
+        }).done((data, textStatus, jqXHR) => {
+          resultContents.html(data);
+        }).fail((jqXHR, textStatus, errorThrown) => {
+          console.log(jqXHR);
+          resultContents.html(errorThrown);
+        }).always((data) => {
+        });
+      }
+      logReload();
+      setInterval(logReload, logsec * 1000);
+    </script>
+  <?php } ?>
 
 </div>
 <?php if (usedArr($characters)) { /* キャラクター登録をしている場合のみに表示 */ ?>
@@ -210,8 +236,8 @@ body {
 div.content-wrap {
   margin: 0;
   padding: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 99vh;
 }
 ul, li {
   list-style-type: none;

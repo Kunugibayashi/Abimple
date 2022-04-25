@@ -105,17 +105,19 @@ outputPage:
   <meta name="viewport" content="width=device-width">
   <title><?php echo h($chatroom['title']); ?></title>
   <?php if ($inputParams['logsec'] != 0) { ?>
-    <script>
-      // 自動画面更新
-      var logReload = function() {
-        location.reload();
-      }
-      setTimeout(logReload, <?php echo h($inputParams['logsec']); ?> * 1000);
-    </script>
+    <?php if ($chatroom['isframe']) {  /* フレームあり */ ?>
+      <script>
+        // 自動画面更新
+        var logReload = function() {
+          location.reload();
+        }
+        setTimeout(logReload, <?php echo h($inputParams['logsec']); ?> * 1000);
+      </script>
+    <?php } ?>
   <?php } ?>
 </head>
 <body>
-<div class="content-wrap">
+<div class="content-log-wrap">
 
   <header class="chatroom-header-wrap">
     <h3 class="chatroom-header-title"><?php echo h($chatroom['title']); ?>
@@ -211,9 +213,10 @@ body {
 li {
   list-style-type: none;
 }
-div.content-wrap {
+div.content-log-wrap {
   margin: 0;
   padding: 0;
+  display: unset;
 }
 /* ヘッダー */
 header.chatroom-header-wrap {

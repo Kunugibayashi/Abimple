@@ -772,6 +772,7 @@ function createChatroom($dbh) {
       toptemplate   VARCHAR(20)    NOT NULL DEFAULT 'default',
       logtemplate   VARCHAR(20)    NOT NULL DEFAULT 'default',
       isfree        INTEGER        NOT NULL DEFAULT 0,
+      isframe       INTEGER        NOT NULL DEFAULT 0,
       color         VARCHAR(7)     NOT NULL DEFAULT '#696969',
       bgcolor       VARCHAR(7)     NOT NULL DEFAULT '#f5f5f5',
       bgimage       TEXT           NOT NULL DEFAULT '',

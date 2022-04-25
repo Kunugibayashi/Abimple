@@ -31,6 +31,7 @@ $inputParams['omi3flg'] = inputParam('omi3flg', 1);
 $inputParams['omi3name'] = inputParam('omi3name', 10);
 $inputParams['omi3text'] = inputParam('omi3text', 10000);
 $inputParams['isfree'] = inputParam('isfree', 1);
+$inputParams['isframe'] = inputParam('isframe', 1);
 $inputParams['created'] = inputParam('created', 20);
 $inputParams['modified'] = inputParam('modified', 20);
 
@@ -180,6 +181,18 @@ outputPage:
           </div>
         </li>
         <li class="form-col-note">自由設定にした場合、ユーザーがタイトルと説明を変更できます。</li>
+      </ul>
+      <ul class="form-row">
+        <li class="form-col-title">フレーム表示にするか<div class="mandatory-mark"></div></li>
+        <li class="form-col-item">
+          <div class="select-wrap">
+            <select name="isframe">
+              <option <?php echo selectedOption($inputParams['isframe'], '0'); ?> value="0">フレーム表示にしない</option>
+              <option <?php echo selectedOption($inputParams['isframe'], '1'); ?> value="1">フレーム表示にする</option>
+            </select>
+          </div>
+        </li>
+        <li class="form-col-note">フレーム表示にした場合、インラインフレームで表示されます。</li>
       </ul>
       <ul class="form-row">
         <li class="form-col-title">基本文字色<div class="optional-mark"></div></li>
