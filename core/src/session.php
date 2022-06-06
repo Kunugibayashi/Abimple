@@ -19,6 +19,7 @@ function setPrev() {
     || $script === 'list.php'
     || $script === 'publiclist.php'
     || $script === 'bbslist.php'
+    || $script === 'index-top.php'
   ) {
     $prevPage = $path;
     if (((boolean) $query)) {

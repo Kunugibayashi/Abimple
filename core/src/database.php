@@ -442,21 +442,20 @@ function selectInfomationList($dbh, $params = array()) {
   return $data;
 }
 
-function selectInfomationMessage($dbh, $params = array()) {
+function selectInfomationMessage($dbh, $id) {
   $sql = '
     SELECT
       *
     FROM infomation
     WHERE
-      id IS NOT NULL
+      id = :id
   ';
-  $sql = setAndArryParam($sql, $params);
   $sql = $sql .'
     ORDER BY id DESC
   ';
 
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setLikeArryBindValue($stmt, $params);
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':id', $id);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
   return $data;
