@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // DB接続
   $dbhCharacters = connectRo(CHARACTERS_DB);
 
-  $characters = selectCharacterMyList($dbhCharacters, getUserid(), getUsername());
+  $characters = selectCharactersMy($dbhCharacters, getUserid(), getUsername());
 
   goto outputPage;
 }

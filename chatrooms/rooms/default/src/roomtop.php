@@ -23,17 +23,17 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策はフォーム表示時にセット
 
   // DB接続
-  $dbhChatrooms = connectRo(CHAT_ROOM_DB);
+  $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
   $dbhCharacters = connectRo(CHARACTERS_DB);
 
-  $chatrooms = selectChatroomConfig($dbhChatrooms);
+  $chatrooms = selectChatroomsConfig($dbhChatrooms);
   if (!usedArr($chatrooms)) {
-    firstAccessChatroom(CHAT_ROOM_DB);
-    $chatrooms = selectChatroomConfig($dbhChatrooms);
+    firstAccessChatroom(CHAT_ROOMS_DB);
+    $chatrooms = selectChatroomsConfig($dbhChatrooms);
   }
   $chatroom = $chatrooms[0];
 
-  $characters = selectCharacterMyList($dbhCharacters, getUserid(), getUsername());
+  $characters = selectCharactersMy($dbhCharacters, getUserid(), getUsername());
 
   goto outputPage;
 }
@@ -96,7 +96,7 @@ outputPage:
       <h3 class="chatconfig-title"><?php echo h($chatroom['title']); ?></h3>
     </div>
 
-    <div class="chatconfig-guide"><?php echo h($chatroom['guide']); ?></div>
+    <div class="chatconfig-guide"><?php echo hb($chatroom['guide']); ?></div>
 
     <div class="form-wrap roomchat-form-wrap">
       <?php if (!isNowRoomEntry(getPageRoomdir()) && isChatEntry()) { /* 他のルームに入室している場合はメッセージのみ */ ?>

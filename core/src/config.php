@@ -67,7 +67,7 @@ define('SITE_CHATROOM', [
  * CCSデザイン時は以下を指定して下さい。毎回読み込みが行われます。
  * define('SITE_UPDATE', time());
  */
-define('SITE_UPDATE', '202201242000');
+define('SITE_UPDATE', time());
 
 /* 1ページに表示する項目数。
  * 編集任意。
@@ -212,12 +212,12 @@ define('INDEX_ROOT', DOCUMENT_ROOT.SITE_ROOT);
  */
 define('CHARACTERS_DB', (INDEX_ROOT.'/characters/src/db/characters.db'));
 define('USERS_DB', (INDEX_ROOT.'/users/src/db/users.db'));
-define('CHAT_ADMIN_ROOMS', (INDEX_ROOT.'/chatrooms/src/db/adminrooms.db'));
-define('CHAT_ROOM_DB', './db/chatroom.db');
+define('ADMIN_ROOMS_DB', (INDEX_ROOT.'/chatrooms/src/db/adminrooms.db'));
+define('CHAT_ROOMS_DB', './db/chatrooms.db');
 define('CHAT_ENTRIES_DB', './db/chatentries.db');
 define('CHAT_LOGS_DB', './db/chatlogs.db');
-define('INBOX_DB', (INDEX_ROOT.'/letters/src/db/inbox.db'));
-define('OUTBOX_DB', (INDEX_ROOT.'/letters/src/db/outbox.db'));
-define('BBSID_DB', (INDEX_ROOT.'/bbs/src/db/bbsparentid.db'));
+define('INBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/inboxletters.db'));
+define('OUTBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/outboxletters.db'));
+define('BBS_PARENTS_DB', (INDEX_ROOT.'/bbs/src/db/bbsparents.db'));
 define('BBS_DB', (INDEX_ROOT.'/bbs/src/db/bbs.db'));
-define('INFOMATION_DB', (INDEX_ROOT.'/infomation/src/db/infomation.db'));
+define('INFOMATIONS_DB', (INDEX_ROOT.'/infomation/src/db/informations.db'));

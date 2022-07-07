@@ -40,10 +40,10 @@ if (usedArr($errors)) {
 }
 
 // DB接続
-$dbhInfomation = connectRw(INFOMATION_DB);
+$dbhInfomation = connectRw(INFOMATIONS_DB);
 
 // 登録
-$result = insertInfomation($dbhInfomation, $inputParams);
+$result = insertInfomations($dbhInfomation, $inputParams);
 if (!$result) {
   $errors[] = '登録に失敗しました。もう一度お試しください。';
   goto outputPage;

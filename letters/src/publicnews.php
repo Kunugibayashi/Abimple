@@ -10,9 +10,9 @@ letterPublicOnly();
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // DB接続
-  $dbhInbox = connectRw(INBOX_DB);
+  $dbhInbox = connectRw(INBOX_LETTERS_DB);
 
-  $letters = selectInboxTitleList($dbhInbox);
+  $letters = selectEqualInboxLettersTitleList($dbhInbox);
 
   // 最初の3件
   $letters = array_slice($letters, 0, 3);

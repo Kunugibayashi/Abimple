@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // DB接続
   $dbhCharacters = connectRo(CHARACTERS_DB);
 
-  $characters = selectCharacterId($dbhCharacters, $inputParams['id']);
+  $characters = selectCharactersId($dbhCharacters, $inputParams['id']);
   if (!usedArr($characters)) {
     $errors[] = 'キャラクターが存在しません。';
     goto outputPage;
@@ -55,7 +55,7 @@ if (!usedStr($inputParams['id'])) {
 // DB接続
 $dbhCharacters = connectRw(CHARACTERS_DB);
 
-$characters = selectCharacterId($dbhCharacters, $inputParams['id']);
+$characters = selectCharactersId($dbhCharacters, $inputParams['id']);
 if (!usedArr($characters)) {
   $errors[] = 'キャラクターが存在しません。';
   goto outputPage;
@@ -70,8 +70,8 @@ $userid = $character['userid'];
 $username = $character['username'];
 
 // キャラクター登録削除
-$result = deleteCharacters($dbhCharacters, $userid, $username, [
-  'id' => $inputParams['id'],
+$result = deleteEqualCharacters($dbhCharacters, $userid, $username, [
+  'id' => $inputParams['id']
 ]);
 if (!$result) {
  $errors[] = '名簿削除に失敗しました。もう一度お試しください。';

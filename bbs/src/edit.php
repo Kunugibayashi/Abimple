@@ -59,7 +59,7 @@ if (usedArr($errors)) {
 }
 
 // DB接続
-$dbhBbsId = connectRw(BBSID_DB);
+$dbhBbsId = connectRw(BBS_PARENTS_DB);
 $dbhBbs = connectRw(BBS_DB);
 
 $editArticles = selectBbsId($dbhBbs, $inputParams['editid']);
@@ -86,7 +86,7 @@ if (usedArr($errors)) {
 }
 
 // 記事登録
-$result = updateBbsId($dbhBbs, $inputParams['editid'], [
+$result = updateBbs($dbhBbs, $inputParams['editid'], [
   'fromname' => $inputParams['fromname'],
   'title' => $inputParams['title'],
   'message' => $inputParams['message'],

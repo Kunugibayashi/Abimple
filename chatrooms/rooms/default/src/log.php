@@ -34,20 +34,20 @@ $inputParams['logsec'] = max([$inputParams['logsec'], 0]);
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // DB接続
-  $dbhChatrooms = connectRo(CHAT_ROOM_DB);
+  $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
   $dbhChatentries = connectRo(CHAT_ENTRIES_DB);
   $dbhChatlogs = connectRo(CHAT_LOGS_DB);
 
-  $chatrooms = selectChatroomConfig($dbhChatrooms);
+  $chatrooms = selectChatroomsConfig($dbhChatrooms);
   if (!usedArr($chatrooms)) {
-    firstAccessChatroom(CHAT_ROOM_DB);
-    $chatrooms = selectChatroomConfig($dbhChatrooms);
+    firstAccessChatroom(CHAT_ROOMS_DB);
+    $chatrooms = selectChatroomsConfig($dbhChatrooms);
   }
   $chatroom = $chatrooms[0];
 
-  $chatentries = selectChatentries($dbhChatentries);
+  $chatentries = selectEqualChatentries($dbhChatentries);
 
-  $chatlogs = selectChatlogs($dbhChatlogs, $inputParams['lognum']);
+  $chatlogs = selectEqualChatlogs($dbhChatlogs, $inputParams['lognum']);
 
   goto outputPage;
 }
@@ -70,19 +70,19 @@ if (!usedStr($entrykey)) {
 }
 
 // DB接続
-$dbhChatrooms = connectRo(CHAT_ROOM_DB);
+$dbhChatrooms = connectRo(CHAT_ROOMS_DB);
 $dbhChatentries = connectRo(CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRo(CHAT_LOGS_DB);
 
-$chatrooms = selectChatroomConfig($dbhChatrooms);
+$chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0];
 
-$chatentries = selectLogChatentries($dbhChatentries, [
+$chatentries = selectEqualLogChatentries($dbhChatentries, [
   'entrykey' => $entrykey,
 ]);
 
 // 最大10000行
-$chatlogs = selectChatlogs($dbhChatlogs, 10000, [
+$chatlogs = selectEqualChatlogs($dbhChatlogs, 10000, [
   'entrykey' => $entrykey,
 ]);
 

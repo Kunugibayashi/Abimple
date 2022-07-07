@@ -10,9 +10,10 @@ letterPublicOnly();
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // DB接続
-  $dbhInbox = connectRw(INBOX_DB);
+  $dbhInbox = connectRw(INBOX_LETTERS_DB);
 
-  $letters = selectInboxPublicTitleList($dbhInbox);
+  $letters = selectEqualInboxLettersPublicTitleList($dbhInbox);
+  $pages = splitPages($letters, getNowPage());
 
   goto outputPage;
 }
@@ -79,7 +80,7 @@ outputPage:
   <div class="sumpaging-wrap">
     <?php outputSumPaging($letters, getNowPage()); ?>
   </div>
-  <?php if (usedArr($letters)) { /* 登録がある場合に表示 */ ?>
+  <?php if (usedArr($pages)) { /* 登録がある場合に表示 */ ?>
     <div class="table-wrap public-inbox-table-wrap">
       <table>
         <tr>
@@ -89,7 +90,7 @@ outputPage:
           <th class="cell-title">タイトル</th>
           <th class="cell-modified">更新日</th>
         </tr>
-        <?php foreach ($letters as $key => $value) { ?>
+        <?php foreach ($pages as $key => $value) { ?>
           <tr>
               <td><?php echo h($value['tocharacterid']); ?></td>
               <td><?php echo h($value['tofullname']); ?></td>

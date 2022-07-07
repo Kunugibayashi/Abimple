@@ -18,9 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   setToken();
 
   // DB接続
-  $dbhInfomation = connectRw(INFOMATION_DB);
+  $dbhInfomation = connectRw(INFOMATIONS_DB);
 
-  $infoList = selectInfomationMessage($dbhInfomation, $inputParams['id']);
+  $infoList = selectInfomationsId($dbhInfomation, $inputParams['id']);
   $info = $infoList[0];
 
   // データ更新
@@ -34,10 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 checkToken();
 
 // DB接続
-$dbhInfomation = connectRw(INFOMATION_DB);
+$dbhInfomation = connectRw(INFOMATIONS_DB);
 
 // 削除
-$result = deleteInfomation($dbhInfomation, $inputParams['id']);
+$result = deleteInfomations($dbhInfomation, $inputParams['id']);
 if (!$result) {
   $errors[] = '削除に失敗しました。もう一度お試しください。';
   goto outputPage;

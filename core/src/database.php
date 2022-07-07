@@ -40,7 +40,7 @@ function fetchArraytoArray($results) {
 }
 
 // 配列をLIKE文のAND条件としてSQLに結合
-function setAndArryParam($sql, $params) {
+function setAndLikeArryParam($sql, $params) {
   if (!isset($params)) {
     return $sql;
   }
@@ -50,6 +50,22 @@ function setAndArryParam($sql, $params) {
   foreach ($params as $key => $value) {
     if (usedStr($value)) {
       $sql = $sql ." AND $key LIKE :$key";
+    }
+  }
+  return $sql;
+}
+
+// 配列を＝文のAND条件としてSQLに結合
+function setAndEqualArryParam($sql, $params) {
+  if (!isset($params)) {
+    return $sql;
+  }
+  if (!is_array($params)) {
+    return $sql;
+  }
+  foreach ($params as $key => $value) {
+    if (usedStr($value)) {
+      $sql = $sql ." AND $key = :$key";
     }
   }
   return $sql;
@@ -66,6 +82,8 @@ function setUpdateArryParam($sql, $params) {
   $tmp = array();
   foreach ($params as $key => $value) {
     if (usedStr($value)) {
+      $tmp[] = "$key = :$key";
+    } else if ($value === "") {
       $tmp[] = "$key = :$key";
     }
   }
@@ -125,7 +143,7 @@ function setLikeArryBindValue($stmt, $params) {
 }
 
 // 配列をバインド（完全一致）
-function setArryBindValue($stmt, $params) {
+function setEqualArryBindValue($stmt, $params) {
   if (!isset($params)) {
     return $stmt;
   }
@@ -135,6 +153,8 @@ function setArryBindValue($stmt, $params) {
   foreach ($params as $key => $value) {
     if (usedStr($value)) {
       $stmt->bindValue(":$key", $value);
+    } else if ($value === "") {
+      $stmt->bindValue(":$key", "");
     }
   }
   return $stmt;
@@ -165,24 +185,24 @@ function checkDB($dbname) {
     createUsers($dbh);
   } else if (CHARACTERS_DB === $dbname) {
     createCharacters($dbh);
-  } else if (CHAT_ADMIN_ROOMS === $dbname) {
+  } else if (ADMIN_ROOMS_DB === $dbname) {
     creatAdminrooms($dbh);
-  } else if (CHAT_ROOM_DB === $dbname) {
-    createChatroom($dbh);
+  } else if (CHAT_ROOMS_DB === $dbname) {
+    createChatrooms($dbh);
   } else if (CHAT_ENTRIES_DB === $dbname) {
     createChatentries($dbh);
   } else if (CHAT_LOGS_DB === $dbname) {
     createChatlogs($dbh);
-  } else if (INBOX_DB === $dbname) {
-    createInbox($dbh);
-  } else if (OUTBOX_DB === $dbname) {
-    createOutbox($dbh);
-  } else if (BBSID_DB === $dbname) {
-    createBbsParentId($dbh);
+  } else if (INBOX_LETTERS_DB === $dbname) {
+    createInboxLetters($dbh);
+  } else if (OUTBOX_LETTERS_DB === $dbname) {
+    createOutboxLetters($dbh);
+  } else if (BBS_PARENTS_DB === $dbname) {
+    createBbsParents($dbh);
   } else if (BBS_DB === $dbname) {
     createBbs($dbh);
-  } else if (INFOMATION_DB === $dbname) {
-    createInfomation($dbh);
+  } else if (INFOMATIONS_DB === $dbname) {
+    createInfomations($dbh);
   }
   // この関数内のみでコネクションを完結する
   $dbh->close();
@@ -227,7 +247,7 @@ function isLogin() {
   $dbname = USERS_DB;
   $dbh = connectRo($dbname);
 
-  $users = selectUserId($dbh, $userid);
+  $users = selectUsersId($dbh, $userid);
   if (!usedArr($users)) {
     return false;
   }
@@ -314,7 +334,7 @@ function deleteUsers($dbh, $userid, $username) {
   return $results;
 }
 
-function selectUserId($dbh, $id) {
+function selectUsersId($dbh, $id) {
   $sql = '
     SELECT
       id,
@@ -332,7 +352,7 @@ function selectUserId($dbh, $id) {
   return $data;
 }
 
-function selectUsername($dbh, $username) {
+function selectUsersUsername($dbh, $username) {
   $sql = '
     SELECT
       id,
@@ -351,7 +371,7 @@ function selectUsername($dbh, $username) {
   return $data;
 }
 
-function selectUserList($dbh, $params = array()) {
+function selectLikeUsersList($dbh, $params = array()) {
   $sql = '
     SELECT
       id,
@@ -362,7 +382,7 @@ function selectUserList($dbh, $params = array()) {
     WHERE
       id IS NOT NULL
   ';
-  $sql = setAndArryParam($sql, $params);
+  $sql = setAndLikeArryParam($sql, $params);
   $sql = $sql .'
     ORDER BY modified DESC
   ';
@@ -374,7 +394,7 @@ function selectUserList($dbh, $params = array()) {
   return $data;
 }
 
-function selectUserMyList($dbh, $userid, $username) {
+function selectUsersMy($dbh, $userid, $username) {
   $sql = '
     SELECT
       id,
@@ -401,9 +421,9 @@ function selectUserMyList($dbh, $userid, $username) {
  * お知らせテーブル
  * ****************************************************************************
  */
-function createInfomation($dbh) {
+function createInfomations($dbh) {
   $sql = "
-    CREATE TABLE infomation (
+    CREATE TABLE informations (
       id              INTEGER        PRIMARY KEY AUTOINCREMENT,
       title           VARCHAR(100)   NOT NULL,
       message         TEXT           NOT NULL DEFAULT '',
@@ -419,39 +439,36 @@ function createInfomation($dbh) {
   }
 }
 
-function selectInfomationList($dbh, $params = array()) {
+function selectEqualInfomationsList($dbh, $params = array()) {
   $sql = '
     SELECT
       id,
       title,
       created,
       modified
-    FROM infomation
+    FROM informations
     WHERE
       id IS NOT NULL
   ';
-  $sql = setAndArryParam($sql, $params);
+  $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
     ORDER BY id DESC
   ';
 
   $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setLikeArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
   return $data;
 }
 
-function selectInfomationMessage($dbh, $id) {
+function selectInfomationsId($dbh, $id) {
   $sql = '
     SELECT
       *
-    FROM infomation
+    FROM informations
     WHERE
       id = :id
-  ';
-  $sql = $sql .'
-    ORDER BY id DESC
   ';
 
   $stmt = myPrepare($dbh, $sql);
@@ -461,13 +478,13 @@ function selectInfomationMessage($dbh, $id) {
   return $data;
 }
 
-function insertInfomation($dbh, $params = array()) {
+function insertInfomations($dbh, $params = array()) {
   unset($params['id']);
   unset($params['created']);
   unset($params['modified']);
 
   $sql = '
-    INSERT INTO infomation (
+    INSERT INTO informations (
   ';
   $sql = setInsertColumnArryParam($sql, $params);
   $sql = $sql .'
@@ -479,18 +496,18 @@ function insertInfomation($dbh, $params = array()) {
   ';
 
   $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
 }
 
-function updateInfomation($dbh, $id, $params = array()) {
+function updateInfomations($dbh, $id, $params = array()) {
   unset($params['id']);
   unset($params['created']);
   unset($params['modified']);
 
   $sql = "
-    UPDATE infomation
+    UPDATE informations
     SET
       modified = (DATETIME('now', 'localtime')),
   ";
@@ -502,14 +519,14 @@ function updateInfomation($dbh, $id, $params = array()) {
 
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt->bindValue(':id', $id);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
 }
 
-function deleteInfomation($dbh, $id) {
+function deleteInfomations($dbh, $id) {
   $sql = '
-    DELETE FROM infomation
+    DELETE FROM informations
     WHERE
       id = :id
   ';
@@ -529,7 +546,7 @@ function creatAdminrooms($dbh) {
     CREATE TABLE adminrooms (
       id        INTEGER        PRIMARY KEY AUTOINCREMENT,
       roomdir   VARCHAR(20)    NOT NULL UNIQUE,
-      roomname  VARCHAR(20)    NOT NULL,
+      roomtitle VARCHAR(100)   NOT NULL,
       published INTEGER        NOT NULL DEFAULT 0,
       displayno INTEGER        NOT NULL DEFAULT 0,
 
@@ -542,6 +559,107 @@ function creatAdminrooms($dbh) {
   if (!$results) {
     echo $dbh->lastErrorMsg();
   }
+}
+
+function insertAdminrooms($dbh, $params = array()) {
+  unset($params['id']);
+  unset($params['created']);
+  unset($params['modified']);
+
+  $sql = '
+    INSERT INTO adminrooms (
+  ';
+  $sql = setInsertColumnArryParam($sql, $params);
+  $sql = $sql .'
+    ) VALUES (
+  ';
+  $sql = setInsertVluesArryParam($sql, $params);
+  $sql = $sql .'
+    )
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function deleteAdminrooms($dbh, $id) {
+  $sql = '
+    DELETE FROM adminrooms
+    WHERE
+      id = :id
+  ';
+
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':id', $id);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function updateAdminrooms($dbh, $id, $params = array()) {
+  unset($params['id']);
+  unset($params['created']);
+  unset($params['modified']);
+
+  $sql = "
+    UPDATE adminrooms
+    SET
+      modified = (DATETIME('now', 'localtime')),
+  ";
+  $sql = setUpdateArryParam($sql, $params);
+  $sql = $sql ."
+    WHERE
+      id = :id
+  ";
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt->bindValue(':id', $id);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function selectAdminroomsId($dbh, $id) {
+  $sql = '
+    SELECT
+      *
+    FROM adminrooms
+    WHERE
+      id = :id
+  ';
+
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':id', $id);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+function selectEqualAdminroomsList($dbh, $params = array()) {
+  $sql = '
+    SELECT
+      id,
+      roomdir,
+      roomtitle,
+      published,
+      displayno,
+      created,
+      modified
+    FROM adminrooms
+    WHERE
+      id IS NOT NULL
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY displayno
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
 }
 
 /* ****************************************************************************
@@ -609,7 +727,7 @@ function insertCharacters($dbh, $userid, $username, $params = array()) {
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt->bindValue(':userid', $userid);
   $stmt->bindValue(':username', $username);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
 }
@@ -632,12 +750,12 @@ function updateCharacters($dbh, $characterid, $params = array()) {
 
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt->bindValue(':characterid', $characterid);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
 }
 
-function deleteCharacters($dbh, $userid, $username, $params = array()) {
+function deleteEqualCharacters($dbh, $userid, $username, $params = array()) {
   $sql = '
     DELETE FROM characters
     WHERE
@@ -645,17 +763,17 @@ function deleteCharacters($dbh, $userid, $username, $params = array()) {
     AND
       username = :username
   ';
-  $sql = setAndArryParam($sql, $params);
+  $sql = setAndEqualArryParam($sql, $params);
 
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt->bindValue(':userid', $userid);
   $stmt->bindValue(':username', $username);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
 }
 
-function selectCharacterId($dbh, $characterid) {
+function selectCharactersId($dbh, $characterid) {
   $sql = '
     SELECT
       *
@@ -671,7 +789,7 @@ function selectCharacterId($dbh, $characterid) {
   return $data;
 }
 
-function selectCharacterList($dbh, $params = array()) {
+function selectLikeCharactersList($dbh, $params = array()) {
   // detail は重くなるため一覧には表示しない
   $sql = '
     SELECT
@@ -702,7 +820,7 @@ function selectCharacterList($dbh, $params = array()) {
     WHERE
       id IS NOT NULL
   ';
-  $sql = setAndArryParam($sql, $params);
+  $sql = setAndLikeArryParam($sql, $params);
   $sql = $sql .'
     ORDER BY modified DESC
   ';
@@ -714,7 +832,7 @@ function selectCharacterList($dbh, $params = array()) {
   return $data;
 }
 
-function selectCharacterMyList($dbh, $userid, $username) {
+function selectCharactersMy($dbh, $userid, $username) {
   $sql = '
     SELECT
       id,
@@ -742,29 +860,13 @@ function selectCharacterMyList($dbh, $userid, $username) {
   return $data;
 }
 
-function selectCharacterView($dbh, $characterid) {
-  $sql = '
-    SELECT
-      *
-    FROM characters
-    WHERE
-      id = :characterid
-  ';
-
-  $stmt = myPrepare($dbh, $sql);
-  $stmt->bindValue(':characterid', $characterid);
-  $results = $stmt->execute();
-  $data = fetchArraytoArray($results);
-  return $data;
-}
-
 /* ****************************************************************************
  * チャットルーム設定
  * ****************************************************************************
  */
-function createChatroom($dbh) {
+function createChatrooms($dbh) {
   $sql = "
-    CREATE TABLE chatroom (
+    CREATE TABLE chatrooms (
       id            INTEGER        PRIMARY KEY AUTOINCREMENT,
       title         VARCHAR(100)   NOT NULL,
       guide         TEXT           NOT NULL,
@@ -784,6 +886,9 @@ function createChatroom($dbh) {
       omi3flg       INTEGER        NOT NULL DEFAULT 0,
       omi3name      VARCHAR(10)    NOT NULL DEFAULT '',
       omi3text      TEXT           NOT NULL DEFAULT '',
+      deck1flg      INTEGER        NOT NULL DEFAULT 0,
+      deck1name     VARCHAR(10)    NOT NULL DEFAULT '',
+      deck1text     TEXT           NOT NULL DEFAULT '',
 
       created DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime')),
       modified DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime'))
@@ -796,9 +901,9 @@ function createChatroom($dbh) {
   }
 }
 
-function insertInitChatroom($dbh) {
+function insertInitChatrooms($dbh) {
   $sql = "
-    INSERT INTO chatroom (
+    INSERT INTO chatrooms (
       title,
       guide
     ) VALUES (
@@ -812,11 +917,11 @@ function insertInitChatroom($dbh) {
   return $results;
 }
 
-function selectChatroomConfig($dbh) {
+function selectChatroomsConfig($dbh) {
   $sql = '
     SELECT
       *
-    FROM chatroom
+    FROM chatrooms
     WHERE
       id = 1
   ';
@@ -827,13 +932,13 @@ function selectChatroomConfig($dbh) {
   return $data;
 }
 
-function updateChatroomConfig($dbh, $params = array()) {
+function updateChatroomsConfig($dbh, $params = array()) {
   unset($params['id']);
   unset($params['created']);
   unset($params['modified']);
 
   $sql = "
-    UPDATE chatroom
+    UPDATE chatrooms
     SET
       modified = (DATETIME('now', 'localtime')),
   ";
@@ -844,7 +949,7 @@ function updateChatroomConfig($dbh, $params = array()) {
   ";
 
   $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
 }
@@ -853,9 +958,9 @@ function updateChatroomConfig($dbh, $params = array()) {
  * 私書テーブル（受信BOX）
  * ****************************************************************************
  */
-function createInbox($dbh) {
+function createInboxLetters($dbh) {
  $sql = "
-   CREATE TABLE inbox (
+   CREATE TABLE inboxletters (
       id            INTEGER        PRIMARY KEY AUTOINCREMENT,
       touserid        INTEGER        NOT NULL,
       tousername      VARCHAR(20)    NOT NULL,
@@ -879,7 +984,7 @@ function createInbox($dbh) {
  }
 
  $sql = "
-   CREATE INDEX IF NOT EXISTS idx_inbox_touserid_tousername ON inbox(touserid, tousername);
+   CREATE INDEX IF NOT EXISTS idx_inbox_touserid_tousername ON inboxletters(touserid, tousername);
  ";
 
  $results = $dbh->query($sql);
@@ -888,13 +993,13 @@ function createInbox($dbh) {
  }
 }
 
-function insertInbox($dbh, $userid, $username, $params = array()) {
+function insertInboxLetters($dbh, $userid, $username, $params = array()) {
   unset($params['id']);
   unset($params['created']);
   unset($params['modified']);
 
   $sql = '
-    INSERT INTO inbox (
+    INSERT INTO inboxletters (
       userid,
       username,
   ';
@@ -912,14 +1017,14 @@ function insertInbox($dbh, $userid, $username, $params = array()) {
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt->bindValue(':userid', $userid);
   $stmt->bindValue(':username', $username);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
 }
 
-function deleteInboxId($dbh, $id) {
+function deleteInboxLetters($dbh, $id) {
   $sql = '
-    DELETE FROM inbox
+    DELETE FROM inboxletters
     WHERE
       id = :id
   ';
@@ -930,7 +1035,7 @@ function deleteInboxId($dbh, $id) {
   return $results;
 }
 
-function selectInboxPublicTitleList($dbh, $params = array()) {
+function selectEqualInboxLettersPublicTitleList($dbh, $params = array()) {
   $sql = '
     SELECT
       box2.id,
@@ -946,25 +1051,25 @@ function selectInboxPublicTitleList($dbh, $params = array()) {
     (
       select
         MAX(id) AS id
-      FROM inbox
+      FROM inboxletters
       GROUP BY
         tocharacterid
     ) AS box1
-    LEFT JOIN inbox AS box2 ON box1.id = box2.id
+    LEFT JOIN inboxletters AS box2 ON box1.id = box2.id
   ';
-  $sql = setAndArryParam($sql, $params);
+  $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
     ORDER BY modified DESC
   ';
 
   $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setLikeArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
   return $data;
 }
 
-function selectInboxTitleList($dbh, $params = array()) {
+function selectEqualInboxLettersTitleList($dbh, $params = array()) {
   $sql = '
     SELECT
       id,
@@ -976,48 +1081,63 @@ function selectInboxTitleList($dbh, $params = array()) {
       fromfullname,
       title,
       modified
-    FROM inbox AS box1
+    FROM inboxletters AS box1
     WHERE
       id IS NOT NULL
   ';
-  $sql = setAndArryParam($sql, $params);
+  $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
     ORDER BY modified DESC
   ';
 
   $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setLikeArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
   return $data;
 }
 
-function selectInboxMessageList($dbh, $params = array()) {
+function selectEqualInboxLettersList($dbh, $params = array()) {
   $sql = '
     SELECT
       *
-    FROM inbox
+    FROM inboxletters
     WHERE
       id IS NOT NULL
   ';
-  $sql = setAndArryParam($sql, $params);
+  $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
     ORDER BY modified DESC
   ';
 
   $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setLikeArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
   return $data;
 }
 
-function selectInboxMyList($dbh, $userid, $username) {
-  // SQLiteの場合、IN句は1000件以上の場合だとエラーとなる。1000件以上になる場合は修正すること。
+function selectInboxLettersId($dbh, $id) {
   $sql = '
     SELECT
       *
-    FROM inbox AS box1
+    FROM inboxletters
+    WHERE
+      id = :id
+  ';
+
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':id', $id);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+function selectInboxLettersMy($dbh, $userid, $username) {
+  $sql = '
+    SELECT
+      *
+    FROM inboxletters AS box1
     WHERE
       touserid = :userid
     AND
@@ -1037,9 +1157,9 @@ function selectInboxMyList($dbh, $userid, $username) {
  * 私書テーブル（送信BOX）
  * ****************************************************************************
  */
-function createOutbox($dbh) {
+function createOutboxLetters($dbh) {
   $sql = "
-    CREATE TABLE outbox (
+    CREATE TABLE outboxletters (
       id              INTEGER        PRIMARY KEY AUTOINCREMENT,
       touserid        INTEGER        NOT NULL,
       tousername      VARCHAR(20)    NOT NULL,
@@ -1063,7 +1183,7 @@ function createOutbox($dbh) {
   }
 
   $sql = "
-    CREATE INDEX IF NOT EXISTS idx_outbox_touserid ON outbox(touserid);
+    CREATE INDEX IF NOT EXISTS idx_outbox_touserid ON outboxletters(touserid);
   ";
 
   $results = $dbh->query($sql);
@@ -1072,13 +1192,13 @@ function createOutbox($dbh) {
   }
 }
 
-function insertOutbox($dbh, $userid, $username, $params = array()) {
+function insertOutboxLetters($dbh, $userid, $username, $params = array()) {
   unset($params['id']);
   unset($params['created']);
   unset($params['modified']);
 
   $sql = '
-    INSERT INTO outbox (
+    INSERT INTO outboxletters (
       userid,
       username,
   ';
@@ -1096,14 +1216,14 @@ function insertOutbox($dbh, $userid, $username, $params = array()) {
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt->bindValue(':userid', $userid);
   $stmt->bindValue(':username', $username);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
 }
 
-function deleteOutboxId($dbh, $id) {
+function deleteOutboxLetters($dbh, $id) {
   $sql = '
-    DELETE FROM outbox
+    DELETE FROM outboxletters
     WHERE
       id = :id
   ';
@@ -1114,8 +1234,7 @@ function deleteOutboxId($dbh, $id) {
   return $results;
 }
 
-function selectOutboxMyList($dbh, $userid, $username) {
-  // SQLiteの場合、IN句は1000件以上の場合だとエラーとなる。1000件以上になる場合は修正すること。
+function selectOutboxLettersMy($dbh, $userid, $username) {
   $sql = '
     SELECT
       id,
@@ -1127,7 +1246,7 @@ function selectOutboxMyList($dbh, $userid, $username) {
       fromfullname,
       title,
       modified
-    FROM outbox
+    FROM outboxletters
     WHERE
       userid = :userid
     AND
@@ -1143,21 +1262,17 @@ function selectOutboxMyList($dbh, $userid, $username) {
   return $data;
 }
 
-function selectOutboxMessageList($dbh, $params = array()) {
+function selectOutboxMessageId($dbh, $id) {
   $sql = '
     SELECT
       *
-    FROM outbox
+    FROM outboxletters
     WHERE
-      id IS NOT NULL
-  ';
-  $sql = setAndArryParam($sql, $params);
-  $sql = $sql .'
-    ORDER BY modified DESC
+      id = :id
   ';
 
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setLikeArryBindValue($stmt, $params);
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':id', $id);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
   return $data;
@@ -1225,7 +1340,7 @@ function insertChatentries($dbh, $userid, $username, $params = array()) {
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt->bindValue(':userid', $userid);
   $stmt->bindValue(':username', $username);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
 }
@@ -1248,12 +1363,12 @@ function updateChatentries($dbh, $characterid, $params = array()) {
 
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt->bindValue(':characterid', $characterid);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
 }
 
-function selectChatentries($dbh, $params = array()) {
+function selectEqualChatentries($dbh, $params = array()) {
   $sql = '
     SELECT
       *
@@ -1261,19 +1376,19 @@ function selectChatentries($dbh, $params = array()) {
     WHERE
       deleteflg = 0
   ';
-  $sql = setAndArryParam($sql, $params);
+  $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
     ORDER BY id DESC
   ';
 
   $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
   return $data;
 }
 
-function selectLogChatentries($dbh, $params = array()) {
+function selectEqualLogChatentries($dbh, $params = array()) {
   $sql = '
     SELECT
       *
@@ -1281,13 +1396,13 @@ function selectLogChatentries($dbh, $params = array()) {
     WHERE
       id IS NOT NULL
   ';
-  $sql = setAndArryParam($sql, $params);
+  $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
     ORDER BY id DESC
   ';
 
   $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
   return $data;
@@ -1355,12 +1470,12 @@ function insertChatlogs($dbh, $userid, $username, $params = array()) {
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt->bindValue(':userid', $userid);
   $stmt->bindValue(':username', $username);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
 }
 
-function selectChatlogs($dbh, $limit, $params = array()) {
+function selectEqualChatlogs($dbh, $limit, $params = array()) {
   $sql = '
     SELECT
       *
@@ -1368,21 +1483,21 @@ function selectChatlogs($dbh, $limit, $params = array()) {
     WHERE
       id IS NOT NULL
   ';
-  $sql = setAndArryParam($sql, $params);
+  $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
     ORDER BY id DESC
     LIMIT :limit
   ';
 
   $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $stmt->bindValue(':limit', $limit);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
   return $data;
 }
 
-function selectChatlogsMylist($dbh, $limit, $entrykey, $params = array()) {
+function selectEqualChatlogsEntrykey($dbh, $limit, $entrykey, $params = array()) {
   $sql = '
     SELECT
       *
@@ -1390,14 +1505,14 @@ function selectChatlogsMylist($dbh, $limit, $entrykey, $params = array()) {
     WHERE
       entrykey = :entrykey
   ';
-  $sql = setAndArryParam($sql, $params);
+  $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
     ORDER BY id DESC
     LIMIT :limit
   ';
 
   $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $stmt->bindValue(':entrykey', $entrykey);
   $stmt->bindValue(':limit', $limit);
   $results = $stmt->execute();
@@ -1405,7 +1520,7 @@ function selectChatlogsMylist($dbh, $limit, $entrykey, $params = array()) {
   return $data;
 }
 
-function updateChatlogsId($dbh, $id, $params = array()) {
+function updateChatlogs($dbh, $id, $params = array()) {
   $sql = "
     UPDATE chatlogs
     SET
@@ -1419,7 +1534,7 @@ function updateChatlogsId($dbh, $id, $params = array()) {
 
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt->bindValue(':id', $id);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
 }
@@ -1428,9 +1543,9 @@ function updateChatlogsId($dbh, $id, $params = array()) {
  * BBS親記事ID管理
  * ****************************************************************************
  */
-function createBbsParentId($dbh) {
+function createBbsParents($dbh) {
   $sql = "
-    CREATE TABLE bbsparentid (
+    CREATE TABLE bbsparents (
       id          INTEGER        PRIMARY KEY AUTOINCREMENT,
 
       userid INTEGER NOT NULL,
@@ -1446,9 +1561,9 @@ function createBbsParentId($dbh) {
   }
 }
 
-function insertBbsParentId($dbh, $userid, $username) {
+function insertBbsParents($dbh, $userid, $username) {
   $sql = '
-    INSERT INTO bbsparentid (
+    INSERT INTO bbsparents (
       userid,
       username
     ) VALUES (
@@ -1464,11 +1579,11 @@ function insertBbsParentId($dbh, $userid, $username) {
   return $results;
 }
 
-function selectBbsParentId($dbh) {
+function selectBbsParents($dbh) {
   $sql = '
     SELECT
       id
-    FROM bbsparentid
+    FROM bbsparents
     ORDER BY id DESC
     Limit 1
   ';
@@ -1557,12 +1672,12 @@ function insertBbs($dbh, $userid, $username, $params = array()) {
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt->bindValue(':userid', $userid);
   $stmt->bindValue(':username', $username);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
 }
 
-function selectBbsParentTitleList($dbh) {
+function selectBbsParentsTitleTop($dbh) {
   $sql = '
     SELECT
       bbs2.parentid,
@@ -1591,7 +1706,7 @@ function selectBbsParentTitleList($dbh) {
   return $data;
 }
 
-function selectBbsListParent($dbh, $parentid) {
+function selectBbsListParentid($dbh, $parentid) {
   $sql = '
     SELECT
       *
@@ -1610,7 +1725,7 @@ function selectBbsListParent($dbh, $parentid) {
   return $data;
 }
 
-function selectBbsListChild($dbh, $parentid) {
+function selectBbsListChildParentid($dbh, $parentid) {
   $sql = '
     SELECT
       *
@@ -1646,7 +1761,7 @@ function selectBbsId($dbh, $id) {
   return $data;
 }
 
-function updateBbsId($dbh, $id, $params = array()) {
+function updateBbs($dbh, $id, $params = array()) {
   unset($params['id']);
   unset($params['created']);
   unset($params['modified']);
@@ -1664,12 +1779,12 @@ function updateBbsId($dbh, $id, $params = array()) {
 
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt->bindValue(':id', $id);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
 }
 
-function deleteBbsId($dbh, $id) {
+function deleteBbs($dbh, $id) {
   $sql = '
     DELETE FROM bbs
     WHERE
@@ -1682,7 +1797,7 @@ function deleteBbsId($dbh, $id) {
   return $results;
 }
 
-function selectBbsTitle($dbh, $params = array()) {
+function selectEqualBbsTitleList($dbh, $params = array()) {
   $sql = '
     SELECT
       id,
@@ -1695,13 +1810,13 @@ function selectBbsTitle($dbh, $params = array()) {
     WHERE
       id IS NOT NULL
   ';
-  $sql = setAndArryParam($sql, $params);
+  $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
     ORDER BY id DESC
   ';
 
   $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setArryBindValue($stmt, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
   return $data;

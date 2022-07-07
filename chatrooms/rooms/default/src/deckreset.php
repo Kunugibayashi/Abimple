@@ -15,7 +15,6 @@ $jsonArray = array();
 $inputParams = array();
 
 $inputParams['characterid'] = inputParam('characterid', 20);
-$inputParams['dice'] = inputParam('dice', 6);
 
 $jsonArray['code'] = 0;
 $jsonArray['errorMessage'] = '';
@@ -30,13 +29,11 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 checkChatToken();
 
 // DB接続
-$dbhChatrooms  = connectRo(CHAT_ROOMS_DB);
+$dbhChatrooms = connectRw(CHAT_ROOMS_DB);
 $dbhCharacters = connectRo(CHARACTERS_DB);
 $dbhChatentries = connectRw(CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRw(CHAT_LOGS_DB);
 
-$chatrooms = selectChatroomsConfig($dbhChatrooms);
-$chatroom = $chatrooms[0]; // 必ずある想定
 
 $characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
 if (!usedArr($characters)) {
@@ -61,28 +58,55 @@ if (!usedArr($myChatentries)) {
 }
 $myChatentry = $myChatentries[0];
 
-// ダイス
-if (!usedStr($inputParams['dice'])) {
-  $jsonArray['code'] = 1;
-  $jsonArray['errorMessage'] = 'ダイス目が入力されていません。';
-  goto outputPage;
-}
-preg_match('/^([0-9]{1,2})d([0-9]{1,3})$/i', $inputParams['dice'], $matches);
-if (count($matches) != 3) {
-  $jsonArray['code'] = 1;
-  $jsonArray['errorMessage'] = 'ダイス目の入力値が形式にあっていません。';
-  goto outputPage;
-}
-$diceMen = min($matches[2], 100);
-$diceNum = min($matches[1], 10);
 
-$result = array();
-$sum = 0;
-for ($i = 0; $i < $diceNum; $i++) {
-  $me = mt_rand(1, $diceMen);
-  $result[] = $me;
-  $sum = $sum + $me;
+$chatrooms = selectChatroomsConfig($dbhChatrooms);
+if (!usedArr($chatrooms)) {
+  firstAccessChatroom(CHAT_ROOMS_DB);
+  $chatrooms = selectChatroomsConfig($dbhChatrooms);
 }
+$chatroom = $chatrooms[0];
+
+
+$deckText = $chatroom['deck1text'];
+
+if (!usedStr($deckText)) {
+  $jsonArray['code'] = 1;
+  $jsonArray['errorMessage'] = '山札が設定されていません。';
+  goto outputPage;
+}
+
+$deckArray = explode(',', $deckText);
+if (!usedArr($deckArray)) {
+  $jsonArray['code'] = 1;
+  $jsonArray['errorMessage'] = '山札が設定されていません。';
+  goto outputPage;
+}
+
+// 改行コードを切り取る
+foreach ($deckArray as $key => $deckValue) {
+  $deckValue = trim($deckValue);
+  $deckArray[$key] = trim($deckValue);
+}
+
+// リセットする
+$newDeckArray = array();
+foreach ($deckArray as $key => $deckValue) {
+  $deckValueArray = explode('#', $deckValue);
+  if (count($deckValueArray) >= 2) {
+    $newDeckArray[] = '0#' .$deckValueArray[1];
+  } else {
+    // 正しい型でなければ全文を残す
+    $newDeckArray[] = '0#' .$deckValueArray[0];
+  }
+}
+
+// 元の文字列に戻す
+$deckText = implode(",\n", $newDeckArray);
+
+// 山札のDBを更新する
+updateChatroomsConfig($dbhChatrooms, [
+  'deck1text' => $deckText,
+]);
 
 // 発言
 $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
@@ -92,12 +116,12 @@ $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
   'color' => $chatroom['color'],
   'bgcolor' => $chatroom['bgcolor'],
   'message' => ('<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-               .'<span class="dice">（' .$diceNum .'d' .$diceMen .'）＞ ' .$sum .'[' .implode(',', $result) .'] ＞ ' .$sum .'</span>'
+               .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .'山札をリセットしました。' .'</span>'
   ),
 ]);
 if (!$result) {
   $jsonArray['code'] = 1;
-  $jsonArray['errorMessage'] = 'ダイスに失敗しました。もう一度お試しください。';
+  $jsonArray['errorMessage'] = '山札リセットに失敗しました。もう一度お試しください。';
   goto outputPage;
 }
 

@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // DB接続
   $dbhBbs = connectRo(BBS_DB);
 
-  $articles = selectBbsTitle($dbhBbs, [
+  $articles = selectEqualBbsTitleList($dbhBbs, [
     'touserid' => getUserid(),
     'tousername' => getUsername(),
   ]);

@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // DB接続
   $dbhUsers = connectRo(USERS_DB);
-  $users = selectUserList($dbhUsers, $searchParams);
+  $users = selectLikeUsersList($dbhUsers, $searchParams);
 
   $pages = splitPages($users, getNowPage());
 
@@ -46,7 +46,7 @@ setSearchParam($searchParams);
 // DB接続
 $dbhUsers = connectRo(USERS_DB);
 
-$users = selectUserList($dbhUsers, $searchParams);
+$users = selectLikeUsersList($dbhUsers, $searchParams);
 $pages = splitPages($users, getNowPage());
 
 

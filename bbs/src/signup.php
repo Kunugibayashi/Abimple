@@ -55,16 +55,16 @@ if (usedArr($errors)) {
 }
 
 // DB接続
-$dbhBbsId = connectRw(BBSID_DB);
+$dbhBbsId = connectRw(BBS_PARENTS_DB);
 $dbhBbs = connectRw(BBS_DB);
 
 // 親IDを取得する
-$result = insertBbsParentId($dbhBbsId, getUserid(), getUsername());
+$result = insertBbsParents($dbhBbsId, getUserid(), getUsername());
 if (!$result) {
   $errors[] = '登録に失敗しました。もう一度お試しください。';
   goto outputPage;
 }
-$ids = selectBbsParentId($dbhBbsId);
+$ids = selectBbsParents($dbhBbsId);
 $parentId = $ids[0]['id'];
 
 // 記事登録

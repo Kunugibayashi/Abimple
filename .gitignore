@@ -5,3 +5,5 @@ user-edit.css
 bbs/src/images/*.jpg
 bbs/src/images/*.png
 bbs/src/images/*.gif
+chatrooms/rooms/*
+!chatrooms/rooms/default

@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // DB接続
   $dbhCharacters = connectRo(CHARACTERS_DB);
 
-  $characters = selectCharacterId($dbhCharacters, $inputParams['id']);
+  $characters = selectCharactersId($dbhCharacters, $inputParams['id']);
   if (!usedArr($characters)) {
     $errors[] = '名簿がありません。';
     goto outputPage;
@@ -74,7 +74,7 @@ checkToken();
 // DB接続
 $dbhCharacters = connectRw(CHARACTERS_DB);
 
-$characters = selectCharacterId($dbhCharacters, $inputParams['id']);
+$characters = selectCharactersId($dbhCharacters, $inputParams['id']);
 if (!usedArr($characters)) {
   $errors[] = '名簿がありません。';
   goto outputPage;
@@ -94,7 +94,7 @@ updateCharacters($dbhCharacters, $character['id'], $updateCharacter);
 $success = '更新が完了しました。';
 
 // 情報更新
-$characters = selectCharacterId($dbhCharacters, $character['id']);
+$characters = selectCharactersId($dbhCharacters, $character['id']);
 // 画面表示のため詰め替え
 $inputParams = $characters[0];
 

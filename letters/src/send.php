@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // DB接続
   $dbhCharacters = connectRo(CHARACTERS_DB);
 
-  $characters = selectCharacterId($dbhCharacters, $inputParams['tocharacterid']);
+  $characters = selectCharactersId($dbhCharacters, $inputParams['tocharacterid']);
   if (!usedArr($characters)) {
     $errors[] = '宛先の名簿がありません。';
     goto outputPage;
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   $inputParams['tocharacterid'] = $character['id'];
   $inputParams['tofullname'] = $character['fullname'];
 
-  $mycharacters = selectCharacterMyList($dbhCharacters, getUserid(), getUsername());
+  $mycharacters = selectCharactersMy($dbhCharacters, getUserid(), getUsername());
   if (count($mycharacters) < 1) {
     $errors[] = '私書を使用する場合は、キャラクター登録を行ってください。';
     goto outputPage;
@@ -59,10 +59,10 @@ checkToken();
 
 // DB接続
 $dbhCharacters = connectRo(CHARACTERS_DB);
-$dbhInbox = connectRw(INBOX_DB);
-$dbhOutbox = connectRw(OUTBOX_DB);
+$dbhInbox = connectRw(INBOX_LETTERS_DB);
+$dbhOutbox = connectRw(OUTBOX_LETTERS_DB);
 
-$mycharacters = selectCharacterMyList($dbhCharacters, getUserid(), getUsername());
+$mycharacters = selectCharactersMy($dbhCharacters, getUserid(), getUsername());
 
 // 入力値チェック
 if (!usedStr($inputParams['fromcharacterid'])) {
@@ -81,7 +81,7 @@ if (usedArr($errors)) {
   goto outputPage;
 }
 
-$characters = selectCharacterId($dbhCharacters, $inputParams['tocharacterid']);
+$characters = selectCharactersId($dbhCharacters, $inputParams['tocharacterid']);
 if (!usedArr($characters)) {
   $errors[] = '宛先の名簿がありません。';
   goto outputPage;
@@ -98,7 +98,7 @@ $inputParams['tousername'] = $character['username'];
 $inputParams['tocharacterid'] = $character['id'];
 $inputParams['tofullname'] = $character['fullname'];
 
-$characters = selectCharacterId($dbhCharacters, $inputParams['fromcharacterid']);
+$characters = selectCharactersId($dbhCharacters, $inputParams['fromcharacterid']);
 if (!usedArr($characters)) {
   $errors[] = '差出人の名簿がありません。';
   goto outputPage;
@@ -118,8 +118,8 @@ $userid = getUserid();
 $username = getUsername();
 
 // 更新
-insertInbox($dbhInbox, $userid, $username, $inputParams);
-insertOutbox($dbhOutbox, $userid, $username, $inputParams);
+insertInboxLetters($dbhInbox, $userid, $username, $inputParams);
+insertOutboxLetters($dbhOutbox, $userid, $username, $inputParams);
 
 $success = '送信しました。';
 

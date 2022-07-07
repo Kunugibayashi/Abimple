@@ -28,11 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     // アドミンの場合は全ての発言を取得
 
     // 最大10000行
-    $chatlogs = selectChatlogs($dbhChatlogs, 10000);
+    $chatlogs = selectEqualChatlogs($dbhChatlogs, 10000);
   } else {
     // ユーザーの場合は入室情報から取得
 
-    $characters = selectCharacterId($dbhCharacters, $inputParams['characterid']);
+    $characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
     if (!usedArr($characters)) {
       // 不正アクセス
       $jsonArray['code'] = 1;
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     // 本人確認
     identityUser($character['userid'], $character['username']);
 
-    $myChatentries = selectChatentries($dbhChatentries, [
+    $myChatentries = selectEqualChatentries($dbhChatentries, [
       'characterid' => $character['id'],
     ]);
     if (!usedArr($myChatentries)) {
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     $myChatentry = $myChatentries[0];
 
     // 最大10000行
-    $chatlogs = selectChatlogsMylist($dbhChatlogs, 10000, $myChatentry['entrykey'], [
+    $chatlogs = selectEqualChatlogsEntrykey($dbhChatlogs, 10000, $myChatentry['entrykey'], [
       'characterid' => $character['id'],
       'fullname' => $character['fullname'],
     ]);

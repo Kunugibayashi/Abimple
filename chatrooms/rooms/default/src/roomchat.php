@@ -30,15 +30,15 @@ if (isNowRoomEntry(getPageRoomdir())) {
 }
 
 // DB接続
-$dbhChatrooms  = connectRo(CHAT_ROOM_DB);
+$dbhChatrooms  = connectRo(CHAT_ROOMS_DB);
 $dbhCharacters = connectRo(CHARACTERS_DB);
 $dbhChatentries = connectRw(CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRw(CHAT_LOGS_DB);
 
-$chatrooms = selectChatroomConfig($dbhChatrooms);
+$chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0]; // 必ずある想定
 
-$characters = selectCharacterId($dbhCharacters, $inputParams['characterid']);
+$characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
 if (!usedArr($characters)) {
   // 不正アクセス
   echo '名簿が存在しません。';
@@ -49,7 +49,7 @@ $character = $characters[0];
 // 本人確認
 identityUser($character['userid'], $character['username']);
 
-$chatentries = selectChatentries($dbhChatentries);
+$chatentries = selectEqualChatentries($dbhChatentries);
 // 最初の入室者かどうか
 if (!usedArr($chatentries)) {
   // 最初の入室者の場合はエントリーキーを入れる
@@ -61,7 +61,7 @@ if (!usedArr($chatentries)) {
     'color' => $inputParams['color'],
     'bgcolor' => $inputParams['bgcolor'],
   ]);
-  $chatentries = selectChatentries($dbhChatentries);
+  $chatentries = selectEqualChatentries($dbhChatentries);
 
   // 入室ログ
   insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
@@ -76,7 +76,7 @@ if (!usedArr($chatentries)) {
 $chatentry = $chatentries[0];
 
 // 自分は入室しているかどうか
-$myChatentries = selectChatentries($dbhChatentries, [
+$myChatentries = selectEqualChatentries($dbhChatentries, [
   'characterid' => $character['id'],
 ]);
 if (!usedArr($myChatentries)) {
@@ -87,7 +87,7 @@ if (!usedArr($myChatentries)) {
     'color' => $inputParams['color'],
     'bgcolor' => $inputParams['bgcolor'],
   ]);
-  $myChatentries = selectChatentries($dbhChatentries, [
+  $myChatentries = selectEqualChatentries($dbhChatentries, [
     'characterid' => $character['id'],
   ]);
 
@@ -173,7 +173,7 @@ outputPage:
         <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
         <ul class="form-row fullname-wrap">
           <li class="form-col-title">名前</li>
-          <li class="form-col-item"><?php echo h($character['fullname']); ?></li>
+          <li class="form-col-item form-col-item-name"><?php echo h($character['fullname']); ?></li>
         </ul>
         <ul class="form-row color-setting-wrap">
           <li class="form-col-title">文字色</li>
@@ -296,7 +296,25 @@ outputPage:
         <?php } ?>
       </div>
     <?php } ?>
+
+    <?php if ($chatroom['deck1flg']) { /* 山札が設定されていれば表示 */ ?>
+      <div class="random-border-wrap">
+        <h3 class="deck-title">山札</h3>
+        <form name="deck-form" id="deck-form" action="" method="POST">
+          <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
+          <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
+        </form>
+        <div class="form-button-wrap deck1-button-wrap">
+          <button type="button" class="deck-button"><?php echo h($chatroom['deck1name']); ?></button>
+        </div>
+        <div class="form-button-wrap deck1-button-wrap">
+          <button type="button" class="deck-reset-button">山札リセット</button>
+        </div>
+      </div>
+    <?php } ?>
+
   </div>
+
 
   <div class="chatroom-frame-wrap">
     <?php if ($chatroom['isframe']) {  /* フレームあり */ ?>
@@ -491,6 +509,60 @@ jQuery(function(){
     });
   });
 
+  // 山札
+  jQuery('button.deck-button').on('click', function(){
+    var id = jQuery(this).val();
+    var omiForm = jQuery('form[name="deck-form"]');
+
+    var sendData = omiForm.serialize();
+    jQuery.ajax({
+      url: './deck.php',
+      type: 'POST',
+      data: sendData,
+      dataType: 'json',
+    }).done((data, textStatus, jqXHR) => {
+      var code = data['code'];
+      var errMes = data['errorMessage'];
+      if (code === 0) {
+        resultElm.html('');
+      } else {
+        resultElm.html(errMes);
+      }
+      reloadBtElm.trigger('click');
+    }).fail((jqXHR, textStatus, errorThrown) => {
+      console.log(jqXHR);
+      resultElm.html(errorThrown);
+    }).always((data) => {
+    });
+  });
+
+  // 山札リセット
+  jQuery('button.deck-reset-button').on('click', function(){
+    var id = jQuery(this).val();
+    var omiForm = jQuery('form[name="deck-form"]');
+
+    var sendData = omiForm.serialize();
+    jQuery.ajax({
+      url: './deckreset.php',
+      type: 'POST',
+      data: sendData,
+      dataType: 'json',
+    }).done((data, textStatus, jqXHR) => {
+      var code = data['code'];
+      var errMes = data['errorMessage'];
+      if (code === 0) {
+        resultElm.html('');
+      } else {
+        resultElm.html(errMes);
+      }
+      reloadBtElm.trigger('click');
+    }).fail((jqXHR, textStatus, errorThrown) => {
+      console.log(jqXHR);
+      resultElm.html(errorThrown);
+    }).always((data) => {
+    });
+  });
+
   // 別窓リンク
   jQuery('span.new-window-submit').on('click', function(){
     var lognum = jQuery('select[name="lognum"]').val();
@@ -632,6 +704,9 @@ li.form-col-item {
   margin: 0.5em 0;
   width: 10em;
 }
+li.form-col-item-name {
+  width: 25em;
+}
 div.form-row-item-group {
   display: flex;
   align-content: center;
@@ -649,17 +724,18 @@ div.form-col-note {
 div.form-col-note-message {
   width: 30em;
 }
-/* ダイス おみくじ */
+/* ダイス おみくじ 山札 */
 div.random-border-wrap {
-  margin: 1em;
-  margin-left: 0;
-  padding: 0.5em;
-  padding-bottom: 1em;
+  margin: 1em 0 0 0;
 
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+form.dice-form {
+  margin:  0 0 0 1.2em;
+}
+h3.deck-title,
 h3.omi-title,
 h3.dice-title {
   font-size: 1.2em;
@@ -668,6 +744,8 @@ h3.dice-title {
   width: 12em;
   margin-bottom: 0.2em;
 }
+button.deck-reset-button,
+button.deck-button,
 button.omi-button,
 input[name="dice"] {
   width: 14em;

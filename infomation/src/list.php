@@ -8,9 +8,9 @@ require_once('../../core/src/administrator.php');
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // DB接続
-  $dbhInfomation = connectRo(INFOMATION_DB);
+  $dbhInfomation = connectRo(INFOMATIONS_DB);
 
-  $infoList = selectInfomationList($dbhInfomation);
+  $infoList = selectEqualInfomationsList($dbhInfomation);
 
   goto outputPage;
 }

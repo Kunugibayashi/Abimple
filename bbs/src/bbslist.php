@@ -10,7 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // DB接続
   $dbhBbs = connectRo(BBS_DB);
 
-  $articles = selectBbsParentTitleList($dbhBbs);
+  $articles = selectBbsParentsTitleTop($dbhBbs);
+  $pages = splitPages($articles, getNowPage());
 
   goto outputPage;
 }
@@ -77,7 +78,7 @@ outputPage:
   <div class="sumpaging-wrap">
     <?php outputSumPaging($articles, getNowPage()); ?>
   </div>
-  <?php if (usedArr($articles)) { /* 登録がある場合に表示 */ ?>
+  <?php if (usedArr($pages)) { /* 登録がある場合に表示 */ ?>
     <div class="table-wrap bbs-table-wrap">
       <table>
         <tr>
@@ -87,7 +88,7 @@ outputPage:
           <th class="cell-modified">最終更新日</th>
           <th class="cell-articlenum">記事数</th>
         </tr>
-        <?php foreach ($articles as $key => $value) { ?>
+        <?php foreach ($pages as $key => $value) { ?>
           <tr>
             <td><?php echo h($value['parentid']); ?></td>
             <td><a href="./bbstop.php?parentid=<?php echo h($value['parentid']); ?>"><?php echo h($value['title']); ?></a></td>

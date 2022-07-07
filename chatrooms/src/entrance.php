@@ -5,15 +5,7 @@ require_once('../../core/src/session.php');
 require_once('../../core/src/database.php');
 require_once('../../core/src/administrator.php');
 
-$inputParams['id'] = inputParam('id', 20);
-
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-
-  // DB接続
-  $dbhInfomation = connectRw(INFOMATIONS_DB);
-
-  $infoList = selectInfomationsId($dbhInfomation, $inputParams['id']);
-  $info = $infoList[0];
 
   goto outputPage;
 }
@@ -33,7 +25,7 @@ outputPage:
   <meta name="robots" content="noindex,nofollow,noarchive" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
-  <title>お知らせ</title>
+  <title>チャットルーム一覧</title>
   <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
   <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
@@ -48,7 +40,7 @@ outputPage:
 </head>
 <body>
 <div class="content-wrap">
-  <h3 class="frame-title">お知らせ</h3>
+  <h3 class="frame-title">チャットルーム一覧</h3>
 
   <?php if (isAdmin()) { /* 管理ユーザーは常に表示 */ ?>
     <div class="note-wrap">
@@ -58,43 +50,16 @@ outputPage:
     </div>
   <?php } ?>
 
-  <?php if (usedArr($info) && usedStr($info['id'])) { /* データがある場合は表示 */ ?>
-    <div class="view-wrap infomation-view-wrap">
-      <div class="view-contents">
-        <ul class="view-row">
-          <li class="view-col-title-only"><?php echo h($info['title']); ?></li>
-        </ul>
-        <ul class="view-row">
-          <li class="view-col-title">ID</li>
-          <li class="view-col-item"><?php echo h($info['id']); ?></li>
-        </ul>
-        <ul class="view-row">
-          <li class="view-col-title">件名</li>
-          <li class="view-col-item"><?php echo h($info['title']); ?></li>
-        </ul>
-        <ul class="view-row">
-          <li class="view-col-title">作成日</li>
-          <li class="view-col-item"><?php echo h($info['created']); ?></li>
-        </ul>
-        <ul class="view-row view-detail-row">
-          <li class="view-col-item view-detail-item"><?php echo ht($info['message']); ?></li>
-        </ul>
-      </div>
-    <?php } ?>
-
-    <div class="page-back-wrap">
-      <button type="button" class="tolist-button">一覧に戻る</button>
-    </div>
-
+  <div class="chatroom-wrap">
+    <?php
+      // ルーム一覧出力
+      ob_start();
+      include('./news.php');
+      $buffer = ob_get_contents();
+      ob_end_clean();
+      echo $buffer;
+    ?>
   </div>
-</div>
-<script> <!-- 各ボタン制御 -->
-jQuery(function(){
-  // 移動ボタン
-  jQuery('button.tolist-button').on('click', function(){
-    window.location.href = "<?php echo h(getPrev()); ?>";
-  });
-});
-</script>
+
 </body>
 </html>

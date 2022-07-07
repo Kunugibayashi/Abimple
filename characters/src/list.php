@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // DB接続
   $dbhCharacters = connectRo(CHARACTERS_DB);
 
-  $characters = selectCharacterList($dbhCharacters, $searchParams);
+  $characters = selectLikeCharactersList($dbhCharacters, $searchParams);
   $pages = splitPages($characters, getNowPage());
 
   goto outputPage;
@@ -85,7 +85,7 @@ setSearchParam($searchParams);
 // DB接続
 $dbhCharacters = connectRo(CHARACTERS_DB);
 
-$characters = selectCharacterList($dbhCharacters, $searchParams);
+$characters = selectLikeCharactersList($dbhCharacters, $searchParams);
 $pages = splitPages($characters, getNowPage());
 
 /* goto文はコードが煩雑になるため使用するべきではないが、
@@ -281,7 +281,9 @@ outputPage:
           <?php if (isAdmin()) { ?>
             <th class="cell-action">操作</th>
           <?php } ?>
-          <th class="cell-letter">私書</th>
+          <?php if (isLogin()) { /* ログイン時のみ表示 */ ?>
+            <th class="cell-letter">私書</th>
+          <?php } ?>
           <th class="cell-id"><?php echo h(NAMELIST_ID); ?></th>
           <th class="cell-fullname"><?php echo h(NAMELIST_NAME); ?></th>
           <th class="cell-color"><?php echo h(NAMELIST_COLOR); ?></th>
@@ -346,9 +348,11 @@ outputPage:
                 <button type="button" class="warning delete-button" value="<?php echo h($value['id']); ?>">削除</button>
               </td>
             <?php } ?>
-            <td>
-              <button type="button" class="letter-button transparent-button" value="<?php echo h($value['id']); ?>"><div class="letter-icon"></div></button>
-            </td>
+            <?php if (isLogin()) { /* ログイン時のみ表示 */ ?>
+              <td>
+                <button type="button" class="letter-button transparent-button" value="<?php echo h($value['id']); ?>"><div class="letter-icon"></div></button>
+              </td>
+            <?php } ?>
             <td><?php echo h($value['id']); ?></td>
             <td><a class="character-view-link" href="./view.php?id=<?php echo h($value['id']); ?>"><?php echo h($value['fullname']); ?><a></td>
             <td><span style="color: <?php echo h($value['color']); ?>; "><?php echo h($value['color']); ?></span></td>

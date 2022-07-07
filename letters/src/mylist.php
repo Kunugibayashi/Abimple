@@ -10,12 +10,12 @@ loginOnly();
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // DB接続
-  $dbhInbox = connectRw(INBOX_DB);
-  $dbhOutbox = connectRw(OUTBOX_DB);
+  $dbhInbox = connectRw(INBOX_LETTERS_DB);
+  $dbhOutbox = connectRw(OUTBOX_LETTERS_DB);
 
-  $inbox = selectInboxMyList($dbhInbox, getUserid(), getUsername());
+  $inbox = selectInboxLettersMy($dbhInbox, getUserid(), getUsername());
 
-  $outbox = selectOutboxMyList($dbhOutbox, getUserid(), getUsername());
+  $outbox = selectOutboxLettersMy($dbhOutbox, getUserid(), getUsername());
 
   goto outputPage;
 }

@@ -34,7 +34,7 @@ $dbhChatlogs = connectRw(CHAT_LOGS_DB);
 
 if (!isAdmin()) {
   // 管理者でない場合は本人確認をする
-  $characters = selectCharacterId($dbhCharacters, $inputParams['characterid']);
+  $characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
   if (!usedArr($characters)) {
     // 不正アクセス
     $jsonArray['code'] = 1;
@@ -60,7 +60,7 @@ if (!usedStr($inputParams['message'])) {
 }
 
 // 発言更新
-updateChatlogsId($dbhChatlogs, $inputParams['id'], [
+updateChatlogs($dbhChatlogs, $inputParams['id'], [
   'message' => $inputParams['message'],
 ]);
 

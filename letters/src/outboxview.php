@@ -12,15 +12,13 @@ $inputParams['id'] = inputParam('id', 20);
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // DB接続
-  $dbhOutbox = connectRw(OUTBOX_DB);
+  $dbhOutbox = connectRw(OUTBOX_LETTERS_DB);
 
-  $outbox = selectOutboxMessageList($dbhOutbox, [
-    'id' => $inputParams['id'],
-  ]);
+  $outbox = selectOutboxMessageId($dbhOutbox, $inputParams['id']);
   $letter = $outbox[0];
 
   // 本人確認
-  identityUser($letter['touserid'], $letter['tousername']);
+  identityUser($letter['userid'], $letter['username']);
 
   goto outputPage;
 }
@@ -91,7 +89,7 @@ outputPage:
         </ul>
         <ul class="view-row view-message-row">
           <li class="view-col-title view-message-title"><?php echo h($letter['title']); ?></li>
-          <li class="view-col-item  view-message-item"><?php echo h($letter['message']); ?></li>
+          <li class="view-col-item  view-message-item"><?php echo hb($letter['message']); ?></li>
         </ul>
       </div>
     </div>

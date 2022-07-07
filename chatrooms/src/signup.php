@@ -11,22 +11,14 @@ $success = '';
 $errors = array();
 $inputParams = array();
 
-$inputParams['id'] = inputParam('id', 20);
-$inputParams['title'] = inputParam('title', 100);
-$inputParams['message'] = inputParam('message', 10000);
+$inputParams['roomdir'] = inputParam('roomdir', 20);
+$inputParams['roomtitle'] = inputParam('roomtitle', 100);
+$inputParams['published'] = inputParam('published', 1);
+$inputParams['displayno'] = inputParam('displayno', 10000);
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策
   setToken();
-
-  // DB接続
-  $dbhInfomation = connectRw(INFOMATIONS_DB);
-
-  $infoList = selectInfomationsId($dbhInfomation, $inputParams['id']);
-  $info = $infoList[0];
-
-  // データ更新
-  $inputParams = $info;
 
   goto outputPage;
 }
@@ -36,30 +28,54 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 checkToken();
 
 // 入力値チェック
-if (!usedStr($inputParams['title'])) {
-  $errors[] = 'タイトルを入力してください。';
+if (!usedStr($inputParams['roomdir'])) {
+  $errors[] = 'roomdir を入力してください。';
 }
-if (!usedStr($inputParams['message'])) {
-  $errors[] = 'メッセージを入力してください。';
+if ($inputParams['roomdir'] === 'default') {
+  $errors[] = 'default は使用できません。';
 }
-if (usedStr($inputParams['message']) && mb_strlen($inputParams['message']) > 10000) {
-  $errors[] = 'メッセージは最大 10000 文字です。';
+if (preg_match('/[^A-Za-z0-9]/', $inputParams['roomdir'])) {
+  $errors[] = 'roomdir に使用できるのは数字とアルファベットのみです。';
+}
+if (!usedStr($inputParams['roomtitle'])) {
+  $errors[] = 'ルーム名を入力してください。';
+}
+if (!usedStr($inputParams['displayno'])) {
+  $errors[] = '表示順序を入力してください。';
+}
+if (preg_match('/[^0-9]/', $inputParams['displayno'])) {
+  $errors[] = '表示順序に使用できるのは数字のみです。';
 }
 if (usedArr($errors)) {
   goto outputPage;
 }
 
 // DB接続
-$dbhInfomation = connectRw(INFOMATIONS_DB);
+$dbhAdminroom = connectRw(ADMIN_ROOMS_DB);
+
+// 重複確認
+$roomList = selectEqualAdminroomsList($dbhAdminroom, [
+  'roomdir' => $inputParams['roomdir'],
+]);
+if (usedArr($roomList)) {
+  $errors[] = 'roomdir が既に登録されています。';
+  goto outputPage;
+}
+
+// ディレクトリ作成
+$errors = createRoomdir($inputParams['roomdir']);
+if (usedArr($errors)) {
+  goto outputPage;
+}
 
 // 登録
-$result = updateInfomations($dbhInfomation, $inputParams['id'], $inputParams);
+$result = insertAdminrooms($dbhAdminroom, $inputParams);
 if (!$result) {
   $errors[] = '登録に失敗しました。もう一度お試しください。';
   goto outputPage;
 }
 
-$success = '投稿しました。';
+$success = '登録しました。';
 
 
 /* goto文はコードが煩雑になるため使用するべきではないが、
@@ -73,7 +89,7 @@ outputPage:
   <meta name="robots" content="noindex,nofollow,noarchive" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
-  <title>お知らせ登録</title>
+  <title>チャットルーム作成</title>
   <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
   <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
@@ -88,7 +104,7 @@ outputPage:
 </head>
 <body>
 <div class="content-wrap">
-  <h3 class="frame-title">お知らせ登録</h3>
+  <h3 class="frame-title">チャットルーム作成</h3>
 
   <?php if (isAdmin()) { /* 管理ユーザーは常に表示 */ ?>
     <div class="note-wrap">
@@ -118,18 +134,33 @@ outputPage:
 
   <?php if (!usedStr($success)) { /* 成功以外にフォームを表示 */ ?>
     <div class="form-wrap">
-      <form name="user-form" class="user-form" action="./edit.php" method="POST" enctype="multipart/form-data">
+      <form name="user-form" class="user-form" action="./signup.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="token" value="<?php echo h(getToken()); ?>">
-        <input type="hidden" name="id" value="<?php echo h($inputParams['id']); ?>">
         <ul class="form-row">
-          <li class="form-col-title">タイトル<div class="mandatory-mark"></div></li>
-          <li class="form-col-item"><input type="text" name="title" value="<?php echo h($inputParams['title']); ?>" maxlength="100"></li>
-          <li class="form-col-note">最大 100 文字まで</li>
+          <li class="form-col-title">roomdir<div class="mandatory-mark"></div></li>
+          <li class="form-col-item"><input type="text" name="roomdir" value="<?php echo h($inputParams['roomdir']); ?>" maxlength="20"></li>
+          <li class="form-col-note">最大 20 文字まで。チャットルームの URL に使用されます。</li>
         </ul>
         <ul class="form-row">
-          <li class="form-col-title">メッセージ<div class="mandatory-mark"></div><div class="htmltag-mark"></div></li>
-          <li class="form-col-item"><textarea name="message" maxlength="10000"><?php echo h($inputParams['message']); ?></textarea></li>
-          <li class="form-col-note">最大 10000 文字。<a href="../../manual/src/htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
+          <li class="form-col-title">ルーム名<div class="mandatory-mark"></div></li>
+          <li class="form-col-item"><input type="text" name="roomtitle" value="<?php echo h($inputParams['roomtitle']); ?>" maxlength="100"></li>
+          <li class="form-col-note">最大 100 文字まで。一覧の部屋タイトルに使用されます。</li>
+        </ul>
+        <ul class="form-row">
+          <li class="form-col-title">一覧に表示するか<div class="mandatory-mark"></div></li>
+          <li class="form-col-item">
+            <div class="select-wrap">
+              <select name="published">
+                <option <?php echo selectedOption($inputParams['published'], '0'); ?> value="0">表示しない</option>
+                <option <?php echo selectedOption($inputParams['published'], '1'); ?> value="1">表示する</option>
+              </select>
+            </div>
+          </li>
+        </ul>
+        <ul class="form-row">
+          <li class="form-col-title">表示順序<div class="mandatory-mark"></div></li>
+          <li class="form-col-item"><input type="text" name="displayno" value="<?php echo h($inputParams['displayno']); ?>" maxlength="10000"></li>
+          <li class="form-col-note">最大 10000。小さい番号ほど上に表示されます。</li>
         </ul>
         <div class="form-button-wrap">
           <button type="submit">登録</button>

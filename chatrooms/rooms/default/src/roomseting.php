@@ -20,9 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   setToken();
 
   // DB接続
-  $dbhChatrooms = connectRo(CHAT_ROOM_DB);
+  $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
 
-  $chatrooms = selectChatroomConfig($dbhChatrooms);
+  $chatrooms = selectChatroomsConfig($dbhChatrooms);
   $chatroom = $chatrooms[0];
 
   // 情報表示のため詰め替え
@@ -36,20 +36,20 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 checkToken();
 
 // DB接続
-$dbhChatrooms = connectRw(CHAT_ROOM_DB);
+$dbhChatrooms = connectRw(CHAT_ROOMS_DB);
 
-$chatrooms = selectChatroomConfig($dbhChatrooms);
+$chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0];
 
 $updateRoom = $inputParams;
-$result = updateChatroomConfig($dbhChatrooms, $updateRoom);
+$result = updateChatroomsConfig($dbhChatrooms, $updateRoom);
 if (!$result) {
   $errors[] = '更新に失敗しました。もう一度お試しください。';
   goto outputPage;
 }
 
 // 情報更新
-$chatrooms = selectChatroomConfig($dbhChatrooms);
+$chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0];
 
 $success = '更新が完了しました。';

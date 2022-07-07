@@ -66,7 +66,7 @@ if (usedArr($errors)) {
   goto outputPage;
 }
 
-$result = deleteBbsId($dbhBbs, $inputParams['deleteid']);
+$result = deleteBbs($dbhBbs, $inputParams['deleteid']);
 if (!$result) {
  $errors[] = '削除に失敗しました。もう一度お試しください。';
  goto outputPage;
@@ -140,12 +140,12 @@ outputPage:
     </div>
     <div class="view-wrap bbs-parent-wrap">
       <div class="view-contents" id="id-<?php echo h($inputParams['id']); ?>">
-        <ul class="view-row">
-          <li class="view-col-title">宛先</li>
-          <li class="view-col-item"><?php echo h($inputParams['toid']); ?></li>
-          <li class="view-col-item"><?php echo h($inputParams['toname']); ?></li>
-          <li class="view-col-item"><?php echo h($inputParams['totitle']); ?></li>
-        </ul>
+        <?php if (usedStr($inputParams['toid'])) { ?>
+          <ul class="view-row">
+            <li class="view-col-title">宛先</li>
+            <li class="view-col-item"><?php echo h($inputParams['toid']); ?>：<?php echo h($inputParams['totitle']); ?>（<?php echo h($inputParams['toname']); ?>）</li>
+          </ul>
+        <?php } ?>
         <ul class="view-row">
           <li class="view-col-title">記事ID</li>
           <li class="view-col-item"><?php echo h($inputParams['id']); ?></li>

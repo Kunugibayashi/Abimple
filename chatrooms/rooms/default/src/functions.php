@@ -9,7 +9,7 @@ function getPageRoomdir() {
 
 function firstAccessChatroom($dbname) {
   $dbh = connectRw($dbname);
-  insertInitChatroom($dbh);
+  insertInitChatrooms($dbh);
   // この関数内のみでコネクションを完結する
   $dbh->close();
 }

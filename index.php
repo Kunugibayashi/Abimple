@@ -58,7 +58,7 @@ require_once('./core/src/administrator.php');
         <?php if (!isLogin()) { /* ログアウト時 */ ?>
           <li class="menu-item"><a href="./users/src/signup.php" target="indexTop">ユーザー登録</a></li>
         <?php } ?>
-        <li class="menu-item"><a href="./chatrooms/src/list.php" target="indexTop">ルーム一覧</a></li>
+        <li class="menu-item"><a href="./chatrooms/src/entrance.php" target="indexTop">ルーム一覧</a></li>
       </ul>
     </nav>
 

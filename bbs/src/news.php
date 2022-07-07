@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // DB接続
   $dbhBbs = connectRo(BBS_DB);
 
-  $articles = selectBbsTitle($dbhBbs);
+  $articles = selectEqualBbsTitleList($dbhBbs);
 
   // 最初の3件
   $articles = array_slice($articles, 0, 3);

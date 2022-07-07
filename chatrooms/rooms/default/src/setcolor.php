@@ -34,7 +34,7 @@ checkChatToken();
 $dbhCharacters = connectRo(CHARACTERS_DB);
 $dbhChatentries = connectRw(CHAT_ENTRIES_DB);
 
-$characters = selectCharacterId($dbhCharacters, $inputParams['characterid']);
+$characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
 if (!usedArr($characters)) {
   // 不正アクセス
   $jsonArray['code'] = 1;
@@ -46,7 +46,7 @@ $character = $characters[0];
 // 本人確認
 identityUser($character['userid'], $character['username']);
 
-$myChatentries = selectChatentries($dbhChatentries, [
+$myChatentries = selectEqualChatentries($dbhChatentries, [
   'characterid' => $character['id'],
 ]);
 if (!usedArr($myChatentries)) {

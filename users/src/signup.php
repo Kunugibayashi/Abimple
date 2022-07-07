@@ -34,7 +34,7 @@ if (!usedStr($inputParams['username'])) {
   $errors[] = 'ユーザー名は 4 文字以上 20 文字以内で入力してください。';
 } else if(!ctype_alnum($inputParams['username'])) {
   $errors[] = 'ユーザー名は英数字で入力してください。';
-} else if(count(selectUsername($dbhUsers, $inputParams['username'])) > 0) {
+} else if(count(selectUsersUsername($dbhUsers, $inputParams['username'])) > 0) {
   $errors[] = 'このユーザーは登録されています。';
 }
 if (!usedStr($inputParams['password'])) {

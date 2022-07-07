@@ -9,7 +9,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // DB接続
   $dbhCharacters = connectRo(CHARACTERS_DB);
 
-  $characters = selectCharacterList($dbhCharacters);
+  $characters = selectLikeCharactersList($dbhCharacters);
 
   // 最初の3件
   $characters = array_slice($characters, 0, 3);

@@ -30,15 +30,15 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 checkChatToken();
 
 // DB接続
-$dbhChatrooms  = connectRo(CHAT_ROOM_DB);
+$dbhChatrooms  = connectRo(CHAT_ROOMS_DB);
 $dbhCharacters = connectRo(CHARACTERS_DB);
 $dbhChatentries = connectRw(CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRw(CHAT_LOGS_DB);
 
-$chatrooms = selectChatroomConfig($dbhChatrooms);
+$chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0]; // 必ずある想定
 
-$characters = selectCharacterId($dbhCharacters, $inputParams['characterid']);
+$characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
 if (!usedArr($characters)) {
   // 不正アクセス
   $jsonArray['code'] = 1;
@@ -50,7 +50,7 @@ $character = $characters[0];
 // 本人確認
 identityUser($character['userid'], $character['username']);
 
-$myChatentries = selectChatentries($dbhChatentries, [
+$myChatentries = selectEqualChatentries($dbhChatentries, [
   'characterid' => $character['id'],
 ]);
 if (!usedArr($myChatentries)) {

@@ -30,6 +30,9 @@ $inputParams['omi2text'] = inputParam('omi2text', 10000);
 $inputParams['omi3flg'] = inputParam('omi3flg', 1);
 $inputParams['omi3name'] = inputParam('omi3name', 10);
 $inputParams['omi3text'] = inputParam('omi3text', 10000);
+$inputParams['deck1flg'] = inputParam('deck1flg', 1);
+$inputParams['deck1name'] = inputParam('deck1name', 10);
+$inputParams['deck1text'] = inputParam('deck1text', 10000);
 $inputParams['isfree'] = inputParam('isfree', 1);
 $inputParams['isframe'] = inputParam('isframe', 1);
 $inputParams['created'] = inputParam('created', 20);
@@ -40,12 +43,12 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   setToken();
 
   // DB接続
-  $dbhChatrooms = connectRo(CHAT_ROOM_DB);
+  $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
 
-  $chatrooms = selectChatroomConfig($dbhChatrooms);
+  $chatrooms = selectChatroomsConfig($dbhChatrooms);
   if (!usedArr($chatrooms)) {
-    firstAccessChatroom(CHAT_ROOM_DB);
-    $chatrooms = selectChatroomConfig($dbhChatrooms);
+    firstAccessChatroom(CHAT_ROOMS_DB);
+    $chatrooms = selectChatroomsConfig($dbhChatrooms);
   }
   $inputParams = $chatrooms[0];
 
@@ -56,18 +59,62 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 // CSRF対策
 checkToken();
 
-// DB接続
-$dbhChatrooms = connectRw(CHAT_ROOM_DB);
 
-// キャラクター更新
+// おみくじ1の編集
+if (usedStr($inputParams['omi1text'])) {
+  $omiTmpArray = explode(',', $inputParams['omi1text']);
+  foreach ($omiTmpArray as $key => $value) {
+    $omiTmpArray[$key] = trim($value);
+  }
+  $inputParams['omi1text'] = implode(",\n", $omiTmpArray);
+}
+
+// おみくじ2の編集
+if (usedStr($inputParams['omi2text'])) {
+  $omiTmpArray = explode(',', $inputParams['omi2text']);
+  foreach ($omiTmpArray as $key => $value) {
+    $omiTmpArray[$key] = trim($value);
+  }
+  $inputParams['omi2text'] = implode(",\n", $omiTmpArray);
+}
+
+// おみくじ3の編集
+if (usedStr($inputParams['omi3text'])) {
+  $omiTmpArray = explode(',', $inputParams['omi3text']);
+  foreach ($omiTmpArray as $key => $value) {
+    $omiTmpArray[$key] = trim($value);
+  }
+  $inputParams['omi3text'] = implode(",\n", $omiTmpArray);
+}
+
+// 山札の編集
+if (usedStr($inputParams['deck1text'])) {
+  $deckTmpArray = explode(',', $inputParams['deck1text']);
+  foreach ($deckTmpArray as $key => $value) {
+    $value = trim($value);
+
+    $markArray = explode('#', $value);
+    if (count($markArray) >= 2) {
+      $deckTmpArray[$key] = $markArray[0].'#'.$markArray[1];
+    } else {
+      $deckTmpArray[$key] = '0#'.$markArray[0];
+    }
+  }
+  $inputParams['deck1text'] = implode(",\n", $deckTmpArray);
+}
+
+// DB接続
+$dbhChatrooms = connectRw(CHAT_ROOMS_DB);
+
+// チャットルーム更新
 $updateRoom = $inputParams;
-$result = updateChatroomConfig($dbhChatrooms, $updateRoom);
+$result = updateChatroomsConfig($dbhChatrooms, $updateRoom);
 if (!$result) {
   $errors[] = '更新に失敗しました。もう一度お試しください。';
   goto outputPage;
 }
 
-$chatrooms = selectChatroomConfig($dbhChatrooms);
+$chatrooms = selectChatroomsConfig($dbhChatrooms);
 $inputParams = $chatrooms[0];
 
 $success = '更新が完了しました。';
@@ -238,7 +285,7 @@ outputPage:
       <ul class="form-row">
         <li class="form-col-title">おみくじ1<div class="optional-mark"></div></li>
         <li class="form-col-item">
-          <textarea name="omi1text" maxlength="10000"><?php echo($inputParams['omi1text']); /* 編集のため echo のみ */ ?></textarea>
+          <textarea name="omi1text" maxlength="10000"><?php echo h($inputParams['omi1text']); ?></textarea>
           <li class="form-col-note">最大 10000 文字。カンマ(,)で区切って記載してください。</li>
           <div class="form-col-item-group">
             <button type="button" class="preview-button" value="omi1text">プレビュー</button>
@@ -265,7 +312,7 @@ outputPage:
       <ul class="form-row">
         <li class="form-col-title">おみくじ2<div class="optional-mark"></div></li>
         <li class="form-col-item">
-          <textarea name="omi2text" maxlength="10000"><?php echo($inputParams['omi2text']); /* 編集のため echo のみ */ ?></textarea>
+          <textarea name="omi2text" maxlength="10000"><?php echo h($inputParams['omi2text']); ?></textarea>
           <li class="form-col-note">最大 10000 文字。カンマ(,)で区切って記載してください。</li>
           <div class="form-col-item-group">
             <button type="button" class="preview-button" value="omi2text">プレビュー</button>
@@ -274,7 +321,7 @@ outputPage:
         </li>
       </ul>
       <ul class="form-row">
-        <li class="form-col-title">おみくじ2を表示するか<div class="mandatory-mark"></div></li>
+        <li class="form-col-title">おみくじ3を表示するか<div class="mandatory-mark"></div></li>
         <li class="form-col-item">
           <div class="select-wrap">
             <select name="omi3flg">
@@ -292,10 +339,37 @@ outputPage:
       <ul class="form-row">
         <li class="form-col-title">おみくじ3<div class="optional-mark"></div></li>
         <li class="form-col-item">
-          <textarea name="omi3text" maxlength="10000"><?php echo($inputParams['omi3text']); /* 編集のため echo のみ */ ?></textarea>
+          <textarea name="omi3text" maxlength="10000"><?php echo h($inputParams['omi3text']); ?></textarea>
           <li class="form-col-note">最大 10000 文字。カンマ(,)で区切って記載してください。</li>
           <div class="form-col-item-group">
             <button type="button" class="preview-button" value="omi3text">プレビュー</button>
+            <div class="preview">ここにプレビュー結果が表示されます。</div>
+          </div>
+        </li>
+      </ul>
+      <ul class="form-row">
+        <li class="form-col-title">山札を表示するか<div class="mandatory-mark"></div></li>
+        <li class="form-col-item">
+          <div class="select-wrap">
+            <select name="deck1flg">
+              <option <?php echo selectedOption($inputParams['deck1flg'], '0'); ?> value="0">表示しない</option>
+              <option <?php echo selectedOption($inputParams['deck1flg'], '1'); ?> value="1">表示する</option>
+            </select>
+          </div>
+        </li>
+      </ul>
+      <ul class="form-row">
+        <li class="form-col-title">山札の名前<div class="optional-mark"></div></li>
+        <li class="form-col-item"><input type="text" name="deck1name" value="<?php echo h($inputParams['deck1name']); ?>" maxlength="10"></li>
+        <li class="form-col-note">最大 10 文字。ボタン名に使用されます。</li>
+      </ul>
+      <ul class="form-row">
+        <li class="form-col-title">山札<div class="optional-mark"></div></li>
+        <li class="form-col-item">
+          <textarea name="deck1text" maxlength="10000"><?php echo h($inputParams['deck1text']); ?></textarea>
+          <li class="form-col-note">最大 10000 文字。カンマ(,)で区切って記載してください。本文に # は使用できません。頭に 0# とつけると未開示、1# とつけると開示済みになります。つけない場合は 0# がつきます。</li>
+          <div class="form-col-item-group">
+            <button type="button" class="preview-deck-button" value="deck1text">プレビュー</button>
             <div class="preview">ここにプレビュー結果が表示されます。</div>
           </div>
         </li>
@@ -336,6 +410,31 @@ jQuery(function(){
     for(const value of textArray){
       result.push('[' + num + ']：' + value.trim());
       num = num + 1;
+    }
+    preview.html(result.join('<br>'));
+  });
+  jQuery('button.preview-deck-button').on('click', function(){
+    var preview = jQuery(this).parent().find('.preview');
+    var deckTextName = jQuery(this).val();
+    var deckText = jQuery('textarea[name="' + deckTextName + '"]').val();
+    var textArray = deckText.replace(/\r?\n/g, '').split(',');
+
+    var result = [];
+    for(const value of textArray){
+      valueArray = value.split('#');
+      if(valueArray.length >= 2){
+        openNum = valueArray[0];
+        deckDetail = valueArray[1];
+      } else {
+        openNum = '0';
+        deckDetail = valueArray[0];
+      }
+      if(openNum === '0'){
+        openText = '未';
+      } else {
+        openText = '済';
+      }
+      result.push('[' + openText + ']：' + deckDetail.trim());
     }
     preview.html(result.join('<br>'));
   });

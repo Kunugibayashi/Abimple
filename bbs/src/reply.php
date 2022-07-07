@@ -52,7 +52,7 @@ if (usedArr($errors)) {
 }
 
 // DB接続
-$dbhBbsId = connectRw(BBSID_DB);
+$dbhBbsId = connectRw(BBS_PARENTS_DB);
 $dbhBbs = connectRw(BBS_DB);
 
 $replyArticles = selectBbsId($dbhBbs, $inputParams['replyid']);
@@ -156,7 +156,7 @@ outputPage:
         </ul>
         <ul class="form-row">
           <li class="form-col-title">メッセージ<div class="mandatory-mark"></div><div class="htmltag-mark"></div></li>
-          <li class="form-col-item"><textarea name="message" maxlength="10000"><?php echo h($inputParams['message']); ?></textarea></li>
+          <li class="form-col-item"><textarea name="message" maxlength="10000"><?php echo ht($inputParams['message']); ?></textarea></li>
           <li class="form-col-note">最大 10000 文字。<a href="../../manual/src/htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
         </ul>
         <ul class="form-row">
@@ -181,12 +181,12 @@ outputPage:
     <?php if (usedArr($replyArticle)) { /* 登録がある場合に表示 */ ?>
       <div class="view-wrap bbs-parent-wrap">
         <div class="view-contents" id="id-<?php echo h($replyArticle['id']); ?>">
-          <ul class="view-row">
-            <li class="view-col-title">宛先</li>
-            <li class="view-col-item"><?php echo h($replyArticle['toid']); ?></li>
-            <li class="view-col-item"><?php echo h($replyArticle['toname']); ?></li>
-            <li class="view-col-item"><?php echo h($replyArticle['totitle']); ?></li>
-          </ul>
+          <?php if (usedStr($replyArticle['toid'])) { ?>
+            <ul class="view-row">
+              <li class="view-col-title">宛先</li>
+              <li class="view-col-item"><?php echo h($replyArticle['toid']); ?>：<?php echo h($replyArticle['totitle']); ?>（<?php echo h($replyArticle['toname']); ?>）</li>
+            </ul>
+          <?php } ?>
           <ul class="view-row">
             <li class="view-col-title">記事ID</li>
             <li class="view-col-item"><?php echo h($replyArticle['id']); ?></li>

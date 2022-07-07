@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // DB接続
   $dbhUsers = connectRo(USERS_DB);
 
-  $users = selectUserMyList($dbhUsers, getUserid(), getUsername());
+  $users = selectUsersMy($dbhUsers, getUserid(), getUsername());
   if (!usedArr($users)) {
     $errors[] = '登録がありません。';
     goto outputPage;

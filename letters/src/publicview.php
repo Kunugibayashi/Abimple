@@ -12,9 +12,9 @@ $inputParams['tocharacterid'] = inputParam('tocharacterid', 20);
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // DB接続
-  $dbhInbox = connectRw(INBOX_DB);
+  $dbhInbox = connectRw(INBOX_LETTERS_DB);
 
-  $letters = selectInboxMessageList($dbhInbox, [
+  $letters = selectEqualInboxLettersList($dbhInbox, [
     'tocharacterid' => $inputParams['tocharacterid'],
   ]);
 
@@ -89,18 +89,19 @@ outputPage:
           </ul>
           <ul class="view-row view-message-row">
             <li class="view-col-title view-message-title"><?php echo h($value['title']); ?></li>
-            <li class="view-col-item  view-message-item"><?php echo h($value['message']); ?></li>
+            <li class="view-col-item  view-message-item"><?php echo hb($value['message']); ?></li>
           </ul>
         </div>
 
-        <?php if (isAdmin()) { ?>
-          <div class="page-button-wrap">
-            <button type="button" class="warning delete-button">削除</button>
-          </div>
-          <form id="delete-form" class="hidden-form" action="./inboxdelete.php" method="GET">
+        <?php if (isAdmin()) { /* 複数のためボタンは submit 指定 */ ?>
+          <form id="delete-form" class="form" action="./inboxdelete.php" method="GET">
             <input type="hidden" name="deleteid" value="<?php echo h($value['id']); ?>">
+            <div class="page-button-wrap">
+              <button type="submit" class="warning delete-button">削除</button>
+            </div>
           </form>
         <?php } ?>
+
       <?php } ?>
     </div>
   <?php } ?>
@@ -115,10 +116,6 @@ jQuery(function(){
   // 移動ボタン
   jQuery('button.tolist-button').on('click', function(){
     window.location.href = "<?php echo h(getPrev()); ?>";
-  });
-  jQuery('button.delete-button').on('click', function(){
-    var deleteForm = jQuery('form#delete-form');
-    deleteForm.submit();
   });
 });
 </script>

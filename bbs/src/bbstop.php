@@ -16,10 +16,14 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // DB接続
   $dbhBbs = connectRo(BBS_DB);
 
-  $parentArticles = selectBbsListParent($dbhBbs, $inputParams['parentid']);
-  $parentArticle = $parentArticles[0];
+  $parentArticles = selectBbsListParentid($dbhBbs, $inputParams['parentid']);
+  if (usedArr($parentArticles)) {
+    $parentArticle = $parentArticles[0];
+  } else {
+    $parentArticle = array();
+  }
 
-  $childArticles = selectBbsListChild($dbhBbs, $inputParams['parentid']);
+  $childArticles = selectBbsListChildParentid($dbhBbs, $inputParams['parentid']);
 
   goto outputPage;
 }
@@ -106,18 +110,24 @@ outputPage:
         </ul>
       </div>
     </div>
+  <?php } else { ?>
+    <div class="view-wrap bbs-parent-wrap">
+      <div class="view-contents">
+        （親記事は削除されています）
+      </div>
+    </div>
   <?php } ?>
 
   <?php if (usedArr($childArticles)) { /* 登録がある場合に表示 */ ?>
     <div class="view-wrap bbs-child-wrap">
       <?php foreach ($childArticles as $key => $value) { ?>
         <div class="view-contents" id="id-<?php echo h($value['id']); ?>">
-          <ul class="view-row">
-            <li class="view-col-title">宛先</li>
-            <li class="view-col-item"><?php echo h($value['toid']); ?></li>
-            <li class="view-col-item"><?php echo h($value['toname']); ?></li>
-            <li class="view-col-item"><?php echo h($value['totitle']); ?></li>
-          </ul>
+          <?php if (usedStr($value['toid'])) { ?>
+            <ul class="view-row">
+              <li class="view-col-title">宛先</li>
+              <li class="view-col-item"><?php echo h($value['toid']); ?>：<?php echo h($value['totitle']); ?>（<?php echo h($value['toname']); ?>）</li>
+            </ul>
+          <?php } ?>
           <ul class="view-row">
             <li class="view-col-title">記事ID</li>
             <li class="view-col-item"><?php echo h($value['id']); ?></li>

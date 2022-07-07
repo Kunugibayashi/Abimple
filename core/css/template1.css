@@ -493,9 +493,10 @@ th.cell-comment { min-width: 20em; width: 20em; }
 th.cell-url { min-width: 4em; width: 4em; }
 th.cell-link { min-width: 4em; width: 4em; }
 th.cell-roomdir { min-width: 10em; width: 10em; }
-th.cell-roomname { min-width: 20em; width: 20em; }
-th.cell-published { min-width: 5em; width: 5em; }
-th.cell-displayno { min-width: 4em; width: 4em; }
+th.cell-roomtitle { min-width: 10em; width: 10em; }
+th.cell-published { min-width: 10em; width: 10em; }
+th.cell-displayno { min-width: 10em; width: 10em; }
+th.cell-roomlink { min-width: 5em; width: 5em; }
 th.cell-dl { min-width: 4em; width: 4em; }
 th.cell-letter { min-width: 4em; width: 4em; }
 th.cell-title { min-width: 40em; width: 40em; }
@@ -814,7 +815,6 @@ div.bbs-child-wrap li.view-message-title {
   width: 100%;
   margin-bottom: 0.2em;
 }
-
 
 /* ****************************************************************************
  * ニュース

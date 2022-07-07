@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // DB接続
   $dbhCharacters = connectRw(CHARACTERS_DB);
 
-  $characters = selectCharacterId($dbhCharacters, $inputParams['characterid']);
+  $characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
   if (!usedArr($characters)) {
     $errors[] = '名簿がありません。';
     goto outputPage;

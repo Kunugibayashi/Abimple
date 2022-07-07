@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // DB接続
   $dbhUsers = connectRo(USERS_DB);
 
-  $users = selectUserId($dbhUsers, $inputParams['id']);
+  $users = selectUsersId($dbhUsers, $inputParams['id']);
   if (!usedArr($users)) {
     $errors[] = 'ユーザーが存在しません。';
     goto outputPage;
@@ -52,7 +52,7 @@ if (isAdmin()) {
 $dbhUsers = connectRw(USERS_DB);
 $dbhCharacters = connectRw(CHARACTERS_DB);
 
-$users = selectUserId($dbhUsers, $userid);
+$users = selectUsersId($dbhUsers, $userid);
 if (!usedArr($users)) {
   $errors[] = 'ユーザーが存在しません。';
   goto outputPage;
@@ -77,7 +77,7 @@ if ($username === ADMIN_USERNAME) {
  * ・ユーザーDB
  */
 // キャラクター登録削除
-$result = deleteCharacters($dbhCharacters, $userid, $username);
+$result = deleteEqualCharacters($dbhCharacters, $userid, $username);
 if (!$result) {
  $errors[] = '名簿削除に失敗しました。もう一度お試しください。';
  goto outputPage;

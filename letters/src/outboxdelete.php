@@ -16,11 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   setToken();
 
   // DB接続
-  $dbhOutbox = connectRw(OUTBOX_DB);
+  $dbhOutbox = connectRw(OUTBOX_LETTERS_DB);
 
-  $outbox = selectOutboxMessageList($dbhOutbox, [
-    'id' => $inputParams['id'],
-  ]);
+  $outbox = selectOutboxMessageId($dbhOutbox, $inputParams['id']);
   $letter = $outbox[0];
 
   // 本人確認
@@ -34,18 +32,16 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 checkToken();
 
 // DB接続
-$dbhOutbox = connectRw(OUTBOX_DB);
+$dbhOutbox = connectRw(OUTBOX_LETTERS_DB);
 
-$outbox = selectOutboxMessageList($dbhOutbox, [
-  'id' => $inputParams['id'],
-]);
+$outbox = selectOutboxMessageId($dbhOutbox, $inputParams['id']);
 $letter = $outbox[0];
 
 // 本人確認
 identityUser($letter['touserid'], $letter['tousername']);
 
 // ユーザー登録削除
-$result = deleteOutboxId($dbhOutbox, $inputParams['id']);
+$result = deleteOutboxLetters($dbhOutbox, $inputParams['id']);
 if (!$result) {
   $errors[] = '私書削除に失敗しました。もう一度お試しください。';
   goto outputPage;
@@ -155,7 +151,7 @@ outputPage:
         </ul>
         <ul class="view-row view-message-row">
           <li class="view-col-title view-message-title"><?php echo h($letter['title']); ?></li>
-          <li class="view-col-item  view-message-item"><?php echo h($letter['message']); ?></li>
+          <li class="view-col-item  view-message-item"><?php echo hb($letter['message']); ?></li>
         </ul>
       </div>
     </div>

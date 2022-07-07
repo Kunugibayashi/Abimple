@@ -24,15 +24,15 @@ checkChatToken();
 
 
 // DB接続
-$dbhChatrooms  = connectRo(CHAT_ROOM_DB);
+$dbhChatrooms  = connectRo(CHAT_ROOMS_DB);
 $dbhCharacters = connectRo(CHARACTERS_DB);
 $dbhChatentries = connectRw(CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRw(CHAT_LOGS_DB);
 
-$chatrooms = selectChatroomConfig($dbhChatrooms);
+$chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0]; // 必ずある想定
 
-$characters = selectCharacterId($dbhCharacters, $inputParams['characterid']);
+$characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
 if (!usedArr($characters)) {
   // 不正アクセス
   echo '名簿が存在しません。';
@@ -43,7 +43,7 @@ $character = $characters[0];
 // 本人確認
 identityUser($character['userid'], $character['username']);
 
-$myChatentries = selectChatentries($dbhChatentries, [
+$myChatentries = selectEqualChatentries($dbhChatentries, [
   'characterid' => $character['id'],
 ]);
 if (usedArr($myChatentries)) {
@@ -71,12 +71,12 @@ setChatEntry($save);
 
 
 // 最終退室者の場合はログを出力
-$chatentries = selectChatentries($dbhChatentries);
+$chatentries = selectEqualChatentries($dbhChatentries);
 if (usedArr($myChatentry) && !usedArr($chatentries)) {
   $entrykey = $myChatentry['entrykey'];
 
   // 最大10000行
-  $chatlogs = selectChatlogs($dbhChatlogs, 10000, [
+  $chatlogs = selectEqualChatlogs($dbhChatlogs, 10000, [
     'entrykey' => $entrykey,
   ]);
 

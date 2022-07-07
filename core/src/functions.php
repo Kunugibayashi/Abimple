@@ -6,12 +6,19 @@ function setJsonHeader() {
 function h($str) {
   $changeStr = htmlspecialchars($str, ENT_QUOTES, "UTF-8");
 
+  return $changeStr;
+}
+
+function hb($str) {
+  $changeStr = htmlspecialchars($str, ENT_QUOTES, "UTF-8");
   $changeStr = nl2br($changeStr);
+
   return $changeStr;
 }
 
 function ht($str) {
   $changeStr = h($str);
+  $changeStr = nl2br($changeStr);
 
   // 許可するタグを戻す
   // /i修飾子は大文字小文字を区別しない
@@ -327,4 +334,84 @@ function fileUpload() {
   // ファイルのパーミッションを確実に0644に設定する
   chmod(IMAGE_SAVE_PATH.$tmpImageFile, 0644);
   return [$errors, $tmpImageFile];
+}
+
+// 作成と削除のPathはあわせること
+function createRoomdir($roomdir) {
+
+  if (!usedStr($roomdir)){
+    // DB削除失敗による二回目以降である可能性があるためエラーにはしない
+    return [];
+  }
+
+  $defaultPathSrc = './../rooms/default/src';
+
+  $copyPath = './../rooms/' .$roomdir;
+  $copyPathLogs = './../rooms/' .$roomdir .'/logs';
+  $copyPathSrc = './../rooms/' .$roomdir .'/src';
+  $copyPathDb = './../rooms/' .$roomdir .'/src/db';
+
+  if (!file_exists($defaultPathSrc)) {
+    $errors[] = 'default ルームが存在しません。';
+    return $errors;
+  }
+
+  mkdir($copyPath, 0644);
+  mkdir($copyPathLogs, 0644);
+  mkdir($copyPathSrc, 0644);
+  mkdir($copyPathDb, 0644);
+
+  $phpFilePath = glob($defaultPathSrc .'/*.php');
+  foreach ($phpFilePath as $key => $phpPath) {
+    $file = str_replace("$defaultPathSrc/", '', $phpPath);
+    copy("$defaultPathSrc/$file", "$copyPathSrc/$file");
+  }
+
+  if (!file_exists($copyPathDb)) {
+    $errors[] = 'ルームのコピーに失敗しました。';
+    return $errors;
+  }
+
+  return [];
+}
+
+// 作成と削除のPathはあわせること
+function deleteRoomdir($roomdir) {
+
+  if (!usedStr($roomdir)){
+    // DB削除失敗による二回目以降である可能性があるためエラーにはしない
+    return [];
+  }
+
+  $copyPath = './../rooms/' .$roomdir;
+  $copyPathLogs = './../rooms/' .$roomdir .'/logs';
+  $copyPathSrc = './../rooms/' .$roomdir .'/src';
+  $copyPathDb = './../rooms/' .$roomdir .'/src/db';
+
+  $files = glob($copyPathDb .'/*.*');
+  foreach ($files as $key => $file) {
+    unlink($file);
+  }
+
+  $files = glob($copyPathSrc .'/*.*');
+  foreach ($files as $key => $file) {
+    unlink($file);
+  }
+
+  $files = glob($copyPathLogs .'/*.*');
+  foreach ($files as $key => $file) {
+    unlink($file);
+  }
+
+  rmdir($copyPathDb);
+  rmdir($copyPathSrc);
+  rmdir($copyPathLogs);
+  rmdir($copyPath);
+
+  if (file_exists($copyPath)) {
+    $errors[] = 'ルームの削除に失敗しました。';
+    return $errors;
+  }
+
+  return [];
 }

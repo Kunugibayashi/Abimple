@@ -41,7 +41,7 @@ if (usedArr($errors)) {
 }
 
 // ログイン可能かのチェック
-$users = selectUsername($dbhUsers, $inputParams['username']);
+$users = selectUsersUsername($dbhUsers, $inputParams['username']);
 if (!usedArr($users)) {
   $errors[] = 'ユーザー名かパスワードが異なります。';
   goto outputPage;
