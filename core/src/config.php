@@ -46,17 +46,6 @@ define('SITE_TEMPLATE', 'template1');
  */
 define('SITE_LETTER_OPEN', 1);
 
-/* 表示チャットルーム。
- * チャットルームを使用する場合は必ず追加してください。
- *
- * 保存ワード「'表示名' => 'ルームDIR',」形式。
- * ルームDIR は、チャットルームトップ画面から遷移する「チャットルーム管理画面」で確認できます。
- * 例） 'デフォルトルーム' => 'default',
- */
-define('SITE_CHATROOM', [
-  'デフォルトルーム' => 'default',  // 削除可能
-]);
-
 /* サイト更新日。
  * 編集任意。
  *
@@ -67,7 +56,7 @@ define('SITE_CHATROOM', [
  * CCSデザイン時は以下を指定して下さい。毎回読み込みが行われます。
  * define('SITE_UPDATE', time());
  */
-define('SITE_UPDATE', time());
+define('SITE_UPDATE', '202207181500');
 
 /* 1ページに表示する項目数。
  * 編集任意。
