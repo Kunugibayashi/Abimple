@@ -177,9 +177,52 @@ define('NAMELIST_TEAM_LIST', [ // 保存ワード「'表示名' => '値',」形�
 <h4 id="6">チャットルームを追加する</h4>
 <div class="note-wrap">
 <p class="note">
-管理ユーザーでログインし、「管理画面」に遷移します。<br>
-「ルーム管理」から「新規チャットルーム追加」を行ってください。<br>
+はじめに、chatrooms/roomsにあるdefaultをコピーして、同フォルダ内にペーストし、フォルダにルーム名をつけてください。<span class="point">使用可能なのは英数字のみ</span>です。<br>
+以下は一例として「test1」というチャットルームを作っています。<br>
 </p>
+<div class="code-wrap"><code><pre>
+chatrooms/rooms/
+  |--default
+  |
+  |--test1
+<pre></code></div>
+<p class="note">
+もしも、defaultルームを動かしていた場合、前ルームの設定が残っていますので以下のファイルを削除してください。<br>
+ない場合は問題ありません。<br>
+</p>
+<div class="code-wrap"><code><pre>
+chatrooms/rooms/
+  |--default
+  |
+  |--test1
+     |
+     |--logs
+     |  |--_save_log.txt
+     |  |--※他の.htmlファイルすべてを削除
+     |
+     |--src
+        |--db
+           |--_save_db.txt
+           |--※他の.dbファイルすべてを削除
+<pre></code></div>
+<p class="note">
+次に、config.phpに新しいチャットルームを追加してください。<br>
+この変更を保存した時点で、トップページやルーム一覧にチャットルームが表示されるようになります。<br>
+</p>
+<div class="file-wrap">core/src/config.php</div>
+<div class="code-wrap"><code><pre>
+/* 表示チャットルーム。
+ * チャットルームを使用する場合は必ず追加してください。
+ *
+ * 保存ワード「'表示名' => 'ルームDIR',」形式。
+ * ルームDIR は、チャットルームトップ画面から遷移する「チャットルーム管理画面」で確認できます。
+ * 例） 'デフォルトルーム' => 'default',
+ */
+define('SITE_CHATROOM', [
+  'デフォルトルーム' => 'default',  // 削除可能
+  'テストルーム' => 'test1',
+]);
+<pre></code></div>
 </div>
 </div>
 

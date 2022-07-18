@@ -63,13 +63,6 @@ adminOnly();
         <li class="menu-item"><a href="./users/src/signup.php" target="indexTop">ユーザー登録</a></li>
       </ul>
     </nav>
-    <nav class="menu menu-site">
-      <h2 class="menu-title">Chat</h2>
-      <ul class="menu-item-group">
-        <li class="menu-item"><a href="./chatrooms/src/list.php" target="indexTop">ルーム管理</a></li>
-        <li class="menu-item"><a href="./chatrooms/src/entrance.php" target="indexTop">ルーム一覧</a></li>
-      </ul>
-    </nav>
 
     <div class="index-warning-wrap">
       <h3 class="index-warning-title">注意事項</h3>
