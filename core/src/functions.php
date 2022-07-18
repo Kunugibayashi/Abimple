@@ -356,10 +356,10 @@ function createRoomdir($roomdir) {
     return $errors;
   }
 
-  mkdir($copyPath, 0644);
-  mkdir($copyPathLogs, 0644);
-  mkdir($copyPathSrc, 0644);
-  mkdir($copyPathDb, 0644);
+  mkdir($copyPath, 0705);
+  mkdir($copyPathLogs, 0705);
+  mkdir($copyPathSrc, 0705);
+  mkdir($copyPathDb, 0705);
 
   $phpFilePath = glob($defaultPathSrc .'/*.php');
   foreach ($phpFilePath as $key => $phpPath) {
