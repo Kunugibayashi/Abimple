@@ -399,13 +399,17 @@ input[name="memo"] {
 <?php } ?>
 <?php if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE2) { ?>
   body {
-    background-image: url("<?php echo h($chatroom['bgimage']); ?>");
+    <?php if (usedStr($chatroom['bgimage'])) { ?>
+      background-image: url("<?php echo h($chatroom['bgimage']); ?>");
+    <?php } ?>
     background-repeat: repeat;
   }
 <?php } ?>
 <?php if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE3) { ?>
   div.chatconfig-title-wrap {
-    background-image: url("<?php echo h($chatroom['bgimage']); ?>");
+    <?php if (usedStr($chatroom['bgimage'])) { ?>
+      background-image: url("<?php echo h($chatroom['bgimage']); ?>");
+    <?php } ?>
     background-repeat: repeat;
   }
 <?php } ?>
