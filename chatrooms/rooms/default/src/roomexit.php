@@ -86,13 +86,20 @@ if (usedArr($myChatentry) && !usedArr($chatentries)) {
   $logFileName = $dt->format('Ymd_His') ."_" .getPageRoomdir();
 
   // ログ出力
-  ob_start();
-  include('./log.php');
-  $buffer = ob_get_contents();
-  ob_end_clean();
+  $logoutput = function($logFileName, $entrykey) {
+    // DBスコープが上書きされてしまうため無名関数使用
+    ob_start();
+    include('./log.php');
+    $buffer = ob_get_contents();
+    ob_end_clean();
 
-  $filePath = OUTPUT_LOG_DIR .$logFileName .'.html';
-  file_put_contents($filePath, $buffer, LOCK_EX);
+    $filePath = OUTPUT_LOG_DIR .$logFileName .'.html';
+    file_put_contents($filePath, $buffer, LOCK_EX);
+  };
+  $logoutput($logFileName, $entrykey);
+
+  // 余分なログを削除
+  deleteChatlogsLimit100($dbhChatlogs);
 }
 
 $success = '退室しました。';

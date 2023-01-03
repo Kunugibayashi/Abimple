@@ -51,9 +51,8 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   goto outputPage;
 }
-/* 以降はPOST通信を想定。
- * POSTの場合、requireでの処理を前提に記載。
- * require元て、ファイル名、エントリーキーを設定すること。
+/* 以降は include を想定。
+ * include元で、ファイル名、エントリーキーを設定すること。
  */
 // 入力値はファイル出力用にセット
 $inputParams['lognum'] = 10000;

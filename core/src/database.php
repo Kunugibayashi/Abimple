@@ -1539,6 +1539,24 @@ function updateChatlogs($dbh, $id, $params = array()) {
   return $results;
 }
 
+function deleteChatlogsLimit100($dbh) {
+  $sql = "
+    DELETE FROM chatlogs
+    WHERE
+      id NOT IN
+      (
+        SELECT id
+        FROM chatlogs
+        ORDER BY id DESC
+        LIMIT 100
+      )
+  ";
+
+  $stmt = myPrepare($dbh, $sql);
+  $results = $stmt->execute();
+  return $results;
+}
+
 /* ****************************************************************************
  * BBS親記事ID管理
  * ****************************************************************************
