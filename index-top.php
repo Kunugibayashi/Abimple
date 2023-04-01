@@ -31,7 +31,6 @@ require_once('./core/src/administrator.php');
   <h3>お知らせ</h3>
   <div id="id-infomation-contents" class="infomation-wrap"></div>
   <script>
-    // 自動画面更新（60秒）
     var infomationReload = function() {
       var resultContents = jQuery('#id-infomation-contents');
       jQuery.ajax({
@@ -46,7 +45,6 @@ require_once('./core/src/administrator.php');
       });
     }
     infomationReload();
-    setInterval(infomationReload, 60 * 1000);
   </script>
 </div>
 
@@ -54,7 +52,6 @@ require_once('./core/src/administrator.php');
   <h3>名簿</h3>
   <div id="id-characters-contents" class="characters-wrap"></div>
   <script>
-    // 自動画面更新（60秒）
     var charactersReload = function() {
       var resultContents = jQuery('#id-characters-contents');
       jQuery.ajax({
@@ -69,7 +66,6 @@ require_once('./core/src/administrator.php');
       });
     }
     charactersReload();
-    setInterval(charactersReload, 60 * 1000);
   </script>
 </div>
 
@@ -78,7 +74,6 @@ require_once('./core/src/administrator.php');
     <h3>公開私書</h3>
     <div id="id-letters-contents" class="letters-wrap"></div>
     <script>
-      // 自動画面更新（60秒）
       var lettersReload = function() {
         var resultContents = jQuery('#id-letters-contents');
         jQuery.ajax({
@@ -93,7 +88,6 @@ require_once('./core/src/administrator.php');
         });
       }
       lettersReload();
-      setInterval(lettersReload, 60 * 1000);
     </script>
   </div>
 <?php } ?>
@@ -102,7 +96,6 @@ require_once('./core/src/administrator.php');
   <h3>掲示板</h3>
   <div id="id-bbs-contents" class="bbs-wrap"></div>
   <script>
-    // 自動画面更新（60秒）
     var bbsReload = function() {
       var resultContents = jQuery('#id-bbs-contents');
       jQuery.ajax({
@@ -117,7 +110,6 @@ require_once('./core/src/administrator.php');
       });
     }
     bbsReload();
-    setInterval(bbsReload, 60 * 1000);
   </script>
 </div>
 
@@ -126,7 +118,6 @@ require_once('./core/src/administrator.php');
     <h3>あなた宛の私書</h3>
     <div id="id-myletters-contents" class="myletters-wrap"></div>
     <script>
-      // 自動画面更新（60秒）
       var mylettersReload = function() {
         var resultContents = jQuery('#id-myletters-contents');
         jQuery.ajax({
@@ -141,7 +132,6 @@ require_once('./core/src/administrator.php');
         });
       }
       mylettersReload();
-      setInterval(mylettersReload, 60 * 1000);
     </script>
   </div>
 
@@ -149,7 +139,6 @@ require_once('./core/src/administrator.php');
     <h3>あなた宛の掲示板返信</h3>
     <div id="id-mybbs-contents" class="mybbs-wrap"></div>
     <script>
-      // 自動画面更新（60秒）
       var mybbsReload = function() {
         var resultContents = jQuery('#id-mybbs-contents');
         jQuery.ajax({
@@ -164,7 +153,6 @@ require_once('./core/src/administrator.php');
         });
       }
       mybbsReload();
-      setInterval(mybbsReload, 60 * 1000);
     </script>
   </div>
 <?php } ?>
@@ -173,7 +161,6 @@ require_once('./core/src/administrator.php');
   <h3>ルーム一覧</h3>
   <div id="id-chatroom-contents" class="chatroom-wrap"></div>
   <script>
-    // 自動画面更新（60秒）
     var roomReload = function() {
       var resultContents = jQuery('#id-chatroom-contents');
       jQuery.ajax({
@@ -188,7 +175,6 @@ require_once('./core/src/administrator.php');
       });
     }
     roomReload();
-    setInterval(roomReload, 60 * 1000);
   </script>
 </div>
 

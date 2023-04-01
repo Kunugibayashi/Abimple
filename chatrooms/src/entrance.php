@@ -37,6 +37,13 @@ outputPage:
   <!-- script -->
   <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
   <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script>
+  // 自動画面更新（60秒）
+    const timer = 60 * 1000
+    window.addEventListener('load', function(){
+      setInterval('location.reload()', timer);
+    });
+  </script>
 </head>
 <body>
 <div class="content-wrap">
