@@ -21,6 +21,7 @@ $inputParams['color'] = inputParam('color', 7);
 $inputParams['bgcolor'] = inputParam('bgcolor', 7);
 $inputParams['memo'] = inputParam('memo', 200);
 $inputParams['message'] = inputParam('message', 3000);
+$inputParams['whisperid'] = inputParam('whisperid', 20);
 
 $jsonArray['code'] = 0;
 $jsonArray['errorMessage'] = '';
@@ -84,6 +85,18 @@ if (!$result) {
   goto outputPage;
 }
 
+// ささやき処理
+$whisperflg = '0';
+$wtocharacterid = '-1';
+$wtofullname = '';
+if ($inputParams['whisperid'] != "") {
+  $whispers = selectCharactersId($dbhCharacters, $inputParams['whisperid']);
+  $whisper = $whispers[0];
+  $whisperflg = '1';
+  $wtocharacterid = $whisper['id'];
+  $wtofullname = $whisper['fullname'];
+}
+
 // 発言
 $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
   'entrykey' => $myChatentry['entrykey'],
@@ -93,6 +106,9 @@ $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
   'bgcolor' => $inputParams['bgcolor'],
   'memo' => $inputParams['memo'],
   'message' => $inputParams['message'],
+  'whisperflg' => $whisperflg,
+  'wtocharacterid' => $wtocharacterid,
+  'wtofullname' => $wtofullname,
 ]);
 if (!$result) {
   $jsonArray['code'] = 1;

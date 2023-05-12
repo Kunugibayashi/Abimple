@@ -47,7 +47,13 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   $chatentries = selectEqualChatentries($dbhChatentries);
 
-  $chatlogs = selectEqualChatlogs($dbhChatlogs, $inputParams['lognum']);
+  // 入室時はささやきを表示する
+  if (isChatEntry()) {
+    $sessionChatEntry = getChatEntry();
+    $chatlogs = selectEqualChatlogsInroom($dbhChatlogs, $inputParams['lognum'], $sessionChatEntry['characterid']);
+  } else {
+    $chatlogs = selectEqualChatlogs($dbhChatlogs, $inputParams['lognum']);
+  }
 
   goto outputPage;
 }
@@ -169,8 +175,12 @@ outputPage:
           <div class="chat-wrap" style="color: <?php echo h($value['color']); ?>;">
             <div class="chat-line-wrap">
               <div class="chat-fullname">
-                <?php echo h($value['fullname']); ?>
-                <div class="chat-memo">備考：<?php echo h($value['memo']); ?></div>
+                <?php if ($value['whisperflg'] != 0) {  /* ささやき */  ?>
+                  （<?php echo h($value['fullname']); ?>→<?php echo h($value['wtofullname']); ?>）
+                <?php } else {  ?>
+                  <?php echo h($value['fullname']); ?>
+                  <div class="chat-memo">備考：<?php echo h($value['memo']); ?></div>
+                <?php } ?>
               </div>
               <div class="chat-created"><?php echo h($value['created']); ?></div>
               <div class="chat-editing"><?php echo h(($value['modified'] == $value['created']) ? '' : '（編集済み）') ?></div>
@@ -182,8 +192,12 @@ outputPage:
           <div class="chat-wrap" style="background-color: <?php echo h($value['bgcolor']); ?>; color: <?php echo h($value['color']); ?>;">
             <div class="chat-line-wrap">
               <div class="chat-fullname">
-                <?php echo h($value['fullname']); ?>
-                <div class="chat-memo">備考：<?php echo h($value['memo']); ?></div>
+                <?php if ($value['whisperflg'] != 0) {  /* ささやき */  ?>
+                  （<?php echo h($value['fullname']); ?>→<?php echo h($value['wtofullname']); ?>）
+                <?php } else {  ?>
+                  <?php echo h($value['fullname']); ?>
+                  <div class="chat-memo">備考：<?php echo h($value['memo']); ?></div>
+                <?php } ?>
               </div>
               <div class="chat-created"><?php echo h($value['created']); ?></div>
               <div class="chat-editing"><?php echo h(($value['modified'] == $value['created']) ? '' : '（編集済み）') ?></div>
@@ -352,6 +366,7 @@ div.chat-narr-created {
   div.chat-editing,
   div.chat-created {
     font-size: 0.8em;
+    opacity: 0.3;
   }
   div.chat-line-wrap {
     display: flex;

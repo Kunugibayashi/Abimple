@@ -171,9 +171,21 @@ outputPage:
         <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
         <input type="hidden" name="entrykey" value="<?php echo h($myChatentry['entrykey']); ?>">
         <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
-        <ul class="form-row fullname-wrap">
+        <ul class="form-row color-setting-wrap">
           <li class="form-col-title">名前</li>
-          <li class="form-col-item form-col-item-name"><?php echo h($character['fullname']); ?></li>
+          <li class="form-col-item">
+            <?php echo h($character['fullname']); ?>
+          </li>
+          <li class="form-col-title">ささやき宛先</li>
+          <li class="form-col-item">
+            <div class="form-row-item-group">
+              <div class="select-wrap">
+                <select name="whisperid">
+                  <option value="">なし</option>
+                </select>
+              </div>
+            </div>
+          </li>
         </ul>
         <ul class="form-row color-setting-wrap">
           <li class="form-col-title">文字色</li>
@@ -239,6 +251,7 @@ outputPage:
         <button type="button" class="chat-button">発言</button>
         <button type="button" class="restore-button">発言復元</button>
         <button type="button" class="color-set-button">設定色変更</button>
+        <button type="button" class="whisperid-set-button">ささやき宛先更新</button>
         <button type="button" class="reload-button">リロード</button>
       </div>
       <div class="mes-wrap">
@@ -362,6 +375,8 @@ jQuery(function(){
   var backupElm = jQuery('input#backup-mes');
   var textMesElm = jQuery('textarea[name="message"]');
   var reloadBtElm = jQuery('button.reload-button');
+  var chatBtElm = jQuery('button.chat-button');
+  var whisperidElm = jQuery('select[name="whisperid"]');
 
   // 復元
   jQuery('button.restore-button').on('click', function(){
@@ -377,7 +392,7 @@ jQuery(function(){
   });
 
   // 発言
-  jQuery('button.chat-button').on('click', function(){
+  chatBtElm.on('click', function(){
     var sendData = jQuery('form#chat-form').serialize();
     var message = textMesElm.val();
 
@@ -418,7 +433,7 @@ jQuery(function(){
   // Ctrl + Enter 発言
   textMesElm.on('keydown', function(event){
     if(event.ctrlKey === true && event.which === 13){
-      jQuery('button.chat-button').trigger('click');
+      chatBtElm.trigger('click');
     }
   });
 
@@ -431,6 +446,41 @@ jQuery(function(){
     <?php if (!$chatroom['isframe']) { /* フレームなし */ ?>
       logReload();
     <?php } ?>
+  });
+
+  // ささやきリスト更新
+  jQuery('button.whisperid-set-button').on('click', function(){
+    var sendData = jQuery('form#chat-form').serialize();
+    jQuery.ajax({
+      url: './whisperlist.php',
+      type: 'POST',
+      data: sendData,
+      dataType: 'json',
+    }).done((data, textStatus, jqXHR) => {
+      var code = data['code'];
+      var errMes = data['errorMessage'];
+      var whisperlist = data['whisperlist'];
+      if (code === 0) {
+        resultElm.html('');
+        whisperidElm.html(whisperlist);
+      } else {
+        resultElm.html(errMes);
+      }
+    }).fail((jqXHR, textStatus, errorThrown) => {
+      console.log(jqXHR);
+      resultElm.html(errorThrown);
+    }).always((data) => {
+      whisperidElm.trigger('change');
+    });
+  });
+
+  whisperidElm.on('change', function(){
+    var selectCharacterid = whisperidElm.val();
+    if (selectCharacterid) {
+      chatBtElm.text('ささやく');
+    } else {
+      chatBtElm.text('発言');
+    }
   });
 
   // 設定色変更
@@ -656,6 +706,7 @@ input[name="memo"] {
 input[name="dice"] {
   width: 7em;
 }
+select[name="whisperid"],
 select[name="lognum"],
 select[name="logsec"] {
   width: 8em;

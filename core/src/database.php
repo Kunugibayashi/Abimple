@@ -1443,14 +1443,18 @@ function selectEqualLogChatentries($dbh, $params = array()) {
 function createChatlogs($dbh) {
   $sql = "
     CREATE TABLE chatlogs (
-      id          INTEGER        PRIMARY KEY AUTOINCREMENT,
-      entrykey    VARCHAR(40)    NOT NULL,
-      characterid INTEGER        NOT NULL,
-      fullname    VARCHAR(20)    NOT NULL,
-      color       VARCHAR(7)     NOT NULL DEFAULT '#000000',
-      bgcolor     VARCHAR(7)     NOT NULL DEFAULT '#ffffff',
-      memo        VARCHAR(200)   NOT NULL DEFAULT '',
-      message     TEXT           NOT NULL,
+      id             INTEGER        PRIMARY KEY AUTOINCREMENT,
+      entrykey       VARCHAR(40)    NOT NULL,
+      characterid    INTEGER        NOT NULL,
+      fullname       VARCHAR(20)    NOT NULL,
+      color          VARCHAR(7)     NOT NULL DEFAULT '#000000',
+      bgcolor        VARCHAR(7)     NOT NULL DEFAULT '#ffffff',
+      memo           VARCHAR(200)   NOT NULL DEFAULT '',
+      message        TEXT           NOT NULL,
+
+      whisperflg     INTEGER        NOT NULL DEFAULT '0',
+      wtocharacterid INTEGER        NOT NULL DEFAULT '-1',
+      wtofullname    VARCHAR(20)    NOT NULL DEFAULT '',
 
       userid INTEGER NOT NULL,
       username VARCHAR(20) NOT NULL,
@@ -1510,6 +1514,8 @@ function selectEqualChatlogs($dbh, $limit, $params = array()) {
     FROM chatlogs
     WHERE
       id IS NOT NULL
+    AND
+      whisperflg = 0
   ';
   $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
@@ -1519,6 +1525,38 @@ function selectEqualChatlogs($dbh, $limit, $params = array()) {
 
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt = setEqualArryBindValue($stmt, $params);
+  $stmt->bindValue(':limit', $limit);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+function selectEqualChatlogsInroom($dbh, $limit, $characterid, $params = array()) {
+  $sql = '
+    SELECT
+      *
+    FROM chatlogs
+    WHERE
+      id IS NOT NULL
+    AND
+      (
+        whisperflg = 0
+      OR
+        (characterid = :characterid and whisperflg <> 0)
+      OR
+        (wtocharacterid = :wtocharacterid and whisperflg <> 0)
+      )
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY id DESC
+    LIMIT :limit
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $stmt->bindValue(':characterid', $characterid);
+  $stmt->bindValue(':wtocharacterid', $characterid);
   $stmt->bindValue(':limit', $limit);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
