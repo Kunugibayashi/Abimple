@@ -965,8 +965,8 @@ function createInboxLetters($dbh) {
       touserid        INTEGER        NOT NULL,
       tousername      VARCHAR(20)    NOT NULL,
       tocharacterid   INTEGER        NOT NULL,
-      tofullname      INTEGER        NOT NULL,
-      fromcharacterid VARCHAR(20)    NOT NULL,
+      tofullname      VARCHAR(20)    NOT NULL,
+      fromcharacterid INTEGER        NOT NULL,
       fromfullname    VARCHAR(20)    NOT NULL,
       title           VARCHAR(100)   NOT NULL,
       message         TEXT           NOT NULL DEFAULT '',
@@ -1153,6 +1153,29 @@ function selectInboxLettersMy($dbh, $userid, $username) {
   return $data;
 }
 
+function selectInboxLettersFromMessage($dbh, $fromcharacterid, $fromfullname, $message) {
+  $sql = '
+    SELECT
+      COUNT(*) AS count
+    FROM inboxletters AS box1
+    WHERE
+      fromcharacterid = :fromcharacterid
+    AND
+      fromfullname = :fromfullname
+    AND
+      message = :message
+    ORDER BY modified DESC
+  ';
+
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':fromcharacterid', $fromcharacterid);
+  $stmt->bindValue(':fromfullname', $fromfullname);
+  $stmt->bindValue(':message', $message);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
 /* ****************************************************************************
  * 私書テーブル（送信BOX）
  * ****************************************************************************
@@ -1164,11 +1187,12 @@ function createOutboxLetters($dbh) {
       touserid        INTEGER        NOT NULL,
       tousername      VARCHAR(20)    NOT NULL,
       tocharacterid   INTEGER        NOT NULL,
-      tofullname      INTEGER        NOT NULL,
-      fromcharacterid VARCHAR(20)    NOT NULL,
+      tofullname      VARCHAR(20)    NOT NULL,
+      fromcharacterid INTEGER        NOT NULL,
       fromfullname    VARCHAR(20)    NOT NULL,
       title           VARCHAR(100)   NOT NULL,
       message         TEXT           NOT NULL DEFAULT '',
+      status          VARCHAR(20)    NOT NULL,
 
       userid INTEGER NOT NULL,
       username VARCHAR(20) NOT NULL,
@@ -1192,7 +1216,7 @@ function createOutboxLetters($dbh) {
   }
 }
 
-function insertOutboxLetters($dbh, $userid, $username, $params = array()) {
+function insertOutboxLetters($dbh, $userid, $username, $status, $params = array()) {
   unset($params['id']);
   unset($params['created']);
   unset($params['modified']);
@@ -1201,12 +1225,14 @@ function insertOutboxLetters($dbh, $userid, $username, $params = array()) {
     INSERT INTO outboxletters (
       userid,
       username,
+      status,
   ';
   $sql = setInsertColumnArryParam($sql, $params);
   $sql = $sql .'
     ) VALUES (
       :userid,
       :username,
+      :status,
   ';
   $sql = setInsertVluesArryParam($sql, $params);
   $sql = $sql .'
@@ -1216,6 +1242,7 @@ function insertOutboxLetters($dbh, $userid, $username, $params = array()) {
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt->bindValue(':userid', $userid);
   $stmt->bindValue(':username', $username);
+  $stmt->bindValue(':status', $status);
   $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
@@ -1245,6 +1272,7 @@ function selectOutboxLettersMy($dbh, $userid, $username) {
       fromcharacterid,
       fromfullname,
       title,
+      status,
       modified
     FROM outboxletters
     WHERE

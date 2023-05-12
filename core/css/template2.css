@@ -435,6 +435,7 @@ th.cell-tagrole { min-width: 4em; width: 4em; }
 th.cell-taghtml { min-width: 4em; width: 4em; }
 th.cell-taglook { min-width: 4em; width: 4em; }
 th.cell-tagexample { min-width: 20em; width: 20em; }
+th.cell-status { min-width: 6em; width: 6em; }
 
 /* お知らせ */
 div.infomation-table-wrap th {

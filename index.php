@@ -82,12 +82,19 @@ require_once('./core/src/administrator.php');
             <?php if (SITE_LETTER_OPEN == 1) { /* 公開私書の場合 */ ?>
               <li class="menu-item"><a href="./letters/src/publiclist.php" target="indexTop">公開私書箱</a></li>
             <?php } ?>
-            <?php if (isLogin()) { /* ログイン時 */ ?>
-              <li class="menu-item"><a href="./letters/src/mylist.php" target="indexTop">私書管理</a></li>
-            <?php } ?>
             <li class="menu-item"><a href="./bbs/src/bbslist.php" target="indexTop">掲示板</a></li>
         </ul>
       </nav>
+
+      <?php if (isLogin()) { /* ログイン時 */ ?>
+        <nav class="menu menu-chara">
+          <h2 class="menu-title">Letter</h2>
+          <ul class="menu-item-group">
+            <li class="menu-item"><a href="./letters/src/inboxmylist.php" target="indexTop">受信箱</a></li>
+            <li class="menu-item"><a href="./letters/src/outboxmylist.php" target="indexTop">送信箱</a></li>
+          </ul>
+        </nav>
+      <?php } ?>
   </div>
 
   <div class="index-frame-wrap">

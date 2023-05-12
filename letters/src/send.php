@@ -118,8 +118,19 @@ $userid = getUserid();
 $username = getUsername();
 
 // 更新
-insertInboxLetters($dbhInbox, $userid, $username, $inputParams);
-insertOutboxLetters($dbhOutbox, $userid, $username, $inputParams);
+$status = '送信済';
+try {
+  insertInboxLetters($dbhInbox, $userid, $username, $inputParams);
+  $counts = selectInboxLettersFromMessage($dbhInbox, $inputParams['fromcharacterid'], $inputParams['fromfullname'], $inputParams['message']);
+  $count = $counts[0]['count'];
+  if ($count <= 0) {
+    $status = '送信エラー';
+  }
+} catch (Exception $e) {
+  $status = '送信エラー';
+}
+
+insertOutboxLetters($dbhOutbox, $userid, $username, $status, $inputParams);
 
 $success = '送信しました。';
 

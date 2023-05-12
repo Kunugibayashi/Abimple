@@ -20,6 +20,8 @@ function setPrev() {
     || $script === 'publiclist.php'
     || $script === 'bbslist.php'
     || $script === 'index-top.php'
+    || $script === 'inboxmylist.php'
+    || $script === 'outboxmylist.php'
   ) {
     $prevPage = $path;
     if (((boolean) $query)) {

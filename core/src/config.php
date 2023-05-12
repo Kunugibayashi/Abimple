@@ -75,7 +75,7 @@ define('SITE_CHATROOM', [
  * CCSデザイン時は以下を指定して下さい。毎回読み込みが行われます。
  * define('SITE_UPDATE', time());
  */
-define('SITE_UPDATE', '202207181500');
+define('SITE_UPDATE', time());
 
 /* 1ページに表示する項目数。
  * 編集任意。

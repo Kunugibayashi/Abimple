@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   $letter = $outbox[0];
 
   // 本人確認
-  identityUser($letter['touserid'], $letter['tousername']);
+  identityUser($letter['userid'], $letter['username']);
 
   goto outputPage;
 }
@@ -38,7 +38,7 @@ $outbox = selectOutboxMessageId($dbhOutbox, $inputParams['id']);
 $letter = $outbox[0];
 
 // 本人確認
-identityUser($letter['touserid'], $letter['tousername']);
+identityUser($letter['userid'], $letter['username']);
 
 // ユーザー登録削除
 $result = deleteOutboxLetters($dbhOutbox, $inputParams['id']);

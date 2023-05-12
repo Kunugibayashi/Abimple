@@ -10,10 +10,7 @@ loginOnly();
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // DB接続
-  $dbhInbox = connectRw(INBOX_LETTERS_DB);
   $dbhOutbox = connectRw(OUTBOX_LETTERS_DB);
-
-  $inbox = selectInboxLettersMy($dbhInbox, getUserid(), getUsername());
 
   $outbox = selectOutboxLettersMy($dbhOutbox, getUserid(), getUsername());
 
@@ -50,7 +47,7 @@ outputPage:
 </head>
 <body>
 <div class="content-wrap">
-  <h3 class="outbox-title">私書管理</h4>
+  <h3 class="outbox-title">送信箱</h3>
 
   <?php if (isAdmin()) { /* 管理ユーザーは常に表示 */ ?>
     <div class="note-wrap">
@@ -59,41 +56,6 @@ outputPage:
       </p>
     </div>
   <?php } ?>
-
-  <h4 class="inbox-title">受信箱</h4>
-
-  <?php if (!usedArr($inbox)) { /* 登録がない場合に表示 */ ?>
-    <div class="note-wrap">
-      <p class="note">
-        データがありません。<br>
-      </p>
-    </div>
-  <?php } ?>
-
-  <?php if (usedArr($inbox)) { /* 登録がある場合に表示 */ ?>
-    <div class="table-wrap my-inbox-table-wrap">
-      <table>
-        <tr>
-          <th class="cell-id">宛先ID</th>
-          <th class="cell-fullname">宛先</th>
-          <th class="cell-fullname">差出人</th>
-          <th class="cell-title">タイトル</th>
-          <th class="cell-modified">更新日</th>
-        </tr>
-        <?php foreach ($inbox as $key => $value) { ?>
-          <tr>
-              <td><?php echo h($value['tocharacterid']); ?></td>
-              <td><?php echo h($value['tofullname']); ?></td>
-              <td><?php echo h($value['fromfullname']); ?></td>
-              <td><a href="./inboxview.php?id=<?php echo h($value['id']); ?>"><?php echo h($value['title']); ?></a></td>
-              <td><?php echo h($value['modified']); ?></td>
-          </tr>
-        <?php } ?>
-      </table>
-    </div>
-  <?php } ?>
-
-  <h4 class="outbox-title">送信箱</h4>
 
   <?php if (!usedArr($outbox)) { /* 登録がない場合に表示 */ ?>
     <div class="note-wrap">
@@ -107,19 +69,19 @@ outputPage:
     <div class="table-wrap my-outbox-table-wrap">
       <table>
         <tr>
-          <th class="cell-id">宛先ID</th>
-          <th class="cell-fullname">宛先</th>
-          <th class="cell-fullname">差出人</th>
-          <th class="cell-title">タイトル</th>
           <th class="cell-modified">更新日</th>
+          <th class="cell-status">ステータス</th>
+          <th>宛先</th>
+          <th>差出人</th>
+          <th>タイトル</th>
         </tr>
         <?php foreach ($outbox as $key => $value) { ?>
           <tr>
-              <td><?php echo h($value['tocharacterid']); ?></td>
+              <td><?php echo h($value['modified']); ?></td>
+              <td><?php echo h($value['status']); ?></td>
               <td><?php echo h($value['tofullname']); ?></td>
               <td><?php echo h($value['fromfullname']); ?></td>
               <td><a href="./outboxview.php?id=<?php echo h($value['id']); ?>"><?php echo h($value['title']); ?></a></td>
-              <td><?php echo h($value['modified']); ?></td>
           </tr>
         <?php } ?>
       </table>
