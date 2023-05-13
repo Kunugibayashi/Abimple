@@ -34,6 +34,7 @@ $dbhChatrooms  = connectRo(CHAT_ROOMS_DB);
 $dbhCharacters = connectRo(CHARACTERS_DB);
 $dbhChatentries = connectRw(CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRw(CHAT_LOGS_DB);
+$dbhSecrets = connectRo(CHAT_SECRETS_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0]; // 必ずある想定
@@ -48,6 +49,25 @@ $character = $characters[0];
 
 // 本人確認
 identityUser($character['userid'], $character['username']);
+
+// 秘匿ルームの場合
+if ($chatroom['issecret'] == 1) {
+  $secrets = selectSecrets($dbhSecrets);
+  if (!usedArr($secrets)) {
+    firstAccessSecrets(CHAT_SECRETS_DB);
+    $secrets = selectSecrets($dbhChatrooms);
+  }
+  $dbKeyword = $secrets[0]['keyword'];
+  $sessionKeyword = getSecretKeyword();
+  if (!usedStr($dbKeyword) || !usedStr($sessionKeyword)) {
+    echo '入室キーワードが設定されていません。';
+    exit;
+  }
+  if ($dbKeyword != $sessionKeyword) {
+    echo '入室キーワードが一致しません';
+    exit;
+  }
+}
 
 $chatentries = selectEqualChatentries($dbhChatentries);
 // 最初の入室者かどうか

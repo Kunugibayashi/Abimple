@@ -13,3 +13,10 @@ function firstAccessChatroom($dbname) {
   // この関数内のみでコネクションを完結する
   $dbh->close();
 }
+
+function firstAccessSecrets($dbname) {
+  $dbh = connectRw($dbname);
+  insertSecrets($dbh, '');
+  // この関数内のみでコネクションを完結する
+  $dbh->close();
+}

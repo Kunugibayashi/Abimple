@@ -18,6 +18,9 @@ $inputParams['title'] = inputParam('title', 100);
 $inputParams['guide'] = inputParam('guide', 2000);
 $inputParams['toptemplate'] = inputParam('toptemplate', 20);
 $inputParams['logtemplate'] = inputParam('logtemplate', 20);
+$inputParams['isfree'] = inputParam('isfree', 1);
+$inputParams['issecret'] = inputParam('issecret', 1);
+$inputParams['isframe'] = inputParam('isframe', 1);
 $inputParams['color'] = inputParam('color', 7);
 $inputParams['bgcolor'] = inputParam('bgcolor', 7);
 $inputParams['bgimage'] = inputParam('bgimage', 1000);
@@ -33,8 +36,6 @@ $inputParams['omi3text'] = inputParam('omi3text', 10000);
 $inputParams['deck1flg'] = inputParam('deck1flg', 1);
 $inputParams['deck1name'] = inputParam('deck1name', 10);
 $inputParams['deck1text'] = inputParam('deck1text', 10000);
-$inputParams['isfree'] = inputParam('isfree', 1);
-$inputParams['isframe'] = inputParam('isframe', 1);
 $inputParams['created'] = inputParam('created', 20);
 $inputParams['modified'] = inputParam('modified', 20);
 
@@ -228,6 +229,18 @@ outputPage:
           </div>
         </li>
         <li class="form-col-note">自由設定にした場合、ユーザーがタイトルと説明を変更できます。</li>
+      </ul>
+      <ul class="form-row">
+        <li class="form-col-title">秘匿ルームにするか<div class="mandatory-mark"></div></li>
+        <li class="form-col-item">
+          <div class="select-wrap">
+            <select name="issecret">
+              <option <?php echo selectedOption($inputParams['issecret'], '0'); ?> value="0">秘匿ルームにしない</option>
+              <option <?php echo selectedOption($inputParams['issecret'], '1'); ?> value="1">秘匿ルームにする</option>
+            </select>
+          </div>
+        </li>
+        <li class="form-col-note">秘匿設定にした場合、入室時にキーワードを設定し、キーワードを入力したユーザーのみが入室可能になります。</li>
       </ul>
       <ul class="form-row">
         <li class="form-col-title">フレーム表示にするか<div class="mandatory-mark"></div></li>

@@ -193,6 +193,8 @@ function checkDB($dbname) {
     createChatentries($dbh);
   } else if (CHAT_LOGS_DB === $dbname) {
     createChatlogs($dbh);
+  } else if (CHAT_SECRETS_DB === $dbname) {
+    createSecrets($dbh);
   } else if (INBOX_LETTERS_DB === $dbname) {
     createInboxLetters($dbh);
   } else if (OUTBOX_LETTERS_DB === $dbname) {
@@ -873,6 +875,7 @@ function createChatrooms($dbh) {
       toptemplate   VARCHAR(20)    NOT NULL DEFAULT 'default',
       logtemplate   VARCHAR(20)    NOT NULL DEFAULT 'default',
       isfree        INTEGER        NOT NULL DEFAULT 0,
+      issecret      INTEGER        NOT NULL DEFAULT 0,
       isframe       INTEGER        NOT NULL DEFAULT 0,
       color         VARCHAR(7)     NOT NULL DEFAULT '#696969',
       bgcolor       VARCHAR(7)     NOT NULL DEFAULT '#f5f5f5',
@@ -1436,6 +1439,18 @@ function selectEqualLogChatentries($dbh, $params = array()) {
   return $data;
 }
 
+function deleteChatentriesExit($dbh) {
+  $sql = "
+    DELETE FROM chatentries
+    WHERE
+      deleteflg = 1
+  ";
+
+  $stmt = myPrepare($dbh, $sql);
+  $results = $stmt->execute();
+  return $results;
+}
+
 /* ****************************************************************************
  * ログ
  * ****************************************************************************
@@ -1452,8 +1467,8 @@ function createChatlogs($dbh) {
       memo           VARCHAR(200)   NOT NULL DEFAULT '',
       message        TEXT           NOT NULL,
 
-      whisperflg     INTEGER        NOT NULL DEFAULT '0',
-      wtocharacterid INTEGER        NOT NULL DEFAULT '-1',
+      whisperflg     INTEGER        NOT NULL DEFAULT 0,
+      wtocharacterid INTEGER        NOT NULL DEFAULT -1,
       wtofullname    VARCHAR(20)    NOT NULL DEFAULT '',
 
       userid INTEGER NOT NULL,
@@ -1605,7 +1620,7 @@ function updateChatlogs($dbh, $id, $params = array()) {
   return $results;
 }
 
-function deleteChatlogsLimit100($dbh) {
+function deleteChatlogsLimit1000($dbh) {
   $sql = "
     DELETE FROM chatlogs
     WHERE
@@ -1614,7 +1629,7 @@ function deleteChatlogsLimit100($dbh) {
         SELECT id
         FROM chatlogs
         ORDER BY id DESC
-        LIMIT 100
+        LIMIT 1000
       )
   ";
 
@@ -1622,6 +1637,90 @@ function deleteChatlogsLimit100($dbh) {
   $results = $stmt->execute();
   return $results;
 }
+
+function deleteChatlogs($dbh) {
+  $sql = "
+    DELETE FROM chatlogs
+  ";
+
+  $stmt = myPrepare($dbh, $sql);
+  $results = $stmt->execute();
+  return $results;
+}
+
+/* ****************************************************************************
+ * 秘匿ルーム用
+ * ****************************************************************************
+ */
+function createSecrets($dbh) {
+  $sql = "
+    CREATE TABLE secrets (
+      id          INTEGER        PRIMARY KEY AUTOINCREMENT,
+      keyword     VARCHAR(20)    NOT NULL,
+
+      created DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+      modified DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime'))
+    )
+  ";
+
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
+}
+
+function insertSecrets($dbh, $keyword) {
+  $sql = '
+    INSERT INTO secrets (
+      keyword
+  ';
+  $sql = $sql .'
+    ) VALUES (
+      :keyword
+  ';
+  $sql = $sql .'
+    )
+  ';
+
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':keyword', $keyword);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function updateSecrets($dbh, $keyword) {
+  $sql = "
+    UPDATE secrets
+    SET
+      modified = (DATETIME('now', 'localtime')),
+      keyword = :keyword
+  ";
+  $sql = $sql ."
+    WHERE
+      id = 1
+  ";
+
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':keyword', $keyword);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function selectSecrets($dbh) {
+  $sql = '
+    SELECT
+      *
+    FROM secrets
+    WHERE
+      id = 1
+  ';
+
+  $stmt = myPrepare($dbh, $sql);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
 
 /* ****************************************************************************
  * BBS親記事ID管理

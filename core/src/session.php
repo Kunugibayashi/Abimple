@@ -231,3 +231,16 @@ function isNowRoomEntry($roomdir) {
   }
   return true;
 }
+
+/* 秘匿キーワード
+ */
+function setSecretKeyword($param) {
+  $_SESSION['secret_keyword'] = $param;
+}
+
+function getSecretKeyword() {
+  if (isset($_SESSION['secret_keyword'])) {
+    return $_SESSION['secret_keyword'];
+  }
+  return '';
+}

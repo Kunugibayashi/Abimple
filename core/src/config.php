@@ -224,6 +224,7 @@ define('ADMIN_ROOMS_DB', (INDEX_ROOT.'/chatrooms/src/db/adminrooms.db'));
 define('CHAT_ROOMS_DB', './db/chatrooms.db');
 define('CHAT_ENTRIES_DB', './db/chatentries.db');
 define('CHAT_LOGS_DB', './db/chatlogs.db');
+define('CHAT_SECRETS_DB', './db/secrets.db');
 define('INBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/inboxletters.db'));
 define('OUTBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/outboxletters.db'));
 define('BBS_PARENTS_DB', (INDEX_ROOT.'/bbs/src/db/bbsparents.db'));

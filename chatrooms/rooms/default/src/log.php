@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
   $dbhChatentries = connectRo(CHAT_ENTRIES_DB);
   $dbhChatlogs = connectRo(CHAT_LOGS_DB);
+  $dbhSecrets = connectRo(CHAT_SECRETS_DB);
 
   $chatrooms = selectChatroomsConfig($dbhChatrooms);
   if (!usedArr($chatrooms)) {
@@ -44,6 +45,21 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     $chatrooms = selectChatroomsConfig($dbhChatrooms);
   }
   $chatroom = $chatrooms[0];
+
+  // 秘匿ルームの場合
+  if ($chatroom['issecret'] == 1) {
+    $secrets = selectSecrets($dbhSecrets);
+    if (!usedArr($secrets)) {
+      firstAccessSecrets(CHAT_SECRETS_DB);
+      $secrets = selectSecrets($dbhChatrooms);
+    }
+    $dbKeyword = $secrets[0]['keyword'];
+    $sessionKeyword = getSecretKeyword();
+    if (!usedStr($dbKeyword) || !usedStr($sessionKeyword) || $dbKeyword != $sessionKeyword) {
+      header('Location: ./logsecretinfo.php');
+      exit;
+    }
+  }
 
   $chatentries = selectEqualChatentries($dbhChatentries);
 
@@ -56,6 +72,10 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   }
 
   goto outputPage;
+}
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+  // POSTは処理しない
+  exit;
 }
 /* 以降は include を想定。
  * include元で、ファイル名、エントリーキーを設定すること。
@@ -125,7 +145,8 @@ outputPage:
 <div class="content-log-wrap">
 
   <header class="chatroom-header-wrap">
-    <h3 class="chatroom-header-title"><?php echo h($chatroom['title']); ?>
+    <h3 class="chatroom-header-title">
+      <?php if ($chatroom['issecret']) { ?>【秘匿】<?php } ?><?php echo h($chatroom['title']); ?>
       <div class="chatroom-header-guide">
         <?php echo h($chatroom['guide']); ?>
       </div>

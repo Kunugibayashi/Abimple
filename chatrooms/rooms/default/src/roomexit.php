@@ -69,10 +69,17 @@ updateChatentries($dbhChatentries, $inputParams['characterid'], [
 $save = array();
 setChatEntry($save);
 
-
-// 最終退室者の場合はログを出力
 $chatentries = selectEqualChatentries($dbhChatentries);
-if (usedArr($myChatentry) && !usedArr($chatentries)) {
+
+if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($chatentries)) {
+  // 秘匿ルーム、かつ、最終退室者の場合はログを削除
+  deleteChatlogs($dbhChatlogs);
+
+  // 余分なログを削除
+  deleteChatentriesExit($dbhChatentries);
+
+} else if (usedArr($myChatentry) && !usedArr($chatentries)) {
+  // 最終退室者の場合はログを出力
   $entrykey = $myChatentry['entrykey'];
 
   // 最大10000行
@@ -99,7 +106,13 @@ if (usedArr($myChatentry) && !usedArr($chatentries)) {
   $logoutput($logFileName, $entrykey);
 
   // 余分なログを削除
-  deleteChatlogsLimit100($dbhChatlogs);
+  deleteChatlogsLimit1000($dbhChatlogs);
+  deleteChatentriesExit($dbhChatentries);
+}
+
+// 秘匿ルームの場合は保持キーワードをリセット
+if ($chatroom['issecret'] == 1) {
+  setSecretKeyword('');
 }
 
 $success = '退室しました。';

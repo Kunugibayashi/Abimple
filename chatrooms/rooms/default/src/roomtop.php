@@ -25,6 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // DB接続
   $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
   $dbhCharacters = connectRo(CHARACTERS_DB);
+  $dbhSecrets = connectRo(CHAT_SECRETS_DB);
 
   $chatrooms = selectChatroomsConfig($dbhChatrooms);
   if (!usedArr($chatrooms)) {
@@ -32,6 +33,21 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     $chatrooms = selectChatroomsConfig($dbhChatrooms);
   }
   $chatroom = $chatrooms[0];
+
+  // 秘匿ルームの場合
+  if ($chatroom['issecret'] == 1) {
+    $secrets = selectSecrets($dbhSecrets);
+    if (!usedArr($secrets)) {
+      firstAccessSecrets(CHAT_SECRETS_DB);
+      $secrets = selectSecrets($dbhChatrooms);
+    }
+    $dbKeyword = $secrets[0]['keyword'];
+    $sessionKeyword = getSecretKeyword();
+    if (!usedStr($dbKeyword) || !usedStr($sessionKeyword) || $dbKeyword != $sessionKeyword) {
+      header('Location: ./secrettop.php');
+      exit;
+    }
+  }
 
   $characters = selectCharactersMy($dbhCharacters, getUserid(), getUsername());
 
