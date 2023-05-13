@@ -11,11 +11,6 @@ require_once('./functions.php');
 $errors = array();
 $inputParams = array();
 
-$inputParams['characterid'] = inputParam('characterid', 20);
-$inputParams['fullname'] = inputParam('fullname', 20);
-$inputParams['isfree'] = inputParam('isfree', 1);
-$inputParams['isframe'] = inputParam('isframe', 1);
-$inputParams['memo'] = inputParam('memo', 200);
 $inputParams['color'] = inputParam('color', 7) ? inputParam('color', 7) : '#000000';
 $inputParams['bgcolor'] = inputParam('bgcolor', 7) ? inputParam('bgcolor', 7) : '#ffffff';
 
@@ -169,7 +164,18 @@ outputPage:
           </ul>
           <ul class="form-row memo-wrap">
             <li class="form-col-title">備考</li>
-            <li class="form-col-item"><input type="text" name="memo" value="<?php echo h($inputParams['memo']); ?>" maxlength="200"></li>
+            <li class="form-col-item"><input type="text" name="memo" value="" maxlength="200"></li>
+          </ul>
+          <ul class="form-row fullname-wrap">
+            <li class="form-col-title">入室メッセージ</li>
+            <li class="form-col-item">
+              <div class="select-wrap">
+                <select name="inoutmesflg">
+                  <option value="1">入室メッセージを表示する</option>
+                  <option value="0">入室メッセージを表示しない</option>
+                </select>
+              </div>
+            </li>
           </ul>
           <div class="form-button-wrap submit-wrap">
             <button type="submit">入室</button>
@@ -261,7 +267,7 @@ ul, li {
 /* レイアウト */
 div.content-wrap {
   display: grid;
-  grid-template-rows: 2em 25em 1fr;
+  grid-template-rows: 2em 28em 1fr;
 }
 header.header {
   grid-row: 1 / 2;
@@ -323,6 +329,7 @@ div.form-col-item-group {
   display: flex;
   align-items: flex-start;
 }
+select[name="inoutmesflg"],
 select[name="characterid"] {
   width: 20em;
 }
@@ -343,8 +350,8 @@ input[name="memo"] {
   /* チャット画面レイアウト */
   div.chatconfig-wrap {
     display: grid;
-    grid-template-rows: 4em 1fr; /* 横 */
-    grid-template-columns: 1fr 30em; /* 縦 */
+    grid-template-rows: 4em 1fr; /* 縦 */
+    grid-template-columns: 1fr 30em; /* 横 */
   }
   div.chatconfig-title-wrap {
     grid-column: 1 / 3; /* 横 */

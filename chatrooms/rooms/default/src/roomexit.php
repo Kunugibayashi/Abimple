@@ -13,6 +13,7 @@ $inputParams = array();
 
 // セッションが切れていても退出はできるようにフォームから値を取得
 $inputParams['characterid'] = inputParam('characterid', 20);
+$inputParams['inoutmesflg'] = inputParam('inoutmesflg', 1);
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // GETは処理しない。
@@ -22,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
  */
 // CSRF対策
 checkChatToken();
-
 
 // DB接続
 $dbhChatrooms  = connectRo(CHAT_ROOMS_DB);
@@ -51,14 +51,16 @@ if (usedArr($myChatentries)) {
   $myChatentry = $myChatentries[0];
 
   // 退室していない場合はログを出す
-  insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
-    'entrykey' => $myChatentry['entrykey'],
-    'characterid' => $character['id'],
-    'fullname' => CHAT_LOG_SYSTEM_NAME,
-    'color' => $chatroom['color'],
-    'bgcolor' => $chatroom['bgcolor'],
-    'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が退室しました。'
-  ]);
+  if ($inputParams['inoutmesflg'] == 1) {
+    insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+      'entrykey' => $myChatentry['entrykey'],
+      'characterid' => $character['id'],
+      'fullname' => CHAT_LOG_SYSTEM_NAME,
+      'color' => $chatroom['color'],
+      'bgcolor' => $chatroom['bgcolor'],
+      'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が退室しました。'
+    ]);
+  }
 }
 
 // 退室処理
@@ -88,23 +90,26 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($chatentries
     'entrykey' => $entrykey,
   ]);
 
-  $firstDate = $chatlogs[0]['created'];
-  $dt = new DateTime($firstDate);
+  // 入退室ログも発言もなければログ出力しない
+  if (usedArr($chatlogs)) {
+    $firstDate = $chatlogs[0]['created'];
+    $dt = new DateTime($firstDate);
 
-  $logFileName = $dt->format('Ymd_His') ."_" .getPageRoomdir();
+    $logFileName = $dt->format('Ymd_His') ."_" .getPageRoomdir();
 
-  // ログ出力
-  $logoutput = function($logFileName, $entrykey) {
-    // DBスコープが上書きされてしまうため無名関数使用
-    ob_start();
-    include('./log.php');
-    $buffer = ob_get_contents();
-    ob_end_clean();
+    // ログ出力
+    $logoutput = function($logFileName, $entrykey) {
+      // DBスコープが上書きされてしまうため無名関数使用
+      ob_start();
+      include('./log.php');
+      $buffer = ob_get_contents();
+      ob_end_clean();
 
-    $filePath = OUTPUT_LOG_DIR .$logFileName .'.html';
-    file_put_contents($filePath, $buffer, LOCK_EX);
-  };
-  $logoutput($logFileName, $entrykey);
+      $filePath = OUTPUT_LOG_DIR .$logFileName .'.html';
+      file_put_contents($filePath, $buffer, LOCK_EX);
+    };
+    $logoutput($logFileName, $entrykey);
+  }
 
   // 余分なログを削除
   deleteChatlogsLimit1000($dbhChatlogs);

@@ -14,6 +14,7 @@ $inputParams['characterid'] = inputParam('characterid', 20);
 $inputParams['color'] = inputParam('color', 7) ? inputParam('color', 7) : '#000000';
 $inputParams['bgcolor'] = inputParam('bgcolor', 7) ? inputParam('bgcolor', 7) : '#ffffff';
 $inputParams['memo'] = inputParam('memo', 200);
+$inputParams['inoutmesflg'] = inputParam('inoutmesflg', 1);
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // GETは処理しない。
@@ -84,14 +85,16 @@ if (!usedArr($chatentries)) {
   $chatentries = selectEqualChatentries($dbhChatentries);
 
   // 入室ログ
-  insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
-    'entrykey' => $entrykey,
-    'characterid' => $character['id'],
-    'fullname' => CHAT_LOG_SYSTEM_NAME,
-    'color' => $chatroom['color'],
-    'bgcolor' => $chatroom['bgcolor'],
-    'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が入室しました。',
-  ]);
+  if ($inputParams['inoutmesflg'] == 1) {
+    insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+      'entrykey' => $entrykey,
+      'characterid' => $character['id'],
+      'fullname' => CHAT_LOG_SYSTEM_NAME,
+      'color' => $chatroom['color'],
+      'bgcolor' => $chatroom['bgcolor'],
+      'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が入室しました。',
+    ]);
+  }
 }
 $chatentry = $chatentries[0];
 
@@ -112,14 +115,16 @@ if (!usedArr($myChatentries)) {
   ]);
 
   // 入室していない場合は入室ログを出す
-  insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
-    'entrykey' => $chatentry['entrykey'],
-    'characterid' => $character['id'],
-    'fullname' => CHAT_LOG_SYSTEM_NAME,
-    'color' => $chatroom['color'],
-    'bgcolor' => $chatroom['bgcolor'],
-    'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が入室しました。'
-  ]);
+  if ($inputParams['inoutmesflg'] == 1) {
+    insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+      'entrykey' => $chatentry['entrykey'],
+      'characterid' => $character['id'],
+      'fullname' => CHAT_LOG_SYSTEM_NAME,
+      'color' => $chatroom['color'],
+      'bgcolor' => $chatroom['bgcolor'],
+      'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が入室しました。'
+    ]);
+  }
 }
 $myChatentry = $myChatentries[0];
 
@@ -174,10 +179,19 @@ outputPage:
           </form>
         </li>
         <li class="header-item">
+          <span class="link form-submit">退室メッセージを表示させずに退室</span>
+          <form name="exit-form" class="hidden-form" action="./roomexit.php" method="POST">
+            <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
+            <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
+            <input type="hidden" name="inoutmesflg" value="0">
+          </form>
+        </li>
+        <li class="header-item">
           <span class="link form-submit">退室</span>
           <form name="exit-form" class="hidden-form" action="./roomexit.php" method="POST">
             <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
             <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
+            <input type="hidden" name="inoutmesflg" value="1">
           </form>
         </li>
       </ul>

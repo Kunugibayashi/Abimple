@@ -73,10 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   goto outputPage;
 }
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  // POSTは処理しない
-  exit;
-}
+// POST
 /* 以降は include を想定。
  * include元で、ファイル名、エントリーキーを設定すること。
  */
@@ -112,7 +109,7 @@ $chatlogs = selectEqualChatlogs($dbhChatlogs, 10000, [
 ]);
 
 if (!usedArr($chatlogs)) {
- echo 'エントリーキーに対応するログありません。';
+ echo 'エントリーキーに対応するログがありません。';
  exit;
 }
 
