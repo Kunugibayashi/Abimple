@@ -126,15 +126,29 @@ outputPage:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title><?php echo h($chatroom['title']); ?></title>
-  <?php if ($inputParams['logsec'] != 0) { ?>
-    <?php if ($chatroom['isframe']) {  /* フレームあり */ ?>
-      <script>
-        // 自動画面更新
-        var logReload = function() {
-          location.reload();
-        }
-        setTimeout(logReload, <?php echo h($inputParams['logsec']); ?> * 1000);
-      </script>
+  <?php if (!isset($logoutputFlg)) { /* フラグが立っていない場合はログ出力ではない通常の処理 */ ?>
+    <script>
+      // 名簿リンク
+      jQuery('li.entries-item').on('click', function(){
+        var url = '<?php echo h(NAMELIST_VIEW_ROOT); ?>' + '?id=' + jQuery(this).val();
+        window.open(url);
+      });
+    </script>
+    <style>
+      li.entries-item {
+        cursor: pointer;
+      }
+    </style>
+    <?php if ($inputParams['logsec'] != 0) { ?>
+      <?php if ($chatroom['isframe']) {  /* ログ更新が0秒でない、かつ、フレーム有の場合は自動更新の処理が必要 */ ?>
+        <script>
+          // 自動画面更新
+          var logReload = function() {
+            location.reload();
+          }
+          setTimeout(logReload, <?php echo h($inputParams['logsec']); ?> * 1000);
+        </script>
+      <?php } ?>
     <?php } ?>
   <?php } ?>
 </head>
@@ -162,13 +176,13 @@ outputPage:
 
   <div class="entries-wrap">
     <h5 class="entries-title">参加者：</h5>
-    <ul id="chat-entries" class="entries-item-group"><?php /* id="chat-entries" は変更しないこと */ ?>
+    <ul id="chat-entries" class="entries-item-group"><?php /* id="chat-entries" は変更しないこと。ログ一覧で使うため */ ?>
       <?php if (!usedArr($chatentries)) { /* 参加者がいない場合 */ ?>
         <li class="entries-item">なし</li>
       <?php } ?>
       <?php if (usedArr($chatentries)) { /* 参加者がいる場合 */ ?>
         <?php foreach ($chatentries as $key => $value) { ?>
-          <li class="entries-item" style="background-color: <?php echo h($value['bgcolor']); ?>;" >
+          <li class="entries-item" style="background-color: <?php echo h($value['bgcolor']); ?>;" value="<?php echo h($value['characterid']); ?>">
             <span style="color: <?php echo h($value['color']); ?>;" ><?php echo h($value['fullname']); ?></span>
           </li>
         <?php } ?>

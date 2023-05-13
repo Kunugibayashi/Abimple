@@ -98,7 +98,7 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($chatentries
     $logFileName = $dt->format('Ymd_His') ."_" .getPageRoomdir();
 
     // ログ出力
-    $logoutput = function($logFileName, $entrykey) {
+    $logoutput = function($logFileName, $entrykey, $logoutputFlg) {
       // DBスコープが上書きされてしまうため無名関数使用
       ob_start();
       include('./log.php');
@@ -108,7 +108,7 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($chatentries
       $filePath = OUTPUT_LOG_DIR .$logFileName .'.html';
       file_put_contents($filePath, $buffer, LOCK_EX);
     };
-    $logoutput($logFileName, $entrykey);
+    $logoutput($logFileName, $entrykey, 1);
   }
 
   // 余分なログを削除

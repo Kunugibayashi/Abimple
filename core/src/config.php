@@ -216,6 +216,7 @@ define('NAMELIST_DETAIL_NAME', '詳細'); // 表示名
 define('IMAGE_SAVE_PATH', './images/');
 define('DOCUMENT_ROOT', $_SERVER['DOCUMENT_ROOT']);
 define('INDEX_ROOT', DOCUMENT_ROOT.SITE_ROOT);
+define('NAMELIST_VIEW_ROOT', SITE_ROOT.'/characters/src/view.php');
 /* 以下の変数を追加した場合は database.php の DB作成 に処理を追加すること。
  */
 define('CHARACTERS_DB', (INDEX_ROOT.'/characters/src/db/characters.db'));
