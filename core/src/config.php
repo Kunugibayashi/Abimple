@@ -195,6 +195,15 @@ define('NAMELIST_FREE8_NAME', '自由設定8'); // 表示名
 /* 自由設定9 （テキストボックス） */
 define('NAMELIST_FREE9', 0); // ONOFF（1:表示する/0:表示しない）
 define('NAMELIST_FREE9_NAME', '自由設定9'); // 表示名
+/* 自由設定10 （テキストエリア） */
+define('NAMELIST_FREE10', 1); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_FREE10_NAME', '自由設定10'); // 表示名
+/* 自由設定11 （テキストエリア） */
+define('NAMELIST_FREE11', 0); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_FREE11_NAME', '自由設定11'); // 表示名
+/* 自由設定12 （テキストエリア） */
+define('NAMELIST_FREE12', 0); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_FREE12_NAME', '自由設定12'); // 表示名
 /* コメント （テキストボックス） */
 define('NAMELIST_COMMENT', 1); // ONOFF（1:表示する/0:表示しない）
 define('NAMELIST_COMMENT_NAME', 'コメント'); // 表示名

@@ -688,6 +688,9 @@ function createCharacters($dbh) {
       free7     VARCHAR(20)  NOT NULL DEFAULT '',
       free8     VARCHAR(20)  NOT NULL DEFAULT '',
       free9     VARCHAR(20)  NOT NULL DEFAULT '',
+      free10    TEXT         NOT NULL DEFAULT '',
+      free11    TEXT         NOT NULL DEFAULT '',
+      free12    TEXT         NOT NULL DEFAULT '',
       comment   VARCHAR(100) NOT NULL DEFAULT '',
       url       TEXT         NOT NULL DEFAULT '',
       detail    TEXT         NOT NULL DEFAULT '',
@@ -792,7 +795,7 @@ function selectCharactersId($dbh, $characterid) {
 }
 
 function selectLikeCharactersList($dbh, $params = array()) {
-  // detail は重くなるため一覧には表示しない
+  // TEXT は重くなるため一覧には表示しない
   $sql = '
     SELECT
       id,

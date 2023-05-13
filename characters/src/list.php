@@ -24,6 +24,9 @@ $searchParams['free6'] = searchParam('free6', SEARCHKEY_LIMIT);
 $searchParams['free7'] = searchParam('free7', SEARCHKEY_LIMIT);
 $searchParams['free8'] = searchParam('free8', SEARCHKEY_LIMIT);
 $searchParams['free9'] = searchParam('free9', SEARCHKEY_LIMIT);
+$searchParams['free10'] = searchParam('free10', SEARCHKEY_LIMIT);
+$searchParams['free11'] = searchParam('free11', SEARCHKEY_LIMIT);
+$searchParams['free12'] = searchParam('free12', SEARCHKEY_LIMIT);
 $searchParams['comment'] = searchParam('comment', SEARCHKEY_LIMIT);
 $searchParams['url'] = searchParam('url', SEARCHKEY_LIMIT);
 $searchParams['detail'] = searchParam('detail', SEARCHKEY_LIMIT);
@@ -75,6 +78,9 @@ $searchParams['free6'] = inputParam('free6', SEARCHKEY_LIMIT);
 $searchParams['free7'] = inputParam('free7', SEARCHKEY_LIMIT);
 $searchParams['free8'] = inputParam('free8', SEARCHKEY_LIMIT);
 $searchParams['free9'] = inputParam('free9', SEARCHKEY_LIMIT);
+$searchParams['free10'] = inputParam('free10', SEARCHKEY_LIMIT);
+$searchParams['free11'] = inputParam('free11', SEARCHKEY_LIMIT);
+$searchParams['free12'] = inputParam('free12', SEARCHKEY_LIMIT);
 $searchParams['comment'] = inputParam('comment', SEARCHKEY_LIMIT);
 $searchParams['url'] = inputParam('url', SEARCHKEY_LIMIT);
 $searchParams['detail'] = inputParam('detail', SEARCHKEY_LIMIT);
@@ -235,6 +241,24 @@ outputPage:
           <ul class="search-row">
             <li class="search-col-title"><?php echo h(NAMELIST_URL_NAME); ?></li>
             <li class="search-col-item"><input type="text" name="url" value="<?php echo h($searchParams['url']); ?>" maxlength="<?php echo h(SEARCHKEY_LIMIT); ?>"></li>
+          </ul>
+        <?php } ?>
+        <?php if (NAMELIST_FREE10 || isAdmin()) { ?>
+          <ul class="search-row">
+            <li class="search-col-title"><?php echo h(NAMELIST_FREE10_NAME); ?></li>
+            <li class="search-col-item"><input type="text" name="free10" value="<?php echo h($searchParams['free10']); ?>" maxlength="<?php echo h(SEARCHKEY_LIMIT); ?>"></li>
+          </ul>
+        <?php } ?>
+        <?php if (NAMELIST_FREE11 || isAdmin()) { ?>
+          <ul class="search-row">
+            <li class="search-col-title"><?php echo h(NAMELIST_FREE11_NAME); ?></li>
+            <li class="search-col-item"><input type="text" name="free11" value="<?php echo h($searchParams['free11']); ?>" maxlength="<?php echo h(SEARCHKEY_LIMIT); ?>"></li>
+          </ul>
+        <?php } ?>
+        <?php if (NAMELIST_FREE12 || isAdmin()) { ?>
+          <ul class="search-row">
+            <li class="search-col-title"><?php echo h(NAMELIST_FREE12_NAME); ?></li>
+            <li class="search-col-item"><input type="text" name="free12" value="<?php echo h($searchParams['free12']); ?>" maxlength="<?php echo h(SEARCHKEY_LIMIT); ?>"></li>
           </ul>
         <?php } ?>
         <?php if (NAMELIST_DETAIL || isAdmin()) { ?>

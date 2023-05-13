@@ -190,6 +190,24 @@ outputPage:
             <li class="view-col-item"><?php echo h($character['url']); ?></li>
           </ul>
         <?php } ?>
+        <?php if (NAMELIST_FREE10 || isAdmin()) { ?>
+          <ul class="view-row view-free10-row">
+            <li class="view-col-title view-free10-title"><?php echo h(NAMELIST_FREE10_NAME); ?></li>
+            <li class="view-col-item view-free10-item"><?php echo ht($character['free10']); ?></li>
+          </ul>
+        <?php } ?>
+        <?php if (NAMELIST_FREE11 || isAdmin()) { ?>
+          <ul class="view-row view-free11-row">
+            <li class="view-col-title view-free11-title"><?php echo h(NAMELIST_FREE11_NAME); ?></li>
+            <li class="view-col-item view-free11-item"><?php echo ht($character['free11']); ?></li>
+          </ul>
+        <?php } ?>
+        <?php if (NAMELIST_FREE12 || isAdmin()) { ?>
+          <ul class="view-row view-free12-row">
+            <li class="view-col-title view-free12-title"><?php echo h(NAMELIST_FREE12_NAME); ?></li>
+            <li class="view-col-item view-free12-item"><?php echo ht($character['free12']); ?></li>
+          </ul>
+        <?php } ?>
         <?php if (NAMELIST_DETAIL || isAdmin()) { ?>
           <ul class="view-row view-detail-row">
             <li class="view-col-title view-detail-title"><?php echo h(NAMELIST_DETAIL_NAME); ?></li>

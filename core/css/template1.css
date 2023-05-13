@@ -586,10 +586,10 @@ ul.view-row {
   padding: 0;
   background-color: #eaebec;
   border: solid #746c74 1px;
-  border-bottom: none;
+  border-top: none;
 }
-ul.view-row:nth-last-child(2) {
-  border-bottom: solid #746c74 1px;
+ul.view-row:first-child {
+  border-top: solid #746c74 1px;
 }
 li.view-col-title,
 li.view-col-title-only {
@@ -604,6 +604,9 @@ li.view-col-title {
 li.view-col-item {
   padding: 0.5em;
 }
+ul.view-free10-row,
+ul.view-free11-row,
+ul.view-free12-row,
 ul.view-detail-row,
 ul.view-message-row {
   display: flex;
@@ -615,6 +618,9 @@ li.view-detail-title,
 li.view-message-title {
   width: 100%;
 }
+li.view-free10-item,
+li.view-free11-item,
+li.view-free12-item,
 li.view-detail-item,
 li.view-message-item {
   padding: 1em;
