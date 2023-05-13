@@ -164,7 +164,7 @@ outputPage:
     <nav class="header-menu">
       <ul class="header-item-group">
         <li class="header-item">
-          <a href="./editlist.php?characterid=<?php echo h($myChatentry['characterid']); ?>" target="log">発言編集</a>
+          <a href="./editlist.php" target="log">発言編集</a>
         </li>
         <li class="header-item">
           <span class="link new-window-submit">ログ別窓表示</span>

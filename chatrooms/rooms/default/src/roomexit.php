@@ -11,6 +11,7 @@ require_once('./functions.php');
 $success = '';
 $inputParams = array();
 
+// セッションが切れていても退出はできるようにフォームから値を取得
 $inputParams['characterid'] = inputParam('characterid', 20);
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {

@@ -12,12 +12,12 @@ $success = '';
 $errors = array();
 $inputParams = array();
 
-$inputParams['characterid'] = getParam('characterid', 20);
-$inputParams['message'] = inputParam('message', 3000);
+// 入室前提のためセッションから値を取得
+$sessionChatEntry = getChatEntry();
+
+$inputParams['characterid'] = $sessionChatEntry['characterid'];
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  // CSRF対策
-  setToken();
 
   // DB接続
   $dbhCharacters = connectRo(CHARACTERS_DB);
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   $dbhChatlogs = connectRw(CHAT_LOGS_DB);
 
   if (isAdmin()) {
-    // アドミンの場合は全ての発言を取得
+    // アドミンの場合は、秘匿を覗く全ての発言を取得
 
     // 最大10000行
     $chatlogs = selectEqualChatlogs($dbhChatlogs, 10000);
