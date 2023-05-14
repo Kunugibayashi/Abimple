@@ -27,7 +27,7 @@ adminOnly();
   <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
   <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
-<body>
+<body class="admin-body">
 <div class="index-wrap">
 
   <header class="index-header">

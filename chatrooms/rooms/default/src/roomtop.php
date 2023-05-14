@@ -71,15 +71,15 @@ outputPage:
   <!-- 共通CSS -->
   <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- レスポンシブ用 -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <!-- 直接記載があるため下部に移動 -->
   <!-- script -->
   <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
   <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
-<div class="content-wrap">
+<div id="id-roomtop-content-wrap" class="content-wrap">
 
-  <header class="header">
+  <header id="id-roomtop-header" class="header">
     <nav class="header-menu">
       <ul class="header-item-group">
         <?php if ($chatroom['isfree']) { ?>
@@ -437,5 +437,7 @@ input[name="memo"] {
   }
 <?php } ?>
 </style>
+<!-- レスポンシブ用 -->
+<link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
 </body>
 </html>

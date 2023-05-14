@@ -579,7 +579,7 @@ div.view-wrap {
   margin: 0;
 }
 div.view-contents {
-  margin: 2em auto;
+  margin: 0.5em auto;
 }
 ul.view-row {
   display: flex;
@@ -669,9 +669,10 @@ div.letters-view-wrap li.view-col-title-only
   color: unset;
 }
 div.letters-view-wrap div.view-contents {
-  background-color: #ffffff;
+  background-color: #f8f8ff;
   border-radius: 0.3em;
   padding: 2em;
+  border: solid #746c74 1px;
 }
 div.letters-view-wrap li.view-col-title-only {
   font-size: 1.5em;
@@ -798,16 +799,18 @@ div.bbs-child-wrap li.view-col-title {
 }
 div.bbs-parent-wrap,
 div.bbs-child-wrap {
-  background-color: #ffffff;
-  padding: 2em;
+  margin: 0;
+  padding: 0;
 }
 div.bbs-parent-wrap div.view-contents {
-  padding: 2em;
+  padding: 1em;
+  background-color: #f8f8ff;
   border: solid #9aa0a8 1px;
 }
 div.bbs-child-wrap div.view-contents {
-  padding: 2em 2em 1em 2em;
-  border-bottom: solid #9aa0a8 1px;
+  padding: 1em;
+  background-color: #f8f8ff;
+  border: solid #9aa0a8 1px;
 }
 div.bbs-parent-wrap ul.view-action-row,
 div.bbs-child-wrap ul.view-action-row {

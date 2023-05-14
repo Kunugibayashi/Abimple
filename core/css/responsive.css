@@ -9,6 +9,10 @@ button.menu-button {
 
 /* 480px以下に適用されるCSS（スマホ用） */
 @media screen and (max-width: 480px) {
+  /* ***************************************************************************
+   * TOPページ
+   * ***************************************************************************
+   */
   button.menu-button {
     display: block;
   }
@@ -67,4 +71,116 @@ button.menu-button {
     opacity: 0.5;
     padding: 1em;
   }
+  ul.news-row {
+    display: flex;
+    flex-direction: column;
+  }
+  li.news-col-item:nth-child(2),
+  #id-characters-contents li.news-col-item:nth-child(3),
+  #id-letters-contents li.news-col-item:nth-child(3),
+  #id-letters-contents li.news-col-item:nth-child(4),
+  #id-bbs-contents li.news-col-item:nth-child(3),
+  #id-bbs-contents li.news-col-item:nth-child(4),
+  #id-myletters-contents li.news-col-item:nth-child(3),
+  #id-myletters-contents li.news-col-item:nth-child(4),
+  #id-mybbs-contents li.news-col-item:nth-child(3),
+  #id-mybbs-contents li.news-col-item:nth-child(4) {
+    width: 100%;
+  }
+
+  ul.view-row {
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  /* ***************************************************************************
+   * チャットルーム
+   * ***************************************************************************
+   */
+  /* TOP */
+  div#id-roomtop-content-wrap {
+    display: grid;
+    grid-template-rows: 2em 1fr 1fr;
+  }
+  div.chatconfig-wrap {
+    margin: 1em;
+    display: flex;
+    flex-direction: column;
+  }
+  h3.chatconfig-title {
+    font-size: 1em;
+  }
+  div.chatconfig-guide {
+    font-size: 0.8em;
+    height: auto;
+  }
+  form.roomchat-form ul.form-row {
+    display: flex;
+    flex-direction: column;
+  }
+  /* チャットルーム */
+  div#id-roomchat-content-wrap {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: 3em 1fr 1fr 1fr 1fr;
+  }
+  header#id-roomtop-header {
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+  }
+  div.chat-form-wrap {
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    overflow: visible;
+    padding: 1em;
+  }
+  div.random-wrap {
+    grid-column: 1 / 2;
+    grid-row: 3 / 4;
+    overflow: visible;
+    margin: 0 0 1em 1em;
+    display: flex;
+    justify-content: flex-end;
+  }
+  div.chatroom-frame-wrap {
+    grid-column: 1 / 2;
+    grid-row: 4 / 5;
+    overflow: visible;
+  }
+  form#chat-form ul.form-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  form#chat-form li.form-col-title,
+  form#chat-form li.form-col-title:not(:first-child) {
+    width: 7em;
+    min-width: 7em;
+    margin: 0.5em 0;
+    font-weight: bold;
+  }
+  form#chat-form textarea[name="message"] ,
+  form#chat-form input[name="memo"] {
+    width: 25em;
+  }
+  form#reload-form ul.form-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  form#reload-form li.form-col-title,
+  form#reload-form li.form-col-title:not(:first-child) {
+    width: 7em;
+    min-width: 7em;
+    margin: 0.5em 0;
+    font-weight: bold;
+  }
+  div.chat-button-wrap {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
 }
