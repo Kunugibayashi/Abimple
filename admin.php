@@ -66,9 +66,7 @@ adminOnly();
     <nav class="menu menu-site">
       <h2 class="menu-title">Chat</h2>
       <ul class="menu-item-group">
-        <?php if (SITE_CHATROOM_DB) { ?>
-          <li class="menu-item"><a href="./chatrooms/src/list.php" target="indexTop">ルーム管理</a></li>
-        <?php } ?>
+        <li class="menu-item"><a href="./chatrooms/src/list.php" target="indexTop">ルーム管理</a></li>
         <li class="menu-item"><a href="./chatrooms/src/entrance.php" target="indexTop">ルーム一覧</a></li>
       </ul>
     </nav>

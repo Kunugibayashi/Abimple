@@ -177,71 +177,10 @@ define('NAMELIST_TEAM_LIST', [ // 保存ワード「'表示名' => '値',」形�
 <h4 id="6">チャットルームを追加する</h4>
 <div class="note-wrap">
 <p class="note">
-チャットルームを追加する方法は、管理画面を使用する方法と設定ファイルに追加する方法があります。<br>
+管理画面の「ルーム管理」からチャットルームを追加してください。<br>
+<span class="point">ルーム追加時に「Permission denied」が表示される場合</span>は権限がありません。<br>
+ファイル編集権限が追加可能なレンタルサーバーを使用してください。<br>
 </p>
-<div class="code-wrap"><code><pre>
-/* 表示チャットルームリストの取得方法。
- * 1 を指定すると、「管理画面」からチャットルームの追加を行うことができます。
- *
- * 1:DBから取得する
- * 0:SITE_CHATROOM に記載して取得する
- */
-define('SITE_CHATROOM_DB', 1);
-<pre></code></div>
-<p class="note">
-管理画面を使用するのであれば、管理画面の「ルーム管理」からチャットルームを追加してください。<br>
-<span class="point">ルーム追加時に「Permission denied」が表示される場合</span>は権限がありませんので、以下の手順を試してください。<br>
-</p>
-<p class="note">
-設定ファイルに追加する場合は、SITE_CHATROOM_DB を 0 に設定して以下手順を実施してください。<br>
-</p>
-<p class="note">
-chatrooms/roomsにあるdefaultをコピーして、同フォルダ内にペーストし、フォルダにルーム名をつけてください。<span class="point">使用可能なのは英数字のみ</span>です。<br>
-以下は一例として「test1」というチャットルームを作っています。<br>
-</p>
-<div class="code-wrap"><code><pre>
-chatrooms/rooms/
-  |--default
-  |
-  |--test1
-<pre></code></div>
-<p class="note">
-もしも、defaultルームを動かしていた場合、前ルームの設定が残っていますので以下のファイルを削除してください。<br>
-ない場合は問題ありません。<br>
-</p>
-<div class="code-wrap"><code><pre>
-chatrooms/rooms/
-  |--default
-  |
-  |--test1
-     |
-     |--logs
-     |  |--_save_log.txt
-     |  |--※他の.htmlファイルすべてを削除
-     |
-     |--src
-        |--db
-           |--_save_db.txt
-           |--※他の.dbファイルすべてを削除
-<pre></code></div>
-<p class="note">
-次に、config.phpに新しいチャットルームを追加してください。<br>
-この変更を保存した時点で、トップページやルーム一覧にチャットルームが表示されるようになります。<br>
-</p>
-<div class="file-wrap">core/src/config.php</div>
-<div class="code-wrap"><code><pre>
-/* 表示チャットルーム。
- * SITE_CHATROOM_DB を 0 にした場合は必ず編集してください。
- *
- * 保存ワード「'表示名' => 'ルームDIR',」形式。
- * ルームDIR は、チャットルームトップ画面から遷移する「チャットルーム管理画面」で確認できます。
- * 例） 'デフォルトルーム' => 'default',
- */
-define('SITE_CHATROOM', [
-  'デフォルトルーム' => 'default',  // 削除可能
-]);
-<pre></code></div>
-</div>
 </div>
 
 <div class="manual-wrap">

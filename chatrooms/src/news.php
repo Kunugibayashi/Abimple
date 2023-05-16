@@ -11,18 +11,9 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   $dbhAdminroom = connectRo(ADMIN_ROOMS_DB);
 
   $roomList = array();
-  if (SITE_CHATROOM_DB) {
-    $roomList = selectEqualAdminroomsList($dbhAdminroom, [
-      'published' => '1',
-    ]);
-  } else {
-    foreach (SITE_CHATROOM as $key => $value) {
-      $roomList[] = [
-        'roomdir' => $value,
-        'roomtitle' => $key,
-      ];
-    }
-  }
+  $roomList = selectEqualAdminroomsList($dbhAdminroom, [
+    'published' => '1',
+  ]);
 
   $chatrooms = array();
   foreach ($roomList as $key => $value) {
