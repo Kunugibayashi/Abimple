@@ -218,6 +218,4 @@ define('CHAT_LOGS_DB', './db/chatlogs.db');
 define('CHAT_SECRETS_DB', './db/secrets.db');
 define('INBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/inboxletters.db'));
 define('OUTBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/outboxletters.db'));
-define('BBS_PARENTS_DB', (INDEX_ROOT.'/bbs/src/db/bbsparents.db'));
-define('BBS_DB', (INDEX_ROOT.'/bbs/src/db/bbs.db'));
 define('INFOMATIONS_DB', (INDEX_ROOT.'/infomation/src/db/informations.db'));

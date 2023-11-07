@@ -82,7 +82,6 @@ require_once('./core/src/administrator.php');
             <?php if (SITE_LETTER_OPEN == 1) { /* 公開私書の場合 */ ?>
               <li class="menu-item"><a href="./letters/src/publiclist.php" target="indexTop">公開私書箱</a></li>
             <?php } ?>
-            <li class="menu-item"><a href="./bbs/src/bbslist.php" target="indexTop">掲示板</a></li>
         </ul>
       </nav>
 

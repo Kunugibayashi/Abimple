@@ -545,12 +545,6 @@ div.my-outbox-table-wrap th {
   color: #e1ece1;
 }
 
-/* 掲示板 */
-div.bbs-table-wrap th {
-  background-color: #c4c3c4;
-  color: #392c1f;
-}
-
 /* ログリスト */
 div.loglist-table-wrap th {
   background-color: #bccc9c;
@@ -774,69 +768,6 @@ div.letter-icon:after {
 }
 
 /* ****************************************************************************
- * BBS
- * ****************************************************************************
- */
-/* BBS 新規投稿メニュー */
-li.bbs-menu-item {
-  font-size: 1em;
-}
-
-div.bbs-parent-wrap ul.view-row,
-div.bbs-parent-wrap li.view-col-title,
-div.bbs-parent-wrap li.view-col-item,
-div.bbs-parent-wrap li.view-col-title-only,
-div.bbs-child-wrap ul.view-row,
-div.bbs-child-wrap li.view-col-title,
-div.bbs-child-wrap li.view-col-item,
-div.bbs-child-wrap li.view-col-title-only
-{
-  margin: 0;
-  padding: 0;
-  border: unset;
-  background-color: unset;
-  color: unset;
-}
-div.bbs-parent-wrap li.view-col-title,
-div.bbs-child-wrap li.view-col-title {
-  width: 5em;
-}
-div.bbs-parent-wrap,
-div.bbs-child-wrap {
-  margin: 0;
-  padding: 0;
-}
-div.bbs-parent-wrap div.view-contents {
-  padding: 1em;
-  background-color: #f8f8ff;
-  border: solid #9aa0a8 1px;
-}
-div.bbs-child-wrap div.view-contents {
-  padding: 1em;
-  background-color: #f8f8ff;
-  border: solid #9aa0a8 1px;
-}
-div.bbs-parent-wrap ul.view-action-row,
-div.bbs-child-wrap ul.view-action-row {
-  font-size: 0.9em;
-  display: flex;
-  justify-content: flex-end;
-}
-div.bbs-parent-wrap ul.view-action-row > li.view-col-item,
-div.bbs-child-wrap ul.view-action-row > li.view-col-item {
-  margin: 0 0 0 2em;
-}
-div.bbs-parent-wrap ul.view-message-row,
-div.bbs-child-wrap ul.view-message-row {
-  margin: 1em 0;
-}
-div.bbs-parent-wrap li.view-message-title,
-div.bbs-child-wrap li.view-message-title {
-  width: 100%;
-  margin-bottom: 0.2em;
-}
-
-/* ****************************************************************************
  * ニュース
  * ****************************************************************************
  */
@@ -923,17 +854,6 @@ div.news-contents-area9 li.news-col-item:nth-child(1) {
   margin-right: 2em;
 }
 
-/* 掲示板 */
-#id-bbs-contents li.news-col-item:nth-child(3)
-{
-  width: 11em;
-  min-width: 11em;
-}
-#id-bbs-contents li.news-col-item:nth-child(4){
-  width: 100%;
-  margin-right: 2em;
-}
-
 /* あなた宛の私書 */
 #id-myletters-contents li.news-col-item:nth-child(3),
 #id-myletters-contents li.news-col-item:nth-child(4)
@@ -942,18 +862,6 @@ div.news-contents-area9 li.news-col-item:nth-child(1) {
   min-width: 11em;
 }
 #id-myletters-contents li.news-col-item:nth-child(5){
-  width: 100%;
-  margin-right: 2em;
-}
-
-/* あなた宛の掲示板返信 */
-#id-mybbs-contents li.news-col-item:nth-child(3),
-#id-mybbs-contents li.news-col-item:nth-child(4)
-{
-  width: 11em;
-  min-width: 11em;
-}
-#id-mybbs-contents li.news-col-item:nth-child(5){
   width: 100%;
   margin-right: 2em;
 }

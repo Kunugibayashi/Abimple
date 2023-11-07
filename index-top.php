@@ -92,27 +92,6 @@ require_once('./core/src/administrator.php');
   </div>
 <?php } ?>
 
-<div class="top-news-contents">
-  <h3>掲示板</h3>
-  <div id="id-bbs-contents" class="bbs-wrap"></div>
-  <script>
-    var bbsReload = function() {
-      var resultContents = jQuery('#id-bbs-contents');
-      jQuery.ajax({
-        url: './bbs/src/news.php',
-        dataType: 'HTML',
-      }).done((data, textStatus, jqXHR) => {
-        resultContents.html(data);
-      }).fail((jqXHR, textStatus, errorThrown) => {
-        console.log(jqXHR);
-        resultContents.html(errorThrown);
-      }).always((data) => {
-      });
-    }
-    bbsReload();
-  </script>
-</div>
-
 <?php if (isLogin()) { /* ログイン時 */ ?>
   <div class="top-news-contents">
     <h3>あなた宛の私書</h3>
@@ -132,27 +111,6 @@ require_once('./core/src/administrator.php');
         });
       }
       mylettersReload();
-    </script>
-  </div>
-
-  <div class="top-news-contents">
-    <h3>あなた宛の掲示板返信</h3>
-    <div id="id-mybbs-contents" class="mybbs-wrap"></div>
-    <script>
-      var mybbsReload = function() {
-        var resultContents = jQuery('#id-mybbs-contents');
-        jQuery.ajax({
-          url: './bbs/src/mynews.php',
-          dataType: 'HTML',
-        }).done((data, textStatus, jqXHR) => {
-          resultContents.html(data);
-        }).fail((jqXHR, textStatus, errorThrown) => {
-          console.log(jqXHR);
-          resultContents.html(errorThrown);
-        }).always((data) => {
-        });
-      }
-      mybbsReload();
     </script>
   </div>
 <?php } ?>

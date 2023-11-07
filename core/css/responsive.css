@@ -79,12 +79,8 @@ button.menu-button {
   #id-characters-contents li.news-col-item:nth-child(3),
   #id-letters-contents li.news-col-item:nth-child(3),
   #id-letters-contents li.news-col-item:nth-child(4),
-  #id-bbs-contents li.news-col-item:nth-child(3),
-  #id-bbs-contents li.news-col-item:nth-child(4),
   #id-myletters-contents li.news-col-item:nth-child(3),
-  #id-myletters-contents li.news-col-item:nth-child(4),
-  #id-mybbs-contents li.news-col-item:nth-child(3),
-  #id-mybbs-contents li.news-col-item:nth-child(4) {
+  #id-myletters-contents li.news-col-item:nth-child(4) {
     width: 100%;
   }
 

@@ -18,7 +18,6 @@ function setPrev() {
   if ($script === 'mylist.php'
     || $script === 'list.php'
     || $script === 'publiclist.php'
-    || $script === 'bbslist.php'
     || $script === 'index-top.php'
     || $script === 'inboxmylist.php'
     || $script === 'outboxmylist.php'
@@ -28,13 +27,6 @@ function setPrev() {
       $prevPage = $prevPage .'?' . $query;
     }
     $_SESSION['prevPage'] = $prevPage;
-  }
-  if ($script === 'bbstop.php') {
-    $prevTopPage = $path;
-    if (((boolean) $query)) {
-      $prevTopPage = $prevTopPage .'?' . $query;
-    }
-    $_SESSION['prevTopPage'] = $prevTopPage;
   }
   // その他は設定しない
 }
