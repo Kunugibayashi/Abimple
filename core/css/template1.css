@@ -281,6 +281,9 @@ ul.menu-item-group {
 li.menu-item {
   list-style-type: disc;
 }
+li.menu-nolink {
+  text-decoration: line-through;
+}
 
 /* ****************************************************************************
  * フォーム

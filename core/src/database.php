@@ -963,7 +963,7 @@ function updateChatroomsConfig($dbh, $params = array()) {
 function createInboxLetters($dbh) {
  $sql = "
    CREATE TABLE inboxletters (
-      id            INTEGER        PRIMARY KEY AUTOINCREMENT,
+      id              INTEGER        PRIMARY KEY AUTOINCREMENT,
       touserid        INTEGER        NOT NULL,
       tousername      VARCHAR(20)    NOT NULL,
       tocharacterid   INTEGER        NOT NULL,

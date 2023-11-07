@@ -84,7 +84,6 @@ outputPage:
     <div class="table-wrap public-inbox-table-wrap">
       <table>
         <tr>
-          <th class="cell-id">宛先ID</th>
           <th class="cell-fullname">宛先</th>
           <th class="cell-fullname">差出人</th>
           <th class="cell-title">タイトル</th>
@@ -92,7 +91,6 @@ outputPage:
         </tr>
         <?php foreach ($pages as $key => $value) { ?>
           <tr>
-              <td><?php echo h($value['tocharacterid']); ?></td>
               <td><?php echo h($value['tofullname']); ?></td>
               <td><?php echo h($value['fromfullname']); ?></td>
               <td><a href="./publicview.php?tocharacterid=<?php echo h($value['tocharacterid']); ?>"><?php echo h($value['title']); ?></a></td>

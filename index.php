@@ -54,11 +54,12 @@ require_once('./core/src/administrator.php');
         <li class="menu-item"><a href="./infomation/src/list.php" target="indexTop">お知らせ</a></li>
         <?php if (isLogin()) { /* ログイン時 */ ?>
           <li class="menu-item"><a href="./users/src/mylist.php" target="indexTop">ユーザー管理</a></li>
+          <li class="menu-item"><a href="./users/src/logout.php" target="indexTop">ログアウト</a></li>
         <?php } ?>
         <?php if (!isLogin()) { /* ログアウト時 */ ?>
           <li class="menu-item"><a href="./users/src/signup.php" target="indexTop">ユーザー登録</a></li>
+          <li class="menu-item"><a href="./users/src/login.php" target="indexTop">ログイン</a></li>
         <?php } ?>
-        <li class="menu-item"><a href="./chatrooms/src/entrance.php" target="indexTop">ルーム一覧</a></li>
       </ul>
     </nav>
 
@@ -71,29 +72,35 @@ require_once('./core/src/administrator.php');
           <li class="menu-item"><a href="./characters/src/mylist.php" target="indexTop">名簿管理</a></li>
         <?php } ?>
         <?php if (!isLogin()) { /* ログアウト時 */ ?>
-          <li class="menu-item"><a href="./users/src/login.php" target="indexTop">ログイン</a></li>
+          <li class="menu-item menu-nolink">名簿登録</a></li>
+          <li class="menu-item menu-nolink">名簿管理</a></li>
         <?php } ?>
       </ul>
     </nav>
 
-      <nav class="menu menu-chara">
-        <h2 class="menu-title">Tool</h2>
-        <ul class="menu-item-group">
-            <?php if (SITE_LETTER_OPEN == 1) { /* 公開私書の場合 */ ?>
-              <li class="menu-item"><a href="./letters/src/publiclist.php" target="indexTop">公開私書箱</a></li>
-            <?php } ?>
-        </ul>
-      </nav>
+    <nav class="menu menu-room">
+      <h2 class="menu-title">Room</h2>
+      <ul class="menu-item-group">
+        <li class="menu-item"><a href="./chatrooms/src/entrance.php" target="indexTop">ルーム一覧</a></li>
+      </ul>
+    </nav>
 
-      <?php if (isLogin()) { /* ログイン時 */ ?>
-        <nav class="menu menu-chara">
-          <h2 class="menu-title">Letter</h2>
-          <ul class="menu-item-group">
-            <li class="menu-item"><a href="./letters/src/inboxmylist.php" target="indexTop">受信箱</a></li>
-            <li class="menu-item"><a href="./letters/src/outboxmylist.php" target="indexTop">送信箱</a></li>
-          </ul>
-        </nav>
-      <?php } ?>
+    <nav class="menu menu-chara">
+      <h2 class="menu-title">Letter</h2>
+      <ul class="menu-item-group">
+        <?php if (SITE_LETTER_OPEN == 1) { /* 公開私書の場合 */ ?>
+          <li class="menu-item"><a href="./letters/src/publiclist.php" target="indexTop">公開私書箱</a></li>
+        <?php } ?>
+        <?php if (isLogin()) { /* ログイン時 */ ?>
+          <li class="menu-item"><a href="./letters/src/inboxmylist.php" target="indexTop">受信箱</a></li>
+          <li class="menu-item"><a href="./letters/src/outboxmylist.php" target="indexTop">送信箱</a></li>
+        <?php } ?>
+        <?php if (!isLogin()) { /* ログアウト時 */ ?>
+          <li class="menu-item menu-nolink">受信箱</a></li>
+          <li class="menu-item menu-nolink">送信箱</a></li>
+        <?php } ?>
+      </ul>
+    </nav>
   </div>
 
   <div class="index-frame-wrap">
