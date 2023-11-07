@@ -49,6 +49,15 @@ checkToken();
 if (!usedStr($inputParams['fullname'])) {
   $errors[] = NAMELIST_NAME .'を入力してください。';
 }
+if (usedStr($inputParams['free10']) && mb_strlen($inputParams['free10']) > 10000) {
+  $errors[] = NAMELIST_FREE10_NAME .'は最大 10000 文字です。';
+}
+if (usedStr($inputParams['free11']) && mb_strlen($inputParams['free11']) > 10000) {
+  $errors[] = NAMELIST_FREE11_NAME .'は最大 10000 文字です。';
+}
+if (usedStr($inputParams['free12']) && mb_strlen($inputParams['free12']) > 10000) {
+  $errors[] = NAMELIST_FREE12_NAME .'は最大 10000 文字です。';
+}
 if (usedStr($inputParams['detail']) && mb_strlen($inputParams['detail']) > 10000) {
   $errors[] = NAMELIST_DETAIL_NAME .'は最大 10000 文字です。';
 }

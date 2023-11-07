@@ -160,7 +160,7 @@ outputPage:
           <li class="form-col-note">ファイルサイズ 10MB 以内</li>
         </ul>
         <div class="form-button-wrap">
-          <button type="submit">新規登録</button>
+          <button type="submit">新規投稿</button>
         </div>
       </form>
     </div>

@@ -639,15 +639,19 @@ div.infomation-view-wrap li.view-col-title-only
   color: unset;
 }
 div.infomation-view-wrap div.view-contents {
-  background-color: #e3e3e4;
-  border-radius: 0.3em;
-  padding: 2em;
+  margin: 0.5em;
+  padding: 0;
 }
 div.infomation-view-wrap li.view-col-title-only {
   font-size: 1.5em;
+  width: 100%;
+  border-bottom: solid 2px #3e463b;
 }
 div.infomation-view-wrap ul.view-row {
   padding: 0.3em 0;
+}
+div.infomation-view-wrap ul.view-created-row {
+  font-size: 0.8em;
 }
 div.infomation-view-wrap li.view-detail-item {
   padding: 1em 0;

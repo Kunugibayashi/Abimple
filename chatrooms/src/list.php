@@ -32,7 +32,7 @@ outputPage:
   <meta name="robots" content="noindex,nofollow,noarchive" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
-  <title>チャットルーム一覧</title>
+  <title>チャットルーム管理</title>
   <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
   <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
@@ -47,7 +47,7 @@ outputPage:
 </head>
 <body>
 <div class="content-wrap">
-  <h3 class="adminroom-title">チャットルーム一覧</h4>
+  <h3 class="adminroom-title">チャットルーム管理</h4>
 
   <?php if (isAdmin()) { /* 管理ユーザーは常に表示 */ ?>
     <div class="note-wrap">

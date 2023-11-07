@@ -55,11 +55,11 @@ $dbhInfomation = connectRw(INFOMATIONS_DB);
 // 登録
 $result = updateInfomations($dbhInfomation, $inputParams['id'], $inputParams);
 if (!$result) {
-  $errors[] = '登録に失敗しました。もう一度お試しください。';
+  $errors[] = '更新に失敗しました。もう一度お試しください。';
   goto outputPage;
 }
 
-$success = '投稿しました。';
+$success = '更新しました。';
 
 
 /* goto文はコードが煩雑になるため使用するべきではないが、
@@ -73,7 +73,7 @@ outputPage:
   <meta name="robots" content="noindex,nofollow,noarchive" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
-  <title>お知らせ登録</title>
+  <title>お知らせ更新</title>
   <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
   <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
@@ -88,7 +88,7 @@ outputPage:
 </head>
 <body>
 <div class="content-wrap">
-  <h3 class="frame-title">お知らせ登録</h3>
+  <h3 class="frame-title">お知らせ更新</h3>
 
   <?php if (isAdmin()) { /* 管理ユーザーは常に表示 */ ?>
     <div class="note-wrap">
@@ -132,7 +132,7 @@ outputPage:
           <li class="form-col-note">最大 10000 文字。<a href="../../manual/src/htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
         </ul>
         <div class="form-button-wrap">
-          <button type="submit">登録</button>
+          <button type="submit">更新</button>
         </div>
       </form>
     </div>

@@ -109,7 +109,7 @@ outputPage:
 
   <div class="note-wrap">
     <p class="note">
-      変更する発言を変更し、編集ボタンを押下してください。<br>
+      変更する発言を変更し、更新ボタンを押下してください。<br>
       出力されたログは編集できません。<br>
     </p>
   </div>
@@ -152,7 +152,7 @@ outputPage:
         <?php foreach ($chatlogs as $key => $value) { ?>
           <tr>
             <td>
-              <button type="button" class="edit-button" value="<?php echo h($value['id']); ?>">編集</button>
+              <button type="button" class="edit-button" value="<?php echo h($value['id']); ?>">更新</button>
             </td>
             <td><?php echo h($value['id']); ?></td>
             <td><?php echo h($value['fullname']); ?></td>

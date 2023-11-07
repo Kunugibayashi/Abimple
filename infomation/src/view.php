@@ -64,16 +64,7 @@ outputPage:
         <ul class="view-row">
           <li class="view-col-title-only"><?php echo h($info['title']); ?></li>
         </ul>
-        <ul class="view-row">
-          <li class="view-col-title">ID</li>
-          <li class="view-col-item"><?php echo h($info['id']); ?></li>
-        </ul>
-        <ul class="view-row">
-          <li class="view-col-title">件名</li>
-          <li class="view-col-item"><?php echo h($info['title']); ?></li>
-        </ul>
-        <ul class="view-row">
-          <li class="view-col-title">作成日</li>
+        <ul class="view-row view-created-row">
           <li class="view-col-item"><?php echo h($info['created']); ?></li>
         </ul>
         <ul class="view-row view-detail-row">
