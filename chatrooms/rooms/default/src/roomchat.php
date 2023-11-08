@@ -363,45 +363,11 @@ outputPage:
 
   </div>
 
-
   <div class="chatroom-frame-wrap">
-    <?php if ($chatroom['isframe']) {  /* フレームあり */ ?>
-      <iframe id="log-top" name="log" title="ルームログ"
-        src="./log.php">
-      </iframe>
-    <?php } ?>
+    <iframe id="log-top" name="log" title="ルームログ"
+      src="./log.php">
+    </iframe>
   </div>
-  <?php if (!$chatroom['isframe']) { /* フレームなし */ ?>
-    <script>
-      // 自動画面更新
-      // 入室時は0秒（手動）があるため、他画面とは異なる処理となる
-      var intervalId = null; // 0秒の停止用
-      var logReload = function() {
-        var resultContents = jQuery('.chatroom-frame-wrap');
-        // 個別に呼ばれるため、フォームから取得
-        var lognum = jQuery('select[name="lognum"]').val();
-        var logsec = jQuery('select[name="logsec"]').val();
-        // log側のデフォルトと異なる場合に、画面表示と整合性を取るため、GETパラメータに指定する
-        jQuery.ajax({
-          url: './log.php?lognum=' + lognum + '&logsec=' + logsec,
-          dataType: 'HTML',
-        }).done((data, textStatus, jqXHR) => {
-          resultContents.html(data);
-        }).fail((jqXHR, textStatus, errorThrown) => {
-          console.log(jqXHR);
-          resultContents.html(errorThrown);
-        }).always((data) => {
-          clearInterval(intervalId);
-          intervalId = null;
-          // 0秒手動の場合は設定しない
-          if (logsec != 0) {
-            intervalId = setInterval(logReload, logsec * 1000);
-          }
-        });
-      }
-      logReload();
-    </script>
-  <?php } ?>
 
 </div>
 <script>
@@ -474,13 +440,8 @@ jQuery(function(){
 
   // リロード
   reloadBtElm.on('click', function(){
-    <?php if ($chatroom['isframe']) {  /* フレームあり */ ?>
-      var reloadForm = jQuery('form#reload-form');
-      reloadForm.submit();
-    <?php } ?>
-    <?php if (!$chatroom['isframe']) { /* フレームなし */ ?>
-      logReload();
-    <?php } ?>
+    var reloadForm = jQuery('form#reload-form');
+    reloadForm.submit();
   });
 
   // ささやきリスト更新

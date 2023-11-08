@@ -140,15 +140,13 @@ outputPage:
       }
     </style>
     <?php if ($inputParams['logsec'] != 0) { ?>
-      <?php if ($chatroom['isframe']) {  /* ログ更新が0秒でない、かつ、フレーム有の場合は自動更新の処理が必要 */ ?>
-        <script>
-          // 自動画面更新
-          var logReload = function() {
-            location.reload();
-          }
-          setTimeout(logReload, <?php echo h($inputParams['logsec']); ?> * 1000);
-        </script>
-      <?php } ?>
+      <script>
+        // 自動画面更新
+        var logReload = function() {
+          location.reload();
+        }
+        setTimeout(logReload, <?php echo h($inputParams['logsec']); ?> * 1000);
+      </script>
     <?php } ?>
   <?php } ?>
 </head>

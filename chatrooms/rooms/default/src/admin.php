@@ -20,7 +20,6 @@ $inputParams['toptemplate'] = inputParam('toptemplate', 20);
 $inputParams['logtemplate'] = inputParam('logtemplate', 20);
 $inputParams['isfree'] = inputParam('isfree', 1);
 $inputParams['issecret'] = inputParam('issecret', 1);
-$inputParams['isframe'] = inputParam('isframe', 1);
 $inputParams['color'] = inputParam('color', 7);
 $inputParams['bgcolor'] = inputParam('bgcolor', 7);
 $inputParams['bgimage'] = inputParam('bgimage', 1000);
@@ -241,18 +240,6 @@ outputPage:
           </div>
         </li>
         <li class="form-col-note">秘匿設定にした場合、入室時にキーワードを設定し、キーワードを入力したユーザーのみが入室可能になります。</li>
-      </ul>
-      <ul class="form-row">
-        <li class="form-col-title">フレーム表示にするか<div class="mandatory-mark"></div></li>
-        <li class="form-col-item">
-          <div class="select-wrap">
-            <select name="isframe">
-              <option <?php echo selectedOption($inputParams['isframe'], '0'); ?> value="0">フレーム表示にしない</option>
-              <option <?php echo selectedOption($inputParams['isframe'], '1'); ?> value="1">フレーム表示にする</option>
-            </select>
-          </div>
-        </li>
-        <li class="form-col-note">フレーム表示にした場合、インラインフレームで表示されます。</li>
       </ul>
       <ul class="form-row">
         <li class="form-col-title">基本文字色<div class="optional-mark"></div></li>

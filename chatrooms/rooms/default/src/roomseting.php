@@ -142,35 +142,10 @@ outputPage:
   </div>
 
   <div class="chatroom-frame-wrap">
-    <?php if ($chatroom['isframe']) {  /* フレームあり */ ?>
-      <iframe id="log-top" name="log" title="ルームログ"
-        src="./log.php">
-      </iframe>
-    <?php } ?>
+    <iframe id="log-top" name="log" title="ルームログ"
+      src="./log.php">
+    </iframe>
   </div>
-  <?php if (!$chatroom['isframe']) { /* フレームなし */ ?>
-    <script>
-      // 自動画面更新
-      var lognum = 100;
-      var logsec = 25;
-      var logReload = function() {
-        var resultContents = jQuery('.chatroom-frame-wrap');
-        // log側のデフォルトと異なる場合に、画面表示と整合性を取るため、GETパラメータに指定する
-        jQuery.ajax({
-          url: './log.php?lognum=' + lognum + '&logsec=' + logsec,
-          dataType: 'HTML',
-        }).done((data, textStatus, jqXHR) => {
-          resultContents.html(data);
-        }).fail((jqXHR, textStatus, errorThrown) => {
-          console.log(jqXHR);
-          resultContents.html(errorThrown);
-        }).always((data) => {
-        });
-      }
-      logReload();
-      setInterval(logReload, logsec * 1000);
-    </script>
-  <?php } ?>
 
 </div>
 <script> <!-- 各ボタン制御 -->
