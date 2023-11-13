@@ -185,8 +185,10 @@ function checkDB($dbname) {
     createUsers($dbh);
   } else if (CHARACTERS_DB === $dbname) {
     createCharacters($dbh);
-  } else if (ADMIN_ROOMS_DB === $dbname) {
-    creatAdminrooms($dbh);
+  } else if (ROOMS_DB === $dbname) {
+    creatRooms($dbh);
+  } else if (ROOM_INOUT_HISTORIES_DB === $dbname) {
+    createRoominouthistories($dbh);
   } else if (CHAT_ROOMS_DB === $dbname) {
     createChatrooms($dbh);
   } else if (CHAT_ENTRIES_DB === $dbname) {
@@ -194,7 +196,7 @@ function checkDB($dbname) {
   } else if (CHAT_LOGS_DB === $dbname) {
     createChatlogs($dbh);
   } else if (CHAT_SECRETS_DB === $dbname) {
-    createSecrets($dbh);
+    createChatsecrets($dbh);
   } else if (INBOX_LETTERS_DB === $dbname) {
     createInboxLetters($dbh);
   } else if (OUTBOX_LETTERS_DB === $dbname) {
@@ -536,131 +538,6 @@ function deleteInfomations($dbh, $id) {
 }
 
 /* ****************************************************************************
- * チャットルーム管理
- * ****************************************************************************
- */
-function creatAdminrooms($dbh) {
-  $sql = "
-    CREATE TABLE adminrooms (
-      id        INTEGER        PRIMARY KEY AUTOINCREMENT,
-      roomdir   VARCHAR(20)    NOT NULL UNIQUE,
-      roomtitle VARCHAR(100)   NOT NULL,
-      published INTEGER        NOT NULL DEFAULT 0,
-      displayno INTEGER        NOT NULL DEFAULT 0,
-
-      created DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime')),
-      modified DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime'))
-    )
-  ";
-
-  $results = $dbh->query($sql);
-  if (!$results) {
-    echo $dbh->lastErrorMsg();
-  }
-}
-
-function insertAdminrooms($dbh, $params = array()) {
-  unset($params['id']);
-  unset($params['created']);
-  unset($params['modified']);
-
-  $sql = '
-    INSERT INTO adminrooms (
-  ';
-  $sql = setInsertColumnArryParam($sql, $params);
-  $sql = $sql .'
-    ) VALUES (
-  ';
-  $sql = setInsertVluesArryParam($sql, $params);
-  $sql = $sql .'
-    )
-  ';
-
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setEqualArryBindValue($stmt, $params);
-  $results = $stmt->execute();
-  return $results;
-}
-
-function deleteAdminrooms($dbh, $id) {
-  $sql = '
-    DELETE FROM adminrooms
-    WHERE
-      id = :id
-  ';
-
-  $stmt = myPrepare($dbh, $sql);
-  $stmt->bindValue(':id', $id);
-  $results = $stmt->execute();
-  return $results;
-}
-
-function updateAdminrooms($dbh, $id, $params = array()) {
-  unset($params['id']);
-  unset($params['created']);
-  unset($params['modified']);
-
-  $sql = "
-    UPDATE adminrooms
-    SET
-      modified = (DATETIME('now', 'localtime')),
-  ";
-  $sql = setUpdateArryParam($sql, $params);
-  $sql = $sql ."
-    WHERE
-      id = :id
-  ";
-
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt->bindValue(':id', $id);
-  $stmt = setEqualArryBindValue($stmt, $params);
-  $results = $stmt->execute();
-  return $results;
-}
-
-function selectAdminroomsId($dbh, $id) {
-  $sql = '
-    SELECT
-      *
-    FROM adminrooms
-    WHERE
-      id = :id
-  ';
-
-  $stmt = myPrepare($dbh, $sql);
-  $stmt->bindValue(':id', $id);
-  $results = $stmt->execute();
-  $data = fetchArraytoArray($results);
-  return $data;
-}
-
-function selectEqualAdminroomsList($dbh, $params = array()) {
-  $sql = '
-    SELECT
-      id,
-      roomdir,
-      roomtitle,
-      published,
-      displayno,
-      created,
-      modified
-    FROM adminrooms
-    WHERE
-      id IS NOT NULL
-  ';
-  $sql = setAndEqualArryParam($sql, $params);
-  $sql = $sql .'
-    ORDER BY displayno
-  ';
-
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setEqualArryBindValue($stmt, $params);
-  $results = $stmt->execute();
-  $data = fetchArraytoArray($results);
-  return $data;
-}
-
-/* ****************************************************************************
  * キャラクターテーブル
  * ****************************************************************************
  */
@@ -862,6 +739,229 @@ function selectCharactersMy($dbh, $userid, $username) {
 }
 
 /* ****************************************************************************
+ * チャットルーム管理
+ * ****************************************************************************
+ */
+function creatRooms($dbh) {
+  $sql = "
+    CREATE TABLE rooms (
+      id        INTEGER        PRIMARY KEY AUTOINCREMENT,
+      roomdir   VARCHAR(20)    NOT NULL UNIQUE,
+      roomtitle VARCHAR(100)   NOT NULL,
+      published INTEGER        NOT NULL DEFAULT 0,
+      displayno INTEGER        NOT NULL DEFAULT 0,
+
+      created DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+      modified DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime'))
+    )
+  ";
+
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
+}
+
+function insertRooms($dbh, $params = array()) {
+  unset($params['id']);
+  unset($params['created']);
+  unset($params['modified']);
+
+  $sql = '
+    INSERT INTO rooms (
+  ';
+  $sql = setInsertColumnArryParam($sql, $params);
+  $sql = $sql .'
+    ) VALUES (
+  ';
+  $sql = setInsertVluesArryParam($sql, $params);
+  $sql = $sql .'
+    )
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function deleteRooms($dbh, $id) {
+  $sql = '
+    DELETE FROM rooms
+    WHERE
+      id = :id
+  ';
+
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':id', $id);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function updateRooms($dbh, $id, $params = array()) {
+  unset($params['id']);
+  unset($params['created']);
+  unset($params['modified']);
+
+  $sql = "
+    UPDATE rooms
+    SET
+      modified = (DATETIME('now', 'localtime')),
+  ";
+  $sql = setUpdateArryParam($sql, $params);
+  $sql = $sql ."
+    WHERE
+      id = :id
+  ";
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt->bindValue(':id', $id);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function selectRoomsId($dbh, $id) {
+  $sql = '
+    SELECT
+      *
+    FROM rooms
+    WHERE
+      id = :id
+  ';
+
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':id', $id);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+function selectEqualRoomsList($dbh, $params = array()) {
+  $sql = '
+    SELECT
+      id,
+      roomdir,
+      roomtitle,
+      published,
+      displayno,
+      created,
+      modified
+    FROM rooms
+    WHERE
+      id IS NOT NULL
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY displayno
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+/* ****************************************************************************
+ * 入退室履歴
+ * ****************************************************************************
+ */
+function createRoominouthistories($dbh) {
+  $sql = "
+    CREATE TABLE roominouthistories (
+      id             INTEGER        PRIMARY KEY AUTOINCREMENT,
+      roomtitle      VARCHAR(100)   NOT NULL,
+      message        TEXT           NOT NULL,
+
+      created DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+      modified DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime'))
+    )
+  ";
+
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
+}
+
+function insertRoominouthistories($dbh, $params = array()) {
+  unset($params['id']);
+  unset($params['created']);
+  unset($params['modified']);
+
+  $sql = '
+    INSERT INTO roominouthistories (
+  ';
+  $sql = setInsertColumnArryParam($sql, $params);
+  $sql = $sql .'
+    ) VALUES (
+  ';
+  $sql = setInsertVluesArryParam($sql, $params);
+  $sql = $sql .'
+    )
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function selectRoominouthistories($dbh, $limit, $params = array()) {
+  $sql = '
+    SELECT
+      *
+    FROM roominouthistories
+    WHERE
+      id IS NOT NULL
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY id DESC
+    LIMIT :limit
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $stmt->bindValue(':limit', $limit);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+function deleteRoominouthistoriesLimit1000($dbh) {
+  $sql = "
+    DELETE FROM roominouthistories
+    WHERE
+      id NOT IN
+      (
+        SELECT id
+        FROM roominouthistories
+        ORDER BY id DESC
+        LIMIT 1000
+      )
+  ";
+
+  $stmt = myPrepare($dbh, $sql);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function deleteRoominouthistories($dbh, $id) {
+  $sql = '
+    DELETE FROM roominouthistories
+    WHERE
+      id = :id
+  ';
+
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':id', $id);
+  $results = $stmt->execute();
+  return $results;
+}
+
+/* ****************************************************************************
  * チャットルーム設定
  * ****************************************************************************
  */
@@ -953,6 +1053,418 @@ function updateChatroomsConfig($dbh, $params = array()) {
   $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;
+}
+
+/* ****************************************************************************
+ * 入室状態
+ * ****************************************************************************
+ */
+function createChatentries($dbh) {
+  $sql = "
+    CREATE TABLE chatentries (
+      id          INTEGER        PRIMARY KEY AUTOINCREMENT,
+      entrykey    VARCHAR(40)    NOT NULL,
+      deleteflg   INTEGER        NOT NULL DEFAULT 0,
+
+      characterid INTEGER        NOT NULL,
+      fullname    VARCHAR(20)    NOT NULL,
+      color       VARCHAR(7)     NOT NULL DEFAULT '#696969',
+      bgcolor     VARCHAR(7)     NOT NULL DEFAULT '#f5f5f5',
+
+      userid INTEGER NOT NULL,
+      username VARCHAR(20) NOT NULL,
+      created DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+      modified DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime'))
+    )
+  ";
+
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
+
+  $sql = "
+    CREATE INDEX IF NOT EXISTS idx_chatentries_entrykey_id ON chatentries(entrykey, id);
+  ";
+
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
+}
+
+function insertChatentries($dbh, $userid, $username, $params = array()) {
+  unset($params['id']);
+  unset($params['created']);
+  unset($params['modified']);
+
+  $sql = '
+    INSERT INTO chatentries (
+      userid,
+      username,
+  ';
+  $sql = setInsertColumnArryParam($sql, $params);
+  $sql = $sql .'
+    ) VALUES (
+      :userid,
+      :username,
+  ';
+  $sql = setInsertVluesArryParam($sql, $params);
+  $sql = $sql .'
+    )
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt->bindValue(':userid', $userid);
+  $stmt->bindValue(':username', $username);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function updateChatentries($dbh, $characterid, $params = array()) {
+  unset($params['id']);
+  unset($params['created']);
+  unset($params['modified']);
+
+  $sql = "
+    UPDATE chatentries
+    SET
+      modified = (DATETIME('now', 'localtime')),
+  ";
+  $sql = setUpdateArryParam($sql, $params);
+  $sql = $sql ."
+    WHERE
+      characterid = :characterid
+  ";
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt->bindValue(':characterid', $characterid);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function selectEqualChatentries($dbh, $params = array()) {
+  $sql = '
+    SELECT
+      *
+    FROM chatentries
+    WHERE
+      deleteflg = 0
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY id DESC
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+function selectEqualLogChatentries($dbh, $params = array()) {
+  $sql = '
+    SELECT
+      *
+    FROM chatentries
+    WHERE
+      id IS NOT NULL
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY id DESC
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+function deleteChatentriesExit($dbh) {
+  $sql = "
+    DELETE FROM chatentries
+    WHERE
+      deleteflg = 1
+  ";
+
+  $stmt = myPrepare($dbh, $sql);
+  $results = $stmt->execute();
+  return $results;
+}
+
+/* ****************************************************************************
+ * ログ
+ * ****************************************************************************
+ */
+function createChatlogs($dbh) {
+  $sql = "
+    CREATE TABLE chatlogs (
+      id             INTEGER        PRIMARY KEY AUTOINCREMENT,
+      entrykey       VARCHAR(40)    NOT NULL,
+      characterid    INTEGER        NOT NULL,
+      fullname       VARCHAR(20)    NOT NULL,
+      color          VARCHAR(7)     NOT NULL DEFAULT '#000000',
+      bgcolor        VARCHAR(7)     NOT NULL DEFAULT '#ffffff',
+      memo           VARCHAR(200)   NOT NULL DEFAULT '',
+      message        TEXT           NOT NULL,
+
+      whisperflg     INTEGER        NOT NULL DEFAULT 0,
+      wtocharacterid INTEGER        NOT NULL DEFAULT -1,
+      wtofullname    VARCHAR(20)    NOT NULL DEFAULT '',
+
+      userid INTEGER NOT NULL,
+      username VARCHAR(20) NOT NULL,
+      created DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+      modified DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime'))
+    )
+  ";
+
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
+
+  $sql = "
+    CREATE INDEX IF NOT EXISTS idx_chatroom_entrykey_id ON chatlogs(entrykey, id);
+  ";
+
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
+}
+
+function insertChatlogs($dbh, $userid, $username, $params = array()) {
+  unset($params['id']);
+  unset($params['created']);
+  unset($params['modified']);
+
+  $sql = '
+    INSERT INTO chatlogs (
+      userid,
+      username,
+  ';
+  $sql = setInsertColumnArryParam($sql, $params);
+  $sql = $sql .'
+    ) VALUES (
+      :userid,
+      :username,
+  ';
+  $sql = setInsertVluesArryParam($sql, $params);
+  $sql = $sql .'
+    )
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt->bindValue(':userid', $userid);
+  $stmt->bindValue(':username', $username);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function selectEqualChatlogs($dbh, $limit, $params = array()) {
+  $sql = '
+    SELECT
+      *
+    FROM chatlogs
+    WHERE
+      id IS NOT NULL
+    AND
+      whisperflg = 0
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY id DESC
+    LIMIT :limit
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $stmt->bindValue(':limit', $limit);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+function selectEqualChatlogsInroom($dbh, $limit, $characterid, $params = array()) {
+  $sql = '
+    SELECT
+      *
+    FROM chatlogs
+    WHERE
+      id IS NOT NULL
+    AND
+      (
+        whisperflg = 0
+      OR
+        (characterid = :characterid and whisperflg <> 0)
+      OR
+        (wtocharacterid = :wtocharacterid and whisperflg <> 0)
+      )
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY id DESC
+    LIMIT :limit
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $stmt->bindValue(':characterid', $characterid);
+  $stmt->bindValue(':wtocharacterid', $characterid);
+  $stmt->bindValue(':limit', $limit);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+function selectEqualChatlogsEntrykey($dbh, $limit, $entrykey, $params = array()) {
+  $sql = '
+    SELECT
+      *
+    FROM chatlogs
+    WHERE
+      entrykey = :entrykey
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY id DESC
+    LIMIT :limit
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $stmt->bindValue(':entrykey', $entrykey);
+  $stmt->bindValue(':limit', $limit);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+function updateChatlogs($dbh, $id, $params = array()) {
+  $sql = "
+    UPDATE chatlogs
+    SET
+      modified = (DATETIME('now', 'localtime')),
+  ";
+  $sql = setUpdateArryParam($sql, $params);
+  $sql = $sql ."
+    WHERE
+      id = :id
+  ";
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt->bindValue(':id', $id);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function deleteChatlogsLimit1000($dbh) {
+  $sql = "
+    DELETE FROM chatlogs
+    WHERE
+      id NOT IN
+      (
+        SELECT id
+        FROM chatlogs
+        ORDER BY id DESC
+        LIMIT 1000
+      )
+  ";
+
+  $stmt = myPrepare($dbh, $sql);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function deleteChatlogs($dbh) {
+  $sql = "
+    DELETE FROM chatlogs
+  ";
+
+  $stmt = myPrepare($dbh, $sql);
+  $results = $stmt->execute();
+  return $results;
+}
+
+/* ****************************************************************************
+ * 秘匿ルーム用
+ * ****************************************************************************
+ */
+function createChatsecrets($dbh) {
+  $sql = "
+    CREATE TABLE chatsecrets (
+      id          INTEGER        PRIMARY KEY AUTOINCREMENT,
+      keyword     VARCHAR(20)    NOT NULL,
+
+      created DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+      modified DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime'))
+    )
+  ";
+
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
+}
+
+function insertChatsecrets($dbh, $keyword) {
+  $sql = '
+    INSERT INTO chatsecrets (
+      keyword
+  ';
+  $sql = $sql .'
+    ) VALUES (
+      :keyword
+  ';
+  $sql = $sql .'
+    )
+  ';
+
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':keyword', $keyword);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function updateChatsecrets($dbh, $keyword) {
+  $sql = "
+    UPDATE chatsecrets
+    SET
+      modified = (DATETIME('now', 'localtime')),
+      keyword = :keyword
+  ";
+  $sql = $sql ."
+    WHERE
+      id = 1
+  ";
+
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':keyword', $keyword);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function selectChatsecrets($dbh) {
+  $sql = '
+    SELECT
+      *
+    FROM chatsecrets
+    WHERE
+      id = 1
+  ';
+
+  $stmt = myPrepare($dbh, $sql);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
 }
 
 /* ****************************************************************************
@@ -1302,418 +1814,6 @@ function selectOutboxMessageId($dbh, $id) {
 
   $stmt = myPrepare($dbh, $sql);
   $stmt->bindValue(':id', $id);
-  $results = $stmt->execute();
-  $data = fetchArraytoArray($results);
-  return $data;
-}
-
-/* ****************************************************************************
- * 入室状態
- * ****************************************************************************
- */
-function createChatentries($dbh) {
-  $sql = "
-    CREATE TABLE chatentries (
-      id          INTEGER        PRIMARY KEY AUTOINCREMENT,
-      entrykey    VARCHAR(40)    NOT NULL,
-      deleteflg   INTEGER        NOT NULL DEFAULT 0,
-
-      characterid INTEGER        NOT NULL,
-      fullname    VARCHAR(20)    NOT NULL,
-      color       VARCHAR(7)     NOT NULL DEFAULT '#696969',
-      bgcolor     VARCHAR(7)     NOT NULL DEFAULT '#f5f5f5',
-
-      userid INTEGER NOT NULL,
-      username VARCHAR(20) NOT NULL,
-      created DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime')),
-      modified DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime'))
-    )
-  ";
-
-  $results = $dbh->query($sql);
-  if (!$results) {
-    echo $dbh->lastErrorMsg();
-  }
-
-  $sql = "
-    CREATE INDEX IF NOT EXISTS idx_chatentries_entrykey_id ON chatentries(entrykey, id);
-  ";
-
-  $results = $dbh->query($sql);
-  if (!$results) {
-    echo $dbh->lastErrorMsg();
-  }
-}
-
-function insertChatentries($dbh, $userid, $username, $params = array()) {
-  unset($params['id']);
-  unset($params['created']);
-  unset($params['modified']);
-
-  $sql = '
-    INSERT INTO chatentries (
-      userid,
-      username,
-  ';
-  $sql = setInsertColumnArryParam($sql, $params);
-  $sql = $sql .'
-    ) VALUES (
-      :userid,
-      :username,
-  ';
-  $sql = setInsertVluesArryParam($sql, $params);
-  $sql = $sql .'
-    )
-  ';
-
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt->bindValue(':userid', $userid);
-  $stmt->bindValue(':username', $username);
-  $stmt = setEqualArryBindValue($stmt, $params);
-  $results = $stmt->execute();
-  return $results;
-}
-
-function updateChatentries($dbh, $characterid, $params = array()) {
-  unset($params['id']);
-  unset($params['created']);
-  unset($params['modified']);
-
-  $sql = "
-    UPDATE chatentries
-    SET
-      modified = (DATETIME('now', 'localtime')),
-  ";
-  $sql = setUpdateArryParam($sql, $params);
-  $sql = $sql ."
-    WHERE
-      characterid = :characterid
-  ";
-
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt->bindValue(':characterid', $characterid);
-  $stmt = setEqualArryBindValue($stmt, $params);
-  $results = $stmt->execute();
-  return $results;
-}
-
-function selectEqualChatentries($dbh, $params = array()) {
-  $sql = '
-    SELECT
-      *
-    FROM chatentries
-    WHERE
-      deleteflg = 0
-  ';
-  $sql = setAndEqualArryParam($sql, $params);
-  $sql = $sql .'
-    ORDER BY id DESC
-  ';
-
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setEqualArryBindValue($stmt, $params);
-  $results = $stmt->execute();
-  $data = fetchArraytoArray($results);
-  return $data;
-}
-
-function selectEqualLogChatentries($dbh, $params = array()) {
-  $sql = '
-    SELECT
-      *
-    FROM chatentries
-    WHERE
-      id IS NOT NULL
-  ';
-  $sql = setAndEqualArryParam($sql, $params);
-  $sql = $sql .'
-    ORDER BY id DESC
-  ';
-
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setEqualArryBindValue($stmt, $params);
-  $results = $stmt->execute();
-  $data = fetchArraytoArray($results);
-  return $data;
-}
-
-function deleteChatentriesExit($dbh) {
-  $sql = "
-    DELETE FROM chatentries
-    WHERE
-      deleteflg = 1
-  ";
-
-  $stmt = myPrepare($dbh, $sql);
-  $results = $stmt->execute();
-  return $results;
-}
-
-/* ****************************************************************************
- * ログ
- * ****************************************************************************
- */
-function createChatlogs($dbh) {
-  $sql = "
-    CREATE TABLE chatlogs (
-      id             INTEGER        PRIMARY KEY AUTOINCREMENT,
-      entrykey       VARCHAR(40)    NOT NULL,
-      characterid    INTEGER        NOT NULL,
-      fullname       VARCHAR(20)    NOT NULL,
-      color          VARCHAR(7)     NOT NULL DEFAULT '#000000',
-      bgcolor        VARCHAR(7)     NOT NULL DEFAULT '#ffffff',
-      memo           VARCHAR(200)   NOT NULL DEFAULT '',
-      message        TEXT           NOT NULL,
-
-      whisperflg     INTEGER        NOT NULL DEFAULT 0,
-      wtocharacterid INTEGER        NOT NULL DEFAULT -1,
-      wtofullname    VARCHAR(20)    NOT NULL DEFAULT '',
-
-      userid INTEGER NOT NULL,
-      username VARCHAR(20) NOT NULL,
-      created DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime')),
-      modified DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime'))
-    )
-  ";
-
-  $results = $dbh->query($sql);
-  if (!$results) {
-    echo $dbh->lastErrorMsg();
-  }
-
-  $sql = "
-    CREATE INDEX IF NOT EXISTS idx_chatroom_entrykey_id ON chatlogs(entrykey, id);
-  ";
-
-  $results = $dbh->query($sql);
-  if (!$results) {
-    echo $dbh->lastErrorMsg();
-  }
-}
-
-function insertChatlogs($dbh, $userid, $username, $params = array()) {
-  unset($params['id']);
-  unset($params['created']);
-  unset($params['modified']);
-
-  $sql = '
-    INSERT INTO chatlogs (
-      userid,
-      username,
-  ';
-  $sql = setInsertColumnArryParam($sql, $params);
-  $sql = $sql .'
-    ) VALUES (
-      :userid,
-      :username,
-  ';
-  $sql = setInsertVluesArryParam($sql, $params);
-  $sql = $sql .'
-    )
-  ';
-
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt->bindValue(':userid', $userid);
-  $stmt->bindValue(':username', $username);
-  $stmt = setEqualArryBindValue($stmt, $params);
-  $results = $stmt->execute();
-  return $results;
-}
-
-function selectEqualChatlogs($dbh, $limit, $params = array()) {
-  $sql = '
-    SELECT
-      *
-    FROM chatlogs
-    WHERE
-      id IS NOT NULL
-    AND
-      whisperflg = 0
-  ';
-  $sql = setAndEqualArryParam($sql, $params);
-  $sql = $sql .'
-    ORDER BY id DESC
-    LIMIT :limit
-  ';
-
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setEqualArryBindValue($stmt, $params);
-  $stmt->bindValue(':limit', $limit);
-  $results = $stmt->execute();
-  $data = fetchArraytoArray($results);
-  return $data;
-}
-
-function selectEqualChatlogsInroom($dbh, $limit, $characterid, $params = array()) {
-  $sql = '
-    SELECT
-      *
-    FROM chatlogs
-    WHERE
-      id IS NOT NULL
-    AND
-      (
-        whisperflg = 0
-      OR
-        (characterid = :characterid and whisperflg <> 0)
-      OR
-        (wtocharacterid = :wtocharacterid and whisperflg <> 0)
-      )
-  ';
-  $sql = setAndEqualArryParam($sql, $params);
-  $sql = $sql .'
-    ORDER BY id DESC
-    LIMIT :limit
-  ';
-
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setEqualArryBindValue($stmt, $params);
-  $stmt->bindValue(':characterid', $characterid);
-  $stmt->bindValue(':wtocharacterid', $characterid);
-  $stmt->bindValue(':limit', $limit);
-  $results = $stmt->execute();
-  $data = fetchArraytoArray($results);
-  return $data;
-}
-
-function selectEqualChatlogsEntrykey($dbh, $limit, $entrykey, $params = array()) {
-  $sql = '
-    SELECT
-      *
-    FROM chatlogs
-    WHERE
-      entrykey = :entrykey
-  ';
-  $sql = setAndEqualArryParam($sql, $params);
-  $sql = $sql .'
-    ORDER BY id DESC
-    LIMIT :limit
-  ';
-
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setEqualArryBindValue($stmt, $params);
-  $stmt->bindValue(':entrykey', $entrykey);
-  $stmt->bindValue(':limit', $limit);
-  $results = $stmt->execute();
-  $data = fetchArraytoArray($results);
-  return $data;
-}
-
-function updateChatlogs($dbh, $id, $params = array()) {
-  $sql = "
-    UPDATE chatlogs
-    SET
-      modified = (DATETIME('now', 'localtime')),
-  ";
-  $sql = setUpdateArryParam($sql, $params);
-  $sql = $sql ."
-    WHERE
-      id = :id
-  ";
-
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt->bindValue(':id', $id);
-  $stmt = setEqualArryBindValue($stmt, $params);
-  $results = $stmt->execute();
-  return $results;
-}
-
-function deleteChatlogsLimit1000($dbh) {
-  $sql = "
-    DELETE FROM chatlogs
-    WHERE
-      id NOT IN
-      (
-        SELECT id
-        FROM chatlogs
-        ORDER BY id DESC
-        LIMIT 1000
-      )
-  ";
-
-  $stmt = myPrepare($dbh, $sql);
-  $results = $stmt->execute();
-  return $results;
-}
-
-function deleteChatlogs($dbh) {
-  $sql = "
-    DELETE FROM chatlogs
-  ";
-
-  $stmt = myPrepare($dbh, $sql);
-  $results = $stmt->execute();
-  return $results;
-}
-
-/* ****************************************************************************
- * 秘匿ルーム用
- * ****************************************************************************
- */
-function createSecrets($dbh) {
-  $sql = "
-    CREATE TABLE secrets (
-      id          INTEGER        PRIMARY KEY AUTOINCREMENT,
-      keyword     VARCHAR(20)    NOT NULL,
-
-      created DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime')),
-      modified DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime'))
-    )
-  ";
-
-  $results = $dbh->query($sql);
-  if (!$results) {
-    echo $dbh->lastErrorMsg();
-  }
-}
-
-function insertSecrets($dbh, $keyword) {
-  $sql = '
-    INSERT INTO secrets (
-      keyword
-  ';
-  $sql = $sql .'
-    ) VALUES (
-      :keyword
-  ';
-  $sql = $sql .'
-    )
-  ';
-
-  $stmt = myPrepare($dbh, $sql);
-  $stmt->bindValue(':keyword', $keyword);
-  $results = $stmt->execute();
-  return $results;
-}
-
-function updateSecrets($dbh, $keyword) {
-  $sql = "
-    UPDATE secrets
-    SET
-      modified = (DATETIME('now', 'localtime')),
-      keyword = :keyword
-  ";
-  $sql = $sql ."
-    WHERE
-      id = 1
-  ";
-
-  $stmt = myPrepare($dbh, $sql);
-  $stmt->bindValue(':keyword', $keyword);
-  $results = $stmt->execute();
-  return $results;
-}
-
-function selectSecrets($dbh) {
-  $sql = '
-    SELECT
-      *
-    FROM secrets
-    WHERE
-      id = 1
-  ';
-
-  $stmt = myPrepare($dbh, $sql);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
   return $data;

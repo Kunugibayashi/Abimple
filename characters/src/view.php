@@ -81,7 +81,7 @@ outputPage:
     </div>
   <?php } ?>
 
-  <?php if (usedArr($character) && usedStr($character['id'])) { /* データがある場合は表示 */ ?>
+  <?php if (usedArr($characters) && usedArr($character) && usedStr($character['id'])) { /* データがある場合は表示 */ ?>
     <div class="view-wrap view-character-wrap">
       <div class="view-contents">
         <ul class="view-row">

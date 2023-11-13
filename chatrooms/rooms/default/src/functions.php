@@ -14,9 +14,9 @@ function firstAccessChatroom($dbname) {
   $dbh->close();
 }
 
-function firstAccessSecrets($dbname) {
+function firstAccessChatsecrets($dbname) {
   $dbh = connectRw($dbname);
-  insertSecrets($dbh, '');
+  insertChatsecrets($dbh, '');
   // この関数内のみでコネクションを完結する
   $dbh->close();
 }

@@ -35,7 +35,7 @@ checkToken();
 
 // DB接続
 $dbhChatentries = connectRw(CHAT_ENTRIES_DB);
-$dbhSecrets = connectRw(CHAT_SECRETS_DB);
+$dbhChatsecrets = connectRw(CHAT_SECRETS_DB);
 
 $chatentries = selectEqualChatentries($dbhChatentries);
 $entryCount = count($chatentries);
@@ -57,7 +57,7 @@ if ($inputParams['setkeyword']) {
     goto outputPage;
   }
 
-  updateSecrets($dbhSecrets, $inputParams['keyword']);
+  updateChatsecrets($dbhChatsecrets, $inputParams['keyword']);
   $success = '入室キーワードを設定しました。';
 
   goto outputPage;
@@ -66,12 +66,12 @@ if ($inputParams['setkeyword']) {
 // 入室画面へ場合
 if ($inputParams['toroomchat']) {
 
-  $secrets = selectSecrets($dbhSecrets);
-  if (!usedArr($secrets)) {
-    firstAccessSecrets(CHAT_SECRETS_DB);
-    $secrets = selectSecrets($dbhSecrets);
+  $chatsecrets = selectChatsecrets($dbhChatsecrets);
+  if (!usedArr($chatsecrets)) {
+    firstAccessChatsecrets(CHAT_SECRETS_DB);
+    $chatsecrets = selectChatsecrets($dbhChatsecrets);
   }
-  $dbKeyword = $secrets[0]['keyword'];
+  $dbKeyword = $chatsecrets[0]['keyword'];
 
   if ($dbKeyword != $inputParams['keyword']) {
     $errors[] = '入室キーワードが異なります。';

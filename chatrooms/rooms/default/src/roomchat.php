@@ -35,7 +35,8 @@ $dbhChatrooms  = connectRo(CHAT_ROOMS_DB);
 $dbhCharacters = connectRo(CHARACTERS_DB);
 $dbhChatentries = connectRw(CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRw(CHAT_LOGS_DB);
-$dbhSecrets = connectRo(CHAT_SECRETS_DB);
+$dbhChatsecrets = connectRo(CHAT_SECRETS_DB);
+$dbhInouthistory = connectRw(ROOM_INOUT_HISTORIES_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0]; // 必ずある想定
@@ -53,12 +54,12 @@ identityUser($character['userid'], $character['username']);
 
 // 秘匿ルームの場合
 if ($chatroom['issecret'] == 1) {
-  $secrets = selectSecrets($dbhSecrets);
-  if (!usedArr($secrets)) {
-    firstAccessSecrets(CHAT_SECRETS_DB);
-    $secrets = selectSecrets($dbhChatrooms);
+  $chatsecrets = selectChatsecrets($dbhChatsecrets);
+  if (!usedArr($chatsecrets)) {
+    firstAccessChatsecrets(CHAT_SECRETS_DB);
+    $chatsecrets = selectChatsecrets($dbhChatrooms);
   }
-  $dbKeyword = $secrets[0]['keyword'];
+  $dbKeyword = $chatsecrets[0]['keyword'];
   $sessionKeyword = getSecretKeyword();
   if (!usedStr($dbKeyword) || !usedStr($sessionKeyword)) {
     echo '入室キーワードが設定されていません。';
@@ -94,6 +95,14 @@ if (!usedArr($chatentries)) {
       'bgcolor' => $chatroom['bgcolor'],
       'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が入室しました。',
     ]);
+
+    // 秘匿ルームでない場合のみ履歴に登録
+    if ($chatroom['issecret'] != 1) {
+      insertRoominouthistories($dbhInouthistory, [
+        'roomtitle' => $chatroom['title'],
+        'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が入室しました。',
+      ]);
+    }
   }
 }
 $chatentry = $chatentries[0];
@@ -124,6 +133,14 @@ if (!usedArr($myChatentries)) {
       'bgcolor' => $chatroom['bgcolor'],
       'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が入室しました。'
     ]);
+
+    // 秘匿ルームでない場合のみ履歴に登録
+    if ($chatroom['issecret'] != 1) {
+      insertRoominouthistories($dbhInouthistory, [
+        'roomtitle' => $chatroom['title'],
+        'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が入室しました。',
+      ]);
+    }
   }
 }
 $myChatentry = $myChatentries[0];

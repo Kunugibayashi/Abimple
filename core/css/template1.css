@@ -509,6 +509,9 @@ th.cell-taghtml { min-width: 4em; width: 4em; }
 th.cell-taglook { min-width: 4em; width: 4em; }
 th.cell-tagexample { min-width: 20em; width: 20em; }
 th.cell-status { min-width: 6em; width: 6em; }
+th.cell-inoutdate { min-width: 14em; width: 14em; }
+th.cell-inoutroomtitle { min-width: 15em; width: 15em; }
+th.cell-inoutmessage { min-width: 10em; width: 30em; }
 
 /* お知らせ */
 div.infomation-table-wrap th {
@@ -561,10 +564,17 @@ div.logedit-table-wrap th {
 }
 
 /* チャットルーム一覧 */
-div.adminroom-table-wrap th {
+div.roomlist-table-wrap th {
   background-color: #e9dfe5;
   color: #392c1f;
 }
+
+/* チャットルーム履歴 */
+div.inouthistory-table-wrap th {
+  background-color: #fff4db;
+  color: #392c1f;
+}
+
 
 /* ****************************************************************************
  * ビュー

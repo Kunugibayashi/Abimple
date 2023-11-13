@@ -82,6 +82,7 @@ require_once('./core/src/administrator.php');
       <h2 class="menu-title">Room</h2>
       <ul class="menu-item-group">
         <li class="menu-item"><a href="./chatrooms/src/entrance.php" target="indexTop">ルーム一覧</a></li>
+        <li class="menu-item"><a href="./chatrooms/src/inouthistorylist.php" target="indexTop">入退室履歴</a></li>
       </ul>
     </nav>
 

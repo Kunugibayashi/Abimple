@@ -29,6 +29,7 @@ $dbhChatrooms  = connectRo(CHAT_ROOMS_DB);
 $dbhCharacters = connectRo(CHARACTERS_DB);
 $dbhChatentries = connectRw(CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRw(CHAT_LOGS_DB);
+$dbhInouthistory = connectRw(ROOM_INOUT_HISTORIES_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0]; // 必ずある想定
@@ -60,6 +61,15 @@ if (usedArr($myChatentries)) {
       'bgcolor' => $chatroom['bgcolor'],
       'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が退室しました。'
     ]);
+
+    // 秘匿ルームでない場合のみ履歴に登録
+    if ($chatroom['issecret'] != 1) {
+      insertRoominouthistories($dbhInouthistory, [
+        'roomtitle' => $chatroom['title'],
+        'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が退室しました。',
+      ]);
+    }
+    deleteRoominouthistoriesLimit1000($dbhInouthistory);
   }
 }
 

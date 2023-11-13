@@ -51,10 +51,10 @@ if (usedArr($errors)) {
 }
 
 // DB接続
-$dbhAdminroom = connectRw(ADMIN_ROOMS_DB);
+$dbhRoomlist = connectRw(ROOMS_DB);
 
 // 重複確認
-$roomList = selectEqualAdminroomsList($dbhAdminroom, [
+$roomList = selectEqualRoomsList($dbhRoomlist, [
   'roomdir' => $inputParams['roomdir'],
 ]);
 if (usedArr($roomList)) {
@@ -69,7 +69,7 @@ if (usedArr($errors)) {
 }
 
 // 登録
-$result = insertAdminrooms($dbhAdminroom, $inputParams);
+$result = insertRooms($dbhRoomlist, $inputParams);
 if (!$result) {
   $errors[] = '登録に失敗しました。もう一度お試しください。';
   goto outputPage;

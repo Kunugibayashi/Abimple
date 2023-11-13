@@ -22,13 +22,13 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   setToken();
 
   // DB接続
-  $dbhAdminroom = connectRw(ADMIN_ROOMS_DB);
+  $dbhRoomlist = connectRw(ROOMS_DB);
 
-  $adminroomList = selectAdminroomsId($dbhAdminroom, $inputParams['id']);
-  $adminroom = $adminroomList[0];
+  $roomlistList = selectRoomsId($dbhRoomlist, $inputParams['id']);
+  $roomlist = $roomlistList[0];
 
   // データ更新
-  $inputParams = $adminroom;
+  $inputParams = $roomlist;
 
   goto outputPage;
 }
@@ -61,12 +61,12 @@ if (usedArr($errors)) {
 }
 
 // DB接続
-$dbhAdminroom = connectRw(ADMIN_ROOMS_DB);
+$dbhRoomlist = connectRw(ROOMS_DB);
 
-$adminroomList = selectAdminroomsId($dbhAdminroom, $inputParams['id']);
-$adminroom = $adminroomList[0];
+$roomlistList = selectRoomsId($dbhRoomlist, $inputParams['id']);
+$roomlist = $roomlistList[0];
 
-$fromPath = './../rooms/'.$adminroom['roomdir'];
+$fromPath = './../rooms/'.$roomlist['roomdir'];
 $toPath = './../rooms/'.$inputParams['roomdir'];
 
 if (!rename($fromPath, $toPath)) {
@@ -75,7 +75,7 @@ if (!rename($fromPath, $toPath)) {
 }
 
 // 登録
-$result = updateAdminrooms($dbhAdminroom, $inputParams['id'], $inputParams);
+$result = updateRooms($dbhRoomlist, $inputParams['id'], $inputParams);
 if (!$result) {
   $errors[] = '登録に失敗しました。もう一度お試しください。';
   goto outputPage;

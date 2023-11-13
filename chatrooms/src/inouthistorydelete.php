@@ -19,13 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   setToken();
 
   // DB接続
-  $dbhRoomlist = connectRw(ROOMS_DB);
+  $dbhInouthistory = connectRo(ROOM_INOUT_HISTORIES_DB);
 
-  $roomlistList = selectRoomsId($dbhRoomlist, $inputParams['id']);
-  $roomlist = $roomlistList[0];
-
-  // データ更新
-  $inputParams = $roomlist;
+  $inouthistoryList = selectRoominouthistories($dbhInouthistory, 100, [
+    'id' => $inputParams['id'],
+  ]);
+  $inouthistory = $inouthistoryList[0];
 
   goto outputPage;
 }
@@ -34,16 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 // CSRF対策
 checkToken();
 
-$errors = deleteRoomdir($inputParams['roomdir']);
-if (usedArr($errors)) {
-  goto outputPage;
-}
-
 // DB接続
-$dbhRoomlist = connectRw(ROOMS_DB);
+$dbhInouthistory = connectRw(ROOM_INOUT_HISTORIES_DB);
 
 // 削除
-$result = deleteRooms($dbhRoomlist, $inputParams['id']);
+$result = deleteRoominouthistories($dbhInouthistory, $inputParams['id']);
 if (!$result) {
   $errors[] = '削除に失敗しました。もう一度お試しください。';
   goto outputPage;
@@ -62,7 +56,7 @@ outputPage:
   <meta name="robots" content="noindex,nofollow,noarchive" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
-  <title>チャットルーム削除</title>
+  <title>チャットルーム入退室履歴削除</title>
   <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
   <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
@@ -77,7 +71,7 @@ outputPage:
 </head>
 <body>
 <div class="content-wrap">
-  <h3 class="frame-title">チャットルーム削除</h3>
+  <h3 class="frame-title">チャットルーム入退室履歴削除</h3>
 
   <?php if (isAdmin()) { /* 管理ユーザーは常に表示 */ ?>
     <div class="note-wrap">
@@ -108,20 +102,15 @@ outputPage:
   <?php if (!usedStr($success) && !usedArr($errors)) { /* 成功でもエラーでもない場合にフォームを表示 */ ?>
     <div class="note-wrap">
       <p class="note">
-        <span class="point"><?php echo h($inputParams['roomdir']); ?></span> を削除します。<br>
-      </p>
-      <p class="note">
-        ルーム内で設定した内容、ルーム内のログも<span class="point">すべて削除</span>されます。<br>
-        よろしいですか？<br>
+        <span class="point"><?php echo h($inouthistory['roomtitle']); ?>：<?php echo ht($inouthistory['message']); ?></span> を削除します。<br>
       </p>
     </div>
     <div class="page-button-wrap">
       <button type="button" class="warning delete-button">はい</button>
     </div>
-    <form id="delete-form" class="hidden-form" action="./delete.php" method="POST">
+    <form id="delete-form" class="hidden-form" action="./inouthistorydelete.php" method="POST">
       <input type="hidden" name="token" value="<?php echo h(getToken()); ?>">
-      <input type="hidden" name="roomdir" value="<?php echo h($inputParams['roomdir']); ?>">
-      <input type="hidden" name="id" value="<?php echo h($inputParams['id']); ?>">
+      <input type="hidden" name="id" value="<?php echo h($inouthistory['id']); ?>">
     </form>
   <?php } ?>
 

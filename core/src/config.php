@@ -209,13 +209,14 @@ define('INDEX_ROOT', DOCUMENT_ROOT.SITE_ROOT);
 define('NAMELIST_VIEW_ROOT', SITE_ROOT.'/characters/src/view.php');
 /* 以下の変数を追加した場合は database.php の DB作成 に処理を追加すること。
  */
-define('CHARACTERS_DB', (INDEX_ROOT.'/characters/src/db/characters.db'));
 define('USERS_DB', (INDEX_ROOT.'/users/src/db/users.db'));
-define('ADMIN_ROOMS_DB', (INDEX_ROOT.'/chatrooms/src/db/adminrooms.db'));
+define('INFOMATIONS_DB', (INDEX_ROOT.'/infomation/src/db/informations.db'));
+define('CHARACTERS_DB', (INDEX_ROOT.'/characters/src/db/characters.db'));
+define('ROOMS_DB', (INDEX_ROOT.'/chatrooms/src/db/rooms.db'));
+define('ROOM_INOUT_HISTORIES_DB', (INDEX_ROOT.'/chatrooms/src/db/roominouthistories.db'));
 define('CHAT_ROOMS_DB', './db/chatrooms.db');
 define('CHAT_ENTRIES_DB', './db/chatentries.db');
 define('CHAT_LOGS_DB', './db/chatlogs.db');
-define('CHAT_SECRETS_DB', './db/secrets.db');
+define('CHAT_SECRETS_DB', './db/chatchatsecrets.db');
 define('INBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/inboxletters.db'));
 define('OUTBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/outboxletters.db'));
-define('INFOMATIONS_DB', (INDEX_ROOT.'/infomation/src/db/informations.db'));

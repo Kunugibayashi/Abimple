@@ -8,10 +8,10 @@ require_once('../../core/src/administrator.php');
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // DB接続
-  $dbhAdminroom = connectRo(ADMIN_ROOMS_DB);
+  $dbhRoomlist = connectRo(ROOMS_DB);
 
   $roomList = array();
-  $roomList = selectEqualAdminroomsList($dbhAdminroom, [
+  $roomList = selectEqualRoomsList($dbhRoomlist, [
     'published' => '1',
   ]);
 

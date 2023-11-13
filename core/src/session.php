@@ -21,6 +21,7 @@ function setPrev() {
     || $script === 'index-top.php'
     || $script === 'inboxmylist.php'
     || $script === 'outboxmylist.php'
+    || $script === 'inouthistorylist.php'
   ) {
     $prevPage = $path;
     if (((boolean) $query)) {

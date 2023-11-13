@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
   $dbhChatentries = connectRo(CHAT_ENTRIES_DB);
   $dbhChatlogs = connectRo(CHAT_LOGS_DB);
-  $dbhSecrets = connectRo(CHAT_SECRETS_DB);
+  $dbhChatsecrets = connectRo(CHAT_SECRETS_DB);
 
   $chatrooms = selectChatroomsConfig($dbhChatrooms);
   if (!usedArr($chatrooms)) {
@@ -48,12 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // 秘匿ルームの場合
   if ($chatroom['issecret'] == 1) {
-    $secrets = selectSecrets($dbhSecrets);
-    if (!usedArr($secrets)) {
-      firstAccessSecrets(CHAT_SECRETS_DB);
-      $secrets = selectSecrets($dbhChatrooms);
+    $chatsecrets = selectChatsecrets($dbhChatsecrets);
+    if (!usedArr($chatsecrets)) {
+      firstAccessChatsecrets(CHAT_SECRETS_DB);
+      $chatsecrets = selectChatsecrets($dbhChatrooms);
     }
-    $dbKeyword = $secrets[0]['keyword'];
+    $dbKeyword = $chatsecrets[0]['keyword'];
     $sessionKeyword = getSecretKeyword();
     if (!usedStr($dbKeyword) || !usedStr($sessionKeyword) || $dbKeyword != $sessionKeyword) {
       header('Location: ./logsecretinfo.php');
@@ -127,9 +127,12 @@ outputPage:
   <meta name="viewport" content="width=device-width">
   <title><?php echo h($chatroom['title']); ?></title>
   <?php if (!isset($logoutputFlg)) { /* フラグが立っていない場合はログ出力ではない通常の処理 */ ?>
+    <!-- script -->
+    <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
     <script>
       // 名簿リンク
-      jQuery('li.entries-item').on('click', function(){
+      // jQuery 記載方法は動かないため document 指定
+      $(document).on('click', 'li.entries-item', function(){
         var url = '<?php echo h(NAMELIST_VIEW_ROOT); ?>' + '?id=' + jQuery(this).val();
         window.open(url);
       });
@@ -176,7 +179,7 @@ outputPage:
     <h5 class="entries-title">参加者：</h5>
     <ul id="chat-entries" class="entries-item-group"><?php /* id="chat-entries" は変更しないこと。ログ一覧で使うため */ ?>
       <?php if (!usedArr($chatentries)) { /* 参加者がいない場合 */ ?>
-        <li class="entries-item">なし</li>
+        <li class="entries-no-item">なし</li>
       <?php } ?>
       <?php if (usedArr($chatentries)) { /* 参加者がいる場合 */ ?>
         <?php foreach ($chatentries as $key => $value) { ?>
@@ -302,7 +305,8 @@ ul.entries-item-group {
   display: flex;
   align-items: center;
 }
-li.entries-item {
+li.entries-item,
+li.entries-no-item {
   margin-right: 0.5em;
   border-radius: 0.2em;
   padding: 0.2em;
