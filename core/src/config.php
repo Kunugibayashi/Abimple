@@ -203,7 +203,6 @@ define('NAMELIST_DETAIL_NAME', '詳細'); // 表示名
  * 編集しないでください。
  *******************************************************************************
  */
-define('IMAGE_SAVE_PATH', './images/');
 define('DOCUMENT_ROOT', $_SERVER['DOCUMENT_ROOT']);
 define('INDEX_ROOT', DOCUMENT_ROOT.SITE_ROOT);
 define('NAMELIST_VIEW_ROOT', SITE_ROOT.'/characters/src/view.php');

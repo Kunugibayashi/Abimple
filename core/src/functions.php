@@ -287,55 +287,6 @@ function splitPages($data, $nowPage) {
   return array_slice($data, $min, PAGING_LIMIT);
 }
 
-function fileUpload() {
-  $errors = array();
-
-  // エラーチェック
-  $ferror = $_FILES['image']['error'];
-  if ($ferror !== UPLOAD_ERR_OK) {
-    $errors[] = '画像アップロードに失敗しました。';
-  }
-  if ($ferror === UPLOAD_ERR_NO_FILE) {
-    $errors[] = 'ファイルが選択されていません。';
-  }
-  if ($ferror === UPLOAD_ERR_INI_SIZE) {
-    $errors[] = 'ファイルサイズが大きすぎます。';
-  }
-  if ($ferror === UPLOAD_ERR_FORM_SIZE) {
-    $errors[] = 'ファイルが大きすぎます。';
-  }
-  if ($_FILES['image']['size'] > 10485760) {
-    $errors[] = '画像ファイルサイズは 10MB 以内にしてください。';
-  }
-  if (!$ext = array_search(
-                mime_content_type($_FILES['image']['tmp_name']),
-                array(
-                  'gif' => 'image/gif',
-                  'jpg' => 'image/jpeg',
-                  'png' => 'image/png',
-                ),
-                true
-              )
-  ) {
-    $errors[] = 'ファイル形式が不正です。';
-  }
-  if (count($errors) > 0) {
-    return [$errors, ''];
-  }
-
-  $tmpImageFile = date('Ymd') .'_' .sha1(uniqid(mt_rand(), true));
-  $tmpImageFile = $tmpImageFile .'.' .$ext;
-
-  if (!move_uploaded_file($_FILES['image']['tmp_name'], IMAGE_SAVE_PATH.$tmpImageFile)) {
-    $errors[] = 'ファイル保存時にエラーが発生しました。';
-    return [$errors, ''];
-  }
-
-  // ファイルのパーミッションを確実に0644に設定する
-  chmod(IMAGE_SAVE_PATH.$tmpImageFile, 0644);
-  return [$errors, $tmpImageFile];
-}
-
 // 作成と削除のPathはあわせること
 function createRoomdir($roomdir) {
 
