@@ -59,6 +59,16 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 // CSRF対策
 checkToken();
 
+// 入力値チェック
+if (!usedStr($inputParams['title'])) {
+  $errors[] = 'ルームタイトルを入力してください。';
+}
+if (!usedStr($inputParams['guide'])) {
+  $errors[] = 'ルーム説明を入力してください。';
+}
+if (usedArr($errors)) {
+  goto outputPage;
+}
 
 // おみくじ1の編集
 if (usedStr($inputParams['omi1text'])) {

@@ -30,6 +30,7 @@ $dbhCharacters = connectRo(CHARACTERS_DB);
 $dbhChatentries = connectRw(CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRw(CHAT_LOGS_DB);
 $dbhInouthistory = connectRw(ROOM_INOUT_HISTORIES_DB);
+$dbhChatsecrets = connectRw(CHAT_SECRETS_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0]; // 必ずある想定
@@ -59,14 +60,14 @@ if (usedArr($myChatentries)) {
       'fullname' => CHAT_LOG_SYSTEM_NAME,
       'color' => $chatroom['color'],
       'bgcolor' => $chatroom['bgcolor'],
-      'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が退室しました。'
+      'message' => '<span class="fullname">' .$character['fullname'] .'</span>' .'が退室しました。'
     ]);
 
     // 秘匿ルームでない場合のみ履歴に登録
     if ($chatroom['issecret'] != 1) {
       insertRoominouthistories($dbhInouthistory, [
         'roomtitle' => $chatroom['title'],
-        'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が退室しました。',
+        'message' => '<span style="font-weight: bold;">' .$character['fullname'] .'</span>' .'が退室しました。',
       ]);
     }
     deleteRoominouthistoriesLimit1000($dbhInouthistory);
@@ -87,6 +88,9 @@ $chatentries = selectEqualChatentries($dbhChatentries);
 if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($chatentries)) {
   // 秘匿ルーム、かつ、最終退室者の場合はログを削除
   deleteChatlogs($dbhChatlogs);
+
+  // 秘匿パスワードのリセット
+  updateChatsecrets($dbhChatsecrets, '');
 
   // 余分なログを削除
   deleteChatentriesExit($dbhChatentries);
@@ -183,11 +187,11 @@ outputPage:
 
 </div>
 <script> <!-- 各ボタン制御 -->
-jQuery(function(){
-  jQuery('button.tochatroom-button').on('click', function(){
-    window.location.href = './roomtop.php';
+  jQuery(function(){
+    jQuery('button.tochatroom-button').on('click', function(){
+      window.location.href = './roomtop.php';
+    });
   });
-});
 </script>
 <style>
 /* 共通 */
@@ -230,8 +234,6 @@ li.header-item>a {
 div.chatroom-frame-wrap {
   border-top: solid 4px;
 }
-</style>
-<style>
 /* レイアウト */
 div.content-wrap {
   display: grid;
@@ -250,8 +252,6 @@ div.chatroom-frame-wrap {
   grid-column: 1 / 3;
   grid-row: 3 / 4;
 }
-</style>
-<style>
 /* 退室メッセージ */
 div.exit-wrap {
   display: flex;
@@ -261,6 +261,30 @@ div.exit-wrap {
 }
 div.page-back-wrap {
   margin-top: 2em;
+}
+/* 戻るボタン */
+div.page-back-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 2em;
+}
+div.page-back-wrap>button:active,
+div.page-back-wrap>button:hover,
+div.page-back-wrap>button {
+  margin: 0 1em;
+  padding: 1em;
+  background-color: #3e463b;
+  color: #e3e2dc;
+  background-image: unset;
+  background-origin: unset;
+  border: unset;
+  border-radius: 10em;
+  box-shadow: unset;
+  display: inline-block;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  filter: none;
 }
 </style>
 </body>

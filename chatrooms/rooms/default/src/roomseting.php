@@ -37,9 +37,27 @@ checkToken();
 
 // DB接続
 $dbhChatrooms = connectRw(CHAT_ROOMS_DB);
+$dbhChatentries = connectRo(CHAT_ENTRIES_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0];
+
+// 入力値チェック
+if (!usedStr($inputParams['title'])) {
+  $errors[] = 'ルームタイトルを入力してください。';
+}
+if (!usedStr($inputParams['guide'])) {
+  $errors[] = 'ルーム説明を入力してください。';
+}
+if (usedArr($errors)) {
+  goto outputPage;
+}
+
+$chatentries = selectEqualChatentries($dbhChatentries);
+if (usedArr($chatentries)) {
+  $errors[] = '入室者がいるため、変更できません。';
+  goto outputPage;
+}
 
 $updateRoom = $inputParams;
 $result = updateChatroomsConfig($dbhChatrooms, $updateRoom);
@@ -137,7 +155,7 @@ outputPage:
     </div>
 
     <div class="page-back-wrap">
-      <button type="button" class="tochatroom-button">戻る</button>
+      <button type="button" class="tochatroom-button">トップに戻る</button>
     </div>
   </div>
 
@@ -167,8 +185,7 @@ body {
 div.content-wrap {
   margin: 0;
   padding: 0;
-  width: 100vw;
-  height: 100vh;
+  height: 99vh;
 }
 ul, li {
   list-style-type: none;
@@ -266,6 +283,30 @@ div.mes-wrap {
   display: flex;
   justify-content: center;
   margin: 2em 0;
+}
+/* 戻るボタン */
+div.page-back-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: 2em;
+}
+div.page-back-wrap>button:active,
+div.page-back-wrap>button:hover,
+div.page-back-wrap>button {
+  margin: 0 1em;
+  padding: 1em;
+  background-color: #3e463b;
+  color: #e3e2dc;
+  background-image: unset;
+  background-origin: unset;
+  border: unset;
+  border-radius: 10em;
+  box-shadow: unset;
+  display: inline-block;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  filter: none;
 }
 </style>
 </body>

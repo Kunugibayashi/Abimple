@@ -11,15 +11,11 @@ require_once('./functions.php');
 $errors = array();
 $inputParams = array();
 
-$inputParams['color'] = inputParam('color', 7) ? inputParam('color', 7) : '#000000';
-$inputParams['bgcolor'] = inputParam('bgcolor', 7) ? inputParam('bgcolor', 7) : '#ffffff';
-
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策はフォーム表示時にセット
 
   // DB接続
   $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
-  $dbhCharacters = connectRo(CHARACTERS_DB);
   $dbhChatsecrets = connectRo(CHAT_SECRETS_DB);
 
   $chatrooms = selectChatroomsConfig($dbhChatrooms);
@@ -43,8 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
       exit;
     }
   }
-
-  $characters = selectCharactersMy($dbhCharacters, getUserid(), getUsername());
 
   goto outputPage;
 }
@@ -87,7 +81,9 @@ outputPage:
         <?php } ?>
         <li class="header-item"><a href="./log.php?lognum=100&logsec=25" target="_blank">ログ別窓表示</a></li>
         <li class="header-item"><a href="./loglist.php">過去ログ一覧</a></li>
-        <li class="header-item"><a href="./admin.php">管理画面</a></li>
+        <?php if (isAdmin()) { ?>
+          <li class="header-item"><a href="./admin.php">管理画面</a></li>
+        <?php } ?>
       </ul>
     </nav>
   </header>
@@ -109,87 +105,13 @@ outputPage:
 
     <div class="chatconfig-guide"><?php echo hb($chatroom['guide']); ?></div>
 
-    <div class="form-wrap roomchat-form-wrap">
-      <?php if (!isNowRoomEntry(getPageRoomdir()) && isChatEntry()) { /* 他のルームに入室している場合はメッセージのみ */ ?>
-        <div class="note-wrap">
-          <p class="note">
-            他のルーム（<?php echo h(getNowRoomEntry()); ?>）に入室しています。<br>
-          </p>
+    <div class="form-wrap roomenter-form-wrap">
+      <form name="roomenter-form" class="roomenter-form" action="./roomenter.php" method="GET">
+        <div class="form-button-wrap submit-wrap">
+          <button type="submit">入室キャラクター選択</button>
         </div>
-      <?php } else if (isChatEntry()) { /* 入室している場合は入室ボタンのみ */ ?>
-        <div class="note-wrap">
-          <p class="note">
-            すでに入室しています。<br>
-          </p>
-        </div>
-        <form name="roomchat-form" class="roomchat-form" action="./roomchat.php" method="POST">
-          <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
-          <div class="form-button-wrap submit-wrap">
-            <button type="submit">再入室</button>
-          </div>
-        </form>
-      <?php } else if (usedArr($characters)) { /* 入室していない & キャラクター登録をしている場合のみに入室を表示 */ ?>
-        <?php setChatToken(); /* フォーム表示時にトークンをセット */ ?>
-        <form name="roomchat-form" class="roomchat-form" action="./roomchat.php" method="POST">
-          <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
-          <ul class="form-row fullname-wrap">
-            <li class="form-col-title">キャラクター</li>
-            <li class="form-col-item">
-              <div class="select-wrap">
-                <select name="characterid">
-                  <?php foreach ($characters as $character) { ?>
-                    <option value="<?php echo h($character['id']); ?>"><?php echo h($character['fullname']); ?></option>
-                  <?php } ?>
-                </select>
-              </div>
-            </li>
-          </ul>
-          <ul class="form-row color-wrap">
-            <li class="form-col-title">文字色</li>
-            <li class="form-col-item">
-              <div class="form-col-item-group">
-                <input type="text" name="color" value="<?php echo h($inputParams['color']); ?>" maxlength="7">
-                <input type="color" class="select-color" value="<?php echo h($inputParams['color']); ?>">
-              </div>
-            </li>
-          </ul>
-          <ul class="form-row bgcolor-wrap">
-            <li class="form-col-title">背景色</li>
-            <li class="form-col-item">
-              <div class="form-col-item-group">
-                <input type="text" name="bgcolor" value="<?php echo h($inputParams['bgcolor']); ?>" maxlength="7">
-                <input type="color" class="select-bgcolor" value="<?php echo h($inputParams['bgcolor']); ?>">
-              </div>
-            </li>
-          </ul>
-          <ul class="form-row memo-wrap">
-            <li class="form-col-title">備考</li>
-            <li class="form-col-item"><input type="text" name="memo" value="" maxlength="200"></li>
-          </ul>
-          <ul class="form-row fullname-wrap">
-            <li class="form-col-title">入室メッセージ</li>
-            <li class="form-col-item">
-              <div class="select-wrap">
-                <select name="inoutmesflg">
-                  <option value="1">入室メッセージを表示する</option>
-                  <option value="0">入室メッセージを表示しない</option>
-                </select>
-              </div>
-            </li>
-          </ul>
-          <div class="form-button-wrap submit-wrap">
-            <button type="submit">入室</button>
-          </div>
-        </form>
-      <?php } else { /* キャラクター登録がない場合は案内を表示 */ ?>
-        <div class="note-wrap">
-          <p class="note">
-            入室する場合はログインし、名簿登録をしてください。<br>
-          </p>
-        </div>
-      <?php } ?>
+      </form>
     </div>
-
   </div>
 
   <div class="chatroom-frame-wrap">
@@ -199,28 +121,6 @@ outputPage:
   </div>
 
 </div>
-<?php if (usedArr($characters)) { /* キャラクター登録をしている場合のみに表示 */ ?>
-  <script>
-  jQuery(function(){
-    var characterColors = {};
-    <?php foreach ($characters as $key => $value) { ?>
-      characterColors['<?php echo h($value['id']); ?>'] = {'color' : '<?php echo h($value['color']); ?>', 'bgcolor' : '<?php echo h($value['bgcolor']); ?>' };
-    <?php } ?>
-
-    // キャラクター選択によって文字色を変更
-    jQuery('select[name="characterid"]').on('change', function(){
-      var characterid = jQuery(this).val();
-
-      jQuery('input[name="color"]').val(characterColors[characterid].color);
-      jQuery('input.select-color').val(characterColors[characterid].color);
-
-      jQuery('input[name="bgcolor"]').val(characterColors[characterid].bgcolor);
-      jQuery('input.select-bgcolor').val(characterColors[characterid].bgcolor);
-    }).trigger('change');
-
-  });
-  </script>
-<?php } ?>
 <style>
 /* 共通 */
 a {
@@ -277,11 +177,12 @@ div.chatroom-frame-wrap {
   border-top: solid 4px;
 }
 /* チャット画面フォーム */
-div.roomchat-form-wrap {
+div.roomenter-form-wrap {
   overflow: auto;
 }
 div.form-wrap {
-  margin: 1em 0;
+  margin: 0;
+  padding: 0;
 }
 ul.form-row {
   display: flex;
@@ -295,25 +196,8 @@ li.form-col-item {
   margin-top: 0.5em;
 }
 div.form-button-wrap {
-  margin-top: 2em;
-  margin-right: 2em;
   display: flex;
   justify-content: flex-end;
-}
-div.form-col-item-group {
-  display: flex;
-  align-items: flex-start;
-}
-select[name="inoutmesflg"],
-select[name="characterid"] {
-  width: 20em;
-}
-input[name="color"],
-input[name="bgcolor"] {
-  width: 8em;
-}
-input[name="memo"] {
-  width: 20em;
 }
 
 <?php if ($chatroom['toptemplate'] === CHAT_TOP_DEFAULT
@@ -325,20 +209,16 @@ input[name="memo"] {
   /* チャット画面レイアウト */
   div.chatconfig-wrap {
     display: grid;
-    grid-template-rows: 4em 1fr; /* 縦 */
-    grid-template-columns: 1fr 30em; /* 横 */
+    grid-template-rows: 4em 1fr 5em; /* 縦 */
   }
   div.chatconfig-title-wrap {
-    grid-column: 1 / 3; /* 横 */
     grid-row: 1 / 2; /* 縦 */
   }
   div.chatconfig-guide {
-    grid-column: 1 / 2; /* 横 */
     grid-row: 2 / 3; /* 縦 */
   }
   div.form-wrap {
-    grid-column: 2 / 3; /* 横 */
-    grid-row: 2 / 3; /* 縦 */
+    grid-row: 3 / 4; /* 縦 */
   }
   /* チャットルームタイトル */
   h3.chatconfig-title {
@@ -362,22 +242,26 @@ input[name="memo"] {
   /* チャット画面レイアウト */
   div.chatconfig-wrap {
     display: grid;
-    grid-template-columns: 24em 1fr 30em; /* 横 */
+    grid-template-rows: 1fr 2.5em; /* 縦 */
+    grid-template-columns: 24em 1fr; /* 横 */
   }
-  h3.chatconfig-title {
+  div.chatconfig-title-wrap {
     grid-column: 1 / 2; /* 横 */
+    grid-row: 1 / 3; /* 縦 */
   }
   div.chatconfig-guide {
     grid-column: 2 / 3; /* 横 */
+    grid-row: 1 / 2; /* 縦 */
   }
   div.form-wrap {
-    grid-column: 3 / 4; /* 横 */
+    grid-column: 2 / 3; /* 横 */
+    grid-row: 2 / 3; /* 縦 */
   }
   /* チャットルームタイトル */
   div.chatconfig-title-wrap {
     border: double 14px;
-    width: 20em;
-    height: 20em;
+    width: 24em;
+    height: 24em;
     padding: 2em;
     color: <?php echo h($chatroom['bgcolor']); ?>;
     background-color: <?php echo h($chatroom['color']); ?>;
@@ -390,8 +274,7 @@ input[name="memo"] {
   }
   /* チャットルーム説明 */
   div.chatconfig-guide {
-    margin: 1em 0;
-    height: 14em;
+    margin: 1em;
     overflow: auto;
   }
 <?php } ?>

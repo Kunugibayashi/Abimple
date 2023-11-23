@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     $chatsecrets = selectChatsecrets($dbhChatsecrets);
     if (!usedArr($chatsecrets)) {
       firstAccessChatsecrets(CHAT_SECRETS_DB);
-      $chatsecrets = selectChatsecrets($dbhChatrooms);
+      $chatsecrets = selectChatsecrets($dbhChatsecrets);
     }
     $dbKeyword = $chatsecrets[0]['keyword'];
     $sessionKeyword = getSecretKeyword();

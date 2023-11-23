@@ -69,7 +69,6 @@ outputPage:
       <table>
         <tr>
           <th class="cell-action">操作</th>
-          <th class="cell-id"><?php echo h(NAMELIST_ID); ?></th>
           <th class="cell-fullname"><?php echo h(NAMELIST_NAME); ?></th>
           <th class="cell-color"><?php echo h(NAMELIST_COLOR); ?></th>
           <th class="cell-bgcolor"><?php echo h(NAMELIST_BGCOLOR); ?></th>
@@ -81,11 +80,10 @@ outputPage:
         </tr>
         <?php foreach ($characters as $key => $value) { ?>
           <tr>
-              <td>
-                <button type="button" class="edit-button" value="<?php echo h($value['id']); ?>">編集</button>
-                <button type="button" class="warning delete-button" value="<?php echo h($value['id']); ?>">削除</button>
-              </td>
-            <td><?php echo h($value['id']); ?></td>
+            <td>
+              <button type="button" class="edit-button" value="<?php echo h($value['id']); ?>">編集</button>
+              <button type="button" class="warning delete-button" value="<?php echo h($value['id']); ?>">削除</button>
+            </td>
             <td><a class="character-view-link" href="./view.php?id=<?php echo h($value['id']); ?>"><?php echo h($value['fullname']); ?><a></td>
             <td><span style="color: <?php echo h($value['color']); ?>; "><?php echo h($value['color']); ?></span></td>
             <td><span style="color: <?php echo h($value['bgcolor']); ?>; "><?php echo h($value['bgcolor']); ?></span></td>

@@ -57,7 +57,7 @@ if ($chatroom['issecret'] == 1) {
   $chatsecrets = selectChatsecrets($dbhChatsecrets);
   if (!usedArr($chatsecrets)) {
     firstAccessChatsecrets(CHAT_SECRETS_DB);
-    $chatsecrets = selectChatsecrets($dbhChatrooms);
+    $chatsecrets = selectChatsecrets($dbhChatsecrets);
   }
   $dbKeyword = $chatsecrets[0]['keyword'];
   $sessionKeyword = getSecretKeyword();
@@ -93,14 +93,14 @@ if (!usedArr($chatentries)) {
       'fullname' => CHAT_LOG_SYSTEM_NAME,
       'color' => $chatroom['color'],
       'bgcolor' => $chatroom['bgcolor'],
-      'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が入室しました。',
+      'message' => '<span class="fullname">' .$character['fullname'] .'</span>' .'が入室しました。',
     ]);
 
     // 秘匿ルームでない場合のみ履歴に登録
     if ($chatroom['issecret'] != 1) {
       insertRoominouthistories($dbhInouthistory, [
         'roomtitle' => $chatroom['title'],
-        'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が入室しました。',
+        'message' => '<span style="font-weight: bold;">' .$character['fullname'] .'</span>' .'が入室しました。',
       ]);
     }
   }
@@ -131,14 +131,14 @@ if (!usedArr($myChatentries)) {
       'fullname' => CHAT_LOG_SYSTEM_NAME,
       'color' => $chatroom['color'],
       'bgcolor' => $chatroom['bgcolor'],
-      'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が入室しました。'
+      'message' => '<span class="fullname">' .$character['fullname'] .'</span>' .'が入室しました。'
     ]);
 
     // 秘匿ルームでない場合のみ履歴に登録
     if ($chatroom['issecret'] != 1) {
       insertRoominouthistories($dbhInouthistory, [
         'roomtitle' => $chatroom['title'],
-        'message' => '<span class="fullname"><span style=" color:' .$character['color'] .';">' .$character['fullname'] .'</span></span>' .'が入室しました。',
+        'message' => '<span style="font-weight: bold;">' .$character['fullname'] .'</span>' .'が入室しました。',
       ]);
     }
   }

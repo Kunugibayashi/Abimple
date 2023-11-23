@@ -137,10 +137,12 @@ outputPage:
     <form name="search-form" class="search-form" action="?page=1<?php // 戻る処理のため検索は明示的に1を指定 ?>" method="POST">
       <input type="hidden" name="token" value="<?php echo h(getToken()); ?>">
       <div class="search-key-wrap">
-        <ul class="search-row">
-          <li class="search-col-title"><?php echo h(NAMELIST_ID); ?></li>
-          <li class="search-col-item"><input type="text" name="id" value="<?php echo h($searchParams['id']); ?>" maxlength="<?php echo h(SEARCHKEY_LIMIT); ?>"></li>
-        </ul>
+        <?php if (isAdmin()) { ?>
+          <ul class="search-row">
+            <li class="search-col-title"><?php echo h(NAMELIST_ID); ?></li>
+            <li class="search-col-item"><input type="text" name="id" value="<?php echo h($searchParams['id']); ?>" maxlength="<?php echo h(SEARCHKEY_LIMIT); ?>"></li>
+          </ul>
+        <?php } ?>
         <ul class="search-row">
           <li class="search-col-title"><?php echo h(NAMELIST_NAME); ?></li>
           <li class="search-col-item"><input type="text" name="fullname" value="<?php echo h($searchParams['fullname']); ?>" maxlength="<?php echo h(SEARCHKEY_LIMIT); ?>"></li>
@@ -308,7 +310,9 @@ outputPage:
           <?php if (isLogin()) { /* ログイン時のみ表示 */ ?>
             <th class="cell-letter">私書</th>
           <?php } ?>
-          <th class="cell-id"><?php echo h(NAMELIST_ID); ?></th>
+          <?php if (isAdmin()) { ?>
+            <th class="cell-id"><?php echo h(NAMELIST_ID); ?></th>
+          <?php } ?>
           <th class="cell-fullname"><?php echo h(NAMELIST_NAME); ?></th>
           <th class="cell-color"><?php echo h(NAMELIST_COLOR); ?></th>
           <th class="cell-bgcolor"><?php echo h(NAMELIST_BGCOLOR); ?></th>
@@ -377,7 +381,9 @@ outputPage:
                 <button type="button" class="letter-button transparent-button" value="<?php echo h($value['id']); ?>"><div class="letter-icon"></div></button>
               </td>
             <?php } ?>
-            <td><?php echo h($value['id']); ?></td>
+            <?php if (isAdmin()) { ?>
+              <td><?php echo h($value['id']); ?></td>
+            <?php } ?>
             <td><a class="character-view-link" href="./view.php?id=<?php echo h($value['id']); ?>"><?php echo h($value['fullname']); ?><a></td>
             <td><span style="color: <?php echo h($value['color']); ?>; "><?php echo h($value['color']); ?></span></td>
             <td><span style="color: <?php echo h($value['bgcolor']); ?>; "><?php echo h($value['bgcolor']); ?></span></td>

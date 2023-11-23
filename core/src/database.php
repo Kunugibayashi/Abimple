@@ -1472,8 +1472,8 @@ function selectChatsecrets($dbh) {
  * ****************************************************************************
  */
 function createInboxLetters($dbh) {
- $sql = "
-   CREATE TABLE inboxletters (
+  $sql = "
+    CREATE TABLE inboxletters (
       id              INTEGER        PRIMARY KEY AUTOINCREMENT,
       touserid        INTEGER        NOT NULL,
       tousername      VARCHAR(20)    NOT NULL,
@@ -1488,22 +1488,22 @@ function createInboxLetters($dbh) {
       username VARCHAR(20) NOT NULL,
       created DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime')),
       modified DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime'))
-   )
- ";
+    )
+  ";
 
- $results = $dbh->query($sql);
- if (!$results) {
-   echo $dbh->lastErrorMsg();
- }
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
 
- $sql = "
-   CREATE INDEX IF NOT EXISTS idx_inbox_touserid_tousername ON inboxletters(touserid, tousername);
- ";
+  $sql = "
+    CREATE INDEX IF NOT EXISTS idx_inbox_touserid_tousername ON inboxletters(touserid, tousername);
+  ";
 
- $results = $dbh->query($sql);
- if (!$results) {
-   echo $dbh->lastErrorMsg();
- }
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
 }
 
 function insertInboxLetters($dbh, $userid, $username, $params = array()) {
