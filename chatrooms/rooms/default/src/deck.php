@@ -69,6 +69,12 @@ $chatroom = $chatrooms[0];
 
 $deckText = $chatroom['deck1text'];
 
+if (!usedStr($deckText)) {
+  $jsonArray['code'] = 1;
+  $jsonArray['errorMessage'] = '山札が設定されていません。';
+  goto outputPage;
+}
+
 $deckArray = explode(',', $deckText);
 if (!usedArr($deckArray)) {
   $jsonArray['code'] = 1;

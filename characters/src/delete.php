@@ -142,7 +142,7 @@ outputPage:
         <span class="point"><?php echo h($character['id']); ?>：<?php echo h($character['fullname']); ?></span> を削除します。<br>
       </p>
       <p class="note">
-        私書、掲示板、チャットルーム、ログ保管庫のログは削除されません。<br>
+        私書、チャットルーム、ログ保管庫のログは削除されません。<br>
       </p>
       <p class="note">
         よろしいですか？<br>

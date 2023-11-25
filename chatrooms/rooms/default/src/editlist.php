@@ -27,8 +27,19 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   if (isAdmin()) {
     // アドミンの場合は、秘匿を覗く全ての発言を取得
 
+    $characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
+    if (!usedArr($characters)) {
+      // 不正アクセス
+      $jsonArray['code'] = 1;
+      $jsonArray['errorMessage'] = '名簿が存在しません。';
+      goto outputPage;
+    }
+    $character = $characters[0];
+
     // 最大10000行
-    $chatlogs = selectEqualChatlogs($dbhChatlogs, 10000);
+    $chatlogs = selectEqualChatlogsAdmin($dbhChatlogs, 10000, [
+      'characterid' => $character['id'],
+    ]);
   } else {
     // ユーザーの場合は入室情報から取得
 

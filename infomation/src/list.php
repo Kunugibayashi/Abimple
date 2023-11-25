@@ -72,7 +72,9 @@ outputPage:
           <?php if (isAdmin()) { ?>
             <th class="cell-action">操作</th>
           <?php } ?>
-          <th class="cell-id">ID</th>
+          <?php if (isAdmin()) { ?>
+            <th class="cell-id">ID</th>
+          <?php } ?>
           <th class="cell-title">タイトル</th>
           <th class="cell-created">作成日</th>
         </tr>
@@ -84,7 +86,9 @@ outputPage:
                 <button type="button" class="warning delete-button" value="<?php echo h($value['id']); ?>">削除</button>
               </td>
             <?php } ?>
-            <td><?php echo h($value['id']); ?></td>
+            <?php if (isAdmin()) { ?>
+              <td><?php echo h($value['id']); ?></td>
+            <?php } ?>
             <td><a href="./view.php?id=<?php echo h($value['id']); ?>"><?php echo h($value['title']); ?></a></td>
             <td><?php echo h($value['created']); ?></td>
           </tr>

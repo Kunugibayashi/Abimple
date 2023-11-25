@@ -217,9 +217,11 @@ outputPage:
       </div>
     <?php } ?>
 
-    <div class="page-back-wrap">
-      <button type="button" class="tolist-button">一覧に戻る</button>
-    </div>
+    <?php if (!isPrevLog()) { ?>
+      <div class="page-back-wrap">
+        <button type="button" class="tolist-button">一覧に戻る</button>
+      </div>
+    <?php } ?>
 
   </div>
 </div>

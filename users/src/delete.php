@@ -165,7 +165,7 @@ outputPage:
         <span class="point">削除されたデータは復元できません。</span><br>
       </p>
       <p class="note">
-        私書、掲示板、チャットルーム、ログ保管庫のログは削除されません。<br>
+        私書、チャットルーム、ログ保管庫のログは削除されません。<br>
         管理人以外に、このユーザーで作成したデータの<span class="point">編集・削除ができなくなります。</span><br>
       </p>
       <p class="note">

@@ -63,6 +63,18 @@ if (usedArr($errors)) {
 // DB接続
 $dbhRoomlist = connectRw(ROOMS_DB);
 
+// 重複確認
+$roomlistList = selectEqualRoomsList($dbhRoomlist, [
+  'roomdir' => $inputParams['roomdir'],
+]);
+if (usedArr($roomlistList)) {
+  $roomlist = $roomlistList[0];
+  if ($roomlist['id'] != $inputParams['id']) {
+    $errors[] = 'roomdir が既に登録されています。';
+    goto outputPage;
+  }
+}
+
 $roomlistList = selectRoomsId($dbhRoomlist, $inputParams['id']);
 $roomlist = $roomlistList[0];
 
@@ -167,7 +179,7 @@ outputPage:
         </ul>
         <ul class="form-row">
           <li class="form-col-title">表示順序<div class="mandatory-mark"></div></li>
-          <li class="form-col-item"><input type="text" name="displayno" value="<?php echo h($inputParams['displayno']); ?>" maxlength="10000"></li>
+          <li class="form-col-item"><input type="text" name="displayno" value="<?php echo h($inputParams['displayno']); ?>" maxlength="5"></li>
           <li class="form-col-note">最大 10000。小さい番号ほど上に表示されます。</li>
         </ul>
         <div class="form-button-wrap">

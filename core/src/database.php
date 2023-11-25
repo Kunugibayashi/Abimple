@@ -1292,6 +1292,32 @@ function selectEqualChatlogs($dbh, $limit, $params = array()) {
   return $data;
 }
 
+function selectEqualChatlogsAdmin($dbh, $limit, $params = array()) {
+  $sql = '
+    SELECT
+      *
+    FROM chatlogs
+    WHERE
+      id IS NOT NULL
+    AND
+      whisperflg = 0
+    OR
+      (characterid = :characterid and whisperflg = 1)
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY id DESC
+    LIMIT :limit
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $stmt->bindValue(':limit', $limit);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
 function selectEqualChatlogsInroom($dbh, $limit, $characterid, $params = array()) {
   $sql = '
     SELECT

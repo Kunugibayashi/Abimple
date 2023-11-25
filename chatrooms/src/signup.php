@@ -159,7 +159,7 @@ outputPage:
         </ul>
         <ul class="form-row">
           <li class="form-col-title">表示順序<div class="mandatory-mark"></div></li>
-          <li class="form-col-item"><input type="text" name="displayno" value="<?php echo h($inputParams['displayno']); ?>" maxlength="10000"></li>
+          <li class="form-col-item"><input type="text" name="displayno" value="<?php echo h($inputParams['displayno']); ?>" maxlength="5"></li>
           <li class="form-col-note">最大 10000。小さい番号ほど上に表示されます。</li>
         </ul>
         <div class="form-button-wrap">

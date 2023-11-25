@@ -607,6 +607,7 @@ li.view-col-title-only {
 }
 li.view-col-title {
   width: 10em;
+  min-width: 10em;
 }
 li.view-col-item {
   padding: 0.5em;

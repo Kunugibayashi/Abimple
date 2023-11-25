@@ -45,6 +45,21 @@ function getTopPrev() {
   // ない場合は自分自身
   return './';
 }
+function isPrevLog() {
+  $refurl = $_SERVER['HTTP_REFERER'];
+  if (!isset($refurl)) {
+    return 0;
+  }
+  $path = parse_url($refurl, PHP_URL_PATH);
+  $query = parse_url($refurl, PHP_URL_QUERY); // なければ NULL
+  $refurl = preg_replace('/^.*\//', '', $refurl);
+  $script = preg_replace('/\?.*$/', '', $refurl);
+  $_SESSION['prevLogFlg'] = $script;
+  if ($script === 'log.php') {
+    return 1;
+  }
+  return 0;
+}
 
 /* ユーザーID
  */
