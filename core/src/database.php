@@ -990,6 +990,7 @@ function createChatrooms($dbh) {
       deck1flg      INTEGER        NOT NULL DEFAULT 0,
       deck1name     VARCHAR(10)    NOT NULL DEFAULT '',
       deck1text     TEXT           NOT NULL DEFAULT '',
+      roomcss       TEXT           NOT NULL DEFAULT '',
 
       created DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime')),
       modified DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime'))

@@ -35,6 +35,7 @@ $inputParams['omi3text'] = inputParam('omi3text', 10000);
 $inputParams['deck1flg'] = inputParam('deck1flg', 1);
 $inputParams['deck1name'] = inputParam('deck1name', 10);
 $inputParams['deck1text'] = inputParam('deck1text', 10000);
+$inputParams['roomcss'] = inputParam('roomcss', 10000);
 $inputParams['created'] = inputParam('created', 20);
 $inputParams['modified'] = inputParam('modified', 20);
 
@@ -383,6 +384,11 @@ outputPage:
             <div class="preview">ここにプレビュー結果が表示されます。</div>
           </div>
         </li>
+      </ul>
+      <ul class="form-row">
+        <li class="form-col-title">ルームCSS追加<div class="optional-mark"></div></li>
+        <li class="form-col-item"><textarea name="roomcss" maxlength="10000"><?php echo h($inputParams['roomcss']); ?></textarea></li>
+        <li class="form-col-note">最大 10000 文字。チャットルームすべてのページの最下部 <style></style> 内に記載されます。</li>
       </ul>
       <ul class="form-row">
         <li class="form-col-title">作成日</li>

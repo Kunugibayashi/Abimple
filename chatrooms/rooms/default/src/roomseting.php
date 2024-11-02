@@ -220,6 +220,7 @@ div.content-wrap {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: 2em 30em 1fr;
+  overflow: auto;
 }
 header.header {
   grid-column: 1 / 3;
@@ -309,5 +310,11 @@ div.page-back-wrap>button {
   filter: none;
 }
 </style>
+<?php if (usedStr($chatroom['roomcss'])) { ?>
+  <style>
+    /* DB登録のCSS記載 */
+    <?php echo h($chatroom['roomcss']) ?>
+  </style>
+<?php } ?>
 </body>
 </html>

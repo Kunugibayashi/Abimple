@@ -223,7 +223,7 @@ outputPage:
         <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
         <input type="hidden" name="entrykey" value="<?php echo h($myChatentry['entrykey']); ?>">
         <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
-        <ul class="form-row color-setting-wrap">
+        <ul class="form-row name-setting-wrap">
           <li class="form-col-title">名前</li>
           <li class="form-col-item">
             <?php echo h($character['fullname']); ?>
@@ -305,6 +305,7 @@ outputPage:
         <button type="button" class="color-set-button">設定色変更</button>
         <button type="button" class="whisperid-set-button">ささやき宛先更新</button>
         <button type="button" class="reload-button">リロード</button>
+        <button type="button" class="change-display-button">表示切替</button>
       </div>
       <div class="mes-wrap">
         <div id="result-mes"><!-- エラーメッセージ表示箇所 --></div>
@@ -453,6 +454,27 @@ jQuery(function(){
     if(event.ctrlKey === true && event.which === 13){
       chatBtElm.trigger('click');
     }
+  });
+
+  // 表示切替
+  jQuery('button.change-display-button').on('click', function(){
+    if (jQuery('div.random-wrap').css('display') == 'block') {
+      // 隠す
+      jQuery('div.content-wrap').css('grid-template-columns', '1fr 0em');
+      jQuery('textarea[name="message"]').css('width', '85vw');
+      jQuery('#id-roomchat-content-wrap').css('grid-template-rows', '2em 16em 1fr');
+    } else {
+      // 表示
+      jQuery('div.content-wrap').css('grid-template-columns', '1fr 18em');
+      jQuery('textarea[name="message"]').css('width', '30em');
+      jQuery('#id-roomchat-content-wrap').css('grid-template-rows', '2em 28em 1fr');
+    }
+
+    jQuery('button.color-set-button').toggle();
+    jQuery('ul.color-setting-wrap').toggle();
+    jQuery('ul.memo-wrap').toggle();
+    jQuery('ul.log-setting-wrap').toggle();
+    jQuery('div.random-wrap').toggle();
   });
 
   // リロード
@@ -815,6 +837,12 @@ input[name="dice"] {
   width: 14em;
 }
 </style>
+<?php if (usedStr($chatroom['roomcss'])) { ?>
+  <style>
+    /* DB登録のCSS記載 */
+    <?php echo h($chatroom['roomcss']) ?>
+  </style>
+<?php } ?>
 <!-- レスポンシブ用 -->
 <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
 </body>

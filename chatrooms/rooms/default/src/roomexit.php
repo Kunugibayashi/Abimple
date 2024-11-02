@@ -287,5 +287,11 @@ div.page-back-wrap>button {
   filter: none;
 }
 </style>
+<?php if (usedStr($chatroom['roomcss'])) { ?>
+  <style>
+    /* DB登録のCSS記載 */
+    <?php echo h($chatroom['roomcss']) ?>
+  </style>
+<?php } ?>
 </body>
 </html>

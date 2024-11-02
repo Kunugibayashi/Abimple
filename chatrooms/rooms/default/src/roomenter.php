@@ -246,6 +246,7 @@ header.header {
 }
 div.chatconfig-wrap {
   grid-row: 2 / 3;
+  overflow: auto;
 }
 div.chatroom-frame-wrap {
   grid-row: 3 / 4;
@@ -344,6 +345,12 @@ div.page-back-wrap>button {
   filter: none;
 }
 </style>
+<?php if (usedStr($chatroom['roomcss'])) { ?>
+  <style>
+    /* DB登録のCSS記載 */
+    <?php echo h($chatroom['roomcss']) ?>
+  </style>
+<?php } ?>
 <!-- レスポンシブ用 -->
 <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
 </body>
