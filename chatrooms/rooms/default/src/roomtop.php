@@ -80,7 +80,6 @@ outputPage:
           <li class="header-item"><a href="./roomseting.php">ルーム設定変更</a></li>
         <?php } ?>
         <li class="header-item"><a href="./log.php?lognum=100&logsec=25" target="_blank">ログ別窓表示</a></li>
-        <li class="header-item"><a href="./loglist.php">過去ログ一覧</a></li>
         <?php if (isAdmin()) { ?>
           <li class="header-item"><a href="./admin.php">管理画面</a></li>
         <?php } ?>

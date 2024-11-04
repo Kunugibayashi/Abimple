@@ -219,3 +219,4 @@ define('CHAT_LOGS_DB', './db/chatlogs.db');
 define('CHAT_SECRETS_DB', './db/chatchatsecrets.db');
 define('INBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/inboxletters.db'));
 define('OUTBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/outboxletters.db'));
+define('ALL_LOG_LISTS_DB', (INDEX_ROOT.'/logstorage/src/db/allloglists.db'));

@@ -79,8 +79,8 @@ if ($username === ADMIN_USERNAME) {
 // キャラクター登録削除
 $result = deleteEqualCharacters($dbhCharacters, $userid, $username);
 if (!$result) {
- $errors[] = '名簿削除に失敗しました。もう一度お試しください。';
- goto outputPage;
+  $errors[] = '名簿削除に失敗しました。もう一度お試しください。';
+  goto outputPage;
 }
 
 // ユーザー登録削除
@@ -97,7 +97,7 @@ $success = '削除しました。';
  */
 
 
- /* goto文はコードが煩雑になるため使用するべきではないが、
+/* goto文はコードが煩雑になるため使用するべきではないが、
   * ソースコードが複雑になるため、画面表示phpのページ出力開始ラベルのみ使用する。
   */
 outputPage:

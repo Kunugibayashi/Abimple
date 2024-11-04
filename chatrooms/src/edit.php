@@ -128,7 +128,12 @@ outputPage:
     <div class="note-wrap">
       <p class="note">
         管理ユーザーでログインしています。<br>
-        roomdir を変更するとチャットルームの URL が変更されます。入室者がいる場合、<span class="point">入室者側でエラーが発生する</span>ためご注意ください。<br>
+      </p>
+      <p class="note">
+        roomdir を変更するとチャットルームの URL が変更されます。<br>
+        入室者がいる場合、<span class="point">入室者側でエラーが発生する</span>ためご注意ください。<br>
+        またログが出力されている場合、<span class="point">ログ倉庫からDLができなくなります。</span><br>
+        ログ倉庫から参照可能なままチャットルームを非表示にしたい場合は、一覧から「表示しない」で更新をおすすめします。<br>
       </p>
     </div>
   <?php } ?>

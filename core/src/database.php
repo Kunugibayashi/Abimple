@@ -183,6 +183,8 @@ function checkDB($dbname) {
   // DB作成
   if (USERS_DB === $dbname) {
     createUsers($dbh);
+  } else if (INFOMATIONS_DB === $dbname) {
+    createInfomations($dbh);
   } else if (CHARACTERS_DB === $dbname) {
     createCharacters($dbh);
   } else if (ROOMS_DB === $dbname) {
@@ -201,8 +203,8 @@ function checkDB($dbname) {
     createInboxLetters($dbh);
   } else if (OUTBOX_LETTERS_DB === $dbname) {
     createOutboxLetters($dbh);
-  } else if (INFOMATIONS_DB === $dbname) {
-    createInfomations($dbh);
+  } else if (ALL_LOG_LISTS_DB === $dbname) {
+    createAllloglists($dbh);
   }
   // この関数内のみでコネクションを完結する
   $dbh->close();
@@ -1844,4 +1846,127 @@ function selectOutboxMessageId($dbh, $id) {
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
   return $data;
+}
+
+/* ****************************************************************************
+ * 全てのログ一覧
+ * ****************************************************************************
+ */
+function createAllloglists($dbh) {
+  $sql = "
+    CREATE TABLE allloglists (
+      id             INTEGER        PRIMARY KEY AUTOINCREMENT,
+      entrykey       VARCHAR(40)    NOT NULL,
+      roomdir        VARCHAR(20)    NOT NULL,
+
+      roomtitle      VARCHAR(100)   NOT NULL,
+      filename       VARCHAR(40)    NOT NULL,
+      entries        TEXT           NOT NULL DEFAULT '',
+
+      created DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+      modified DATETIME NOT NULL DEFAULT (DATETIME('now', 'localtime'))
+    )
+  ";
+
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
+
+  $sql = "
+    CREATE INDEX IF NOT EXISTS idx_allloglists_roomdir ON allloglists(roomdir);
+  ";
+
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
+}
+
+function selectEqualAllloglistsList($dbh, $params = array()) {
+  $sql = '
+    SELECT
+      id,
+      roomdir,
+      roomtitle,
+      filename,
+      entries,
+      created
+    FROM allloglists
+    WHERE
+      id IS NOT NULL
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY id DESC
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+function insertAllloglists($dbh, $entrykey, $roomdir, $roomtitle, $filename, $entries) {
+  $sql = '
+    INSERT INTO allloglists (
+      entrykey,
+      roomdir,
+      roomtitle,
+      filename,
+      entries
+  ';
+  $sql = $sql .'
+    ) VALUES (
+      :entrykey,
+      :roomdir,
+      :roomtitle,
+      :filename,
+      :entries
+  ';
+  $sql = $sql .'
+    )
+  ';
+
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':entrykey', $entrykey);
+  $stmt->bindValue(':roomdir', $roomdir);
+  $stmt->bindValue(':roomtitle', $roomtitle);
+  $stmt->bindValue(':filename', $filename);
+  $stmt->bindValue(':entries', $entries);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function selectAllLogListsId($dbh, $id) {
+  $sql = '
+    SELECT
+      id,
+      roomdir,
+      filename
+    FROM allloglists
+    WHERE
+      id = :id
+    LIMIT 1
+  ';
+
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':id', $id);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+function deleteAllLogListsId($dbh, $id) {
+  $sql = '
+    DELETE FROM allloglists
+    WHERE
+      id = :id
+  ';
+
+  $stmt = myPrepare($dbh, $sql);
+  $stmt->bindValue(':id', $id);
+  $results = $stmt->execute();
+  return $results;
 }

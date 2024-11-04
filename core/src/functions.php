@@ -37,6 +37,13 @@ function ht($str) {
   $changeStr = preg_replace('/(&lt;)\/span(&gt;)/i', '</span>', $changeStr);
   $changeStr = preg_replace('/(&lt;)\/div(&gt;)/i', '</div>', $changeStr);
 
+  // ログ一覧用
+  $changeStr = preg_replace('/(&lt;)ul id=(&quot;)chat-entries(&quot;) class=(&quot;)entries-item-group/i', '<ul id="chat-entries" class="entries-item-group', $changeStr);
+  $changeStr = preg_replace('/(&lt;)\/ul(&gt;)/i', '</ul>', $changeStr);
+  $changeStr = preg_replace('/(&lt;)li class=(&quot;)entries-item(&quot;) style=(&quot;)/i', '<li class="entries-item" style="', $changeStr);
+  $changeStr = preg_replace('/;(&quot;) value=(&quot;)1/i', ';" value="', $changeStr);
+  $changeStr = preg_replace('/(&lt;)\/li(&gt;)/i', '</li>', $changeStr);
+
   return $changeStr;
 }
 
@@ -354,13 +361,21 @@ function deleteRoomdir($roomdir) {
     unlink($file);
   }
 
-  rmdir($copyPathDb);
-  rmdir($copyPathSrc);
-  rmdir($copyPathLogs);
-  rmdir($copyPath);
+  if (file_exists($copyPathDb)) {
+    rmdir($copyPathDb);
+  }
+  if (file_exists($copyPathSrc)) {
+    rmdir($copyPathSrc);
+  }
+  if (file_exists($copyPathLogs)) {
+    rmdir($copyPathLogs);
+  }
+  if (file_exists($copyPath)) {
+    rmdir($copyPath);
+  }
 
   if (file_exists($copyPath)) {
-    $errors[] = 'ルームの削除に失敗しました。';
+    $errors[] = 'ルームの削除に失敗しました。「Permission denied」が表示されている場合は、ディレクトリを直接削除後に再度お試しください。';
     return $errors;
   }
 

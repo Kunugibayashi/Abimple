@@ -31,6 +31,7 @@ $dbhChatentries = connectRw(CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRw(CHAT_LOGS_DB);
 $dbhInouthistory = connectRw(ROOM_INOUT_HISTORIES_DB);
 $dbhChatsecrets = connectRw(CHAT_SECRETS_DB);
+$dbhAllLogLists = connectRw(ALL_LOG_LISTS_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0]; // 必ずある想定
@@ -109,7 +110,7 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($chatentries
     $firstDate = $chatlogs[0]['created'];
     $dt = new DateTime($firstDate);
 
-    $logFileName = $dt->format('Ymd_His') ."_" .getPageRoomdir();
+    $logFileName = $dt->format('Ymd_His') ."_" .getPageRoomdir().'.html';
 
     // ログ出力
     $logoutput = function($logFileName, $entrykey, $logoutputFlg) {
@@ -119,10 +120,31 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($chatentries
       $buffer = ob_get_contents();
       ob_end_clean();
 
-      $filePath = OUTPUT_LOG_DIR .$logFileName .'.html';
+      $filePath = OUTPUT_LOG_DIR .$logFileName;
       file_put_contents($filePath, $buffer, LOCK_EX);
     };
     $logoutput($logFileName, $entrykey, 1);
+
+    // roomdir の取得。DBからの取得は読み込みを増やす必要があるため、共通関数で対応
+    $roomdir = getPageRoomdir();
+
+    // ログの中から参加者を取得
+    $doc = new DOMDocument();
+    libxml_use_internal_errors(true);
+    $doc->loadHTMLFile(OUTPUT_LOG_DIR .$logFileName);
+    libxml_clear_errors();
+    $entries = $doc->saveHTML($doc->getElementById('chat-entries'));
+    // 出力時に改行コードが <br> に変換されてしまうため削除
+    $entries = str_replace(array("\r\n", "\r", "\n"), '', $entries);
+
+    // ログ倉庫に登録
+    insertAllloglists($dbhAllLogLists,
+                      $entrykey,
+                      $roomdir,
+                      $chatroom['title'],
+                      $logFileName,
+                      $entries
+                    );
   }
 
   // 余分なログを削除

@@ -5,27 +5,30 @@ require_once('../../core/src/session.php');
 require_once('../../core/src/database.php');
 require_once('../../core/src/administrator.php');
 
+loginOnly();
 adminOnly();
 
 $success = '';
 $errors = array();
 $inputParams = array();
+$user = array();
 
+// 初期ページは指定されたidから
 $inputParams['id'] = inputParam('id', 20);
-$inputParams['roomdir'] = inputParam('roomdir', 20);
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策
   setToken();
 
   // DB接続
-  $dbhRoomlist = connectRw(ROOMS_DB);
+  $dbhAllLogLists = connectRo(ALL_LOG_LISTS_DB);
 
-  $roomlistList = selectRoomsId($dbhRoomlist, $inputParams['id']);
-  $roomlist = $roomlistList[0];
-
-  // データ更新
-  $inputParams = $roomlist;
+  $logLists = selectAllLogListsId($dbhAllLogLists, $inputParams['id']);
+  if (!usedArr($logLists)) {
+    $errors[] = 'ログが存在しません。';
+    goto outputPage;
+  }
+  $logfile = $logLists[0];
 
   goto outputPage;
 }
@@ -34,26 +37,43 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 // CSRF対策
 checkToken();
 
-$errors = deleteRoomdir($inputParams['roomdir']);
-if (usedArr($errors)) {
+// DB接続
+$dbhAllLogLists = connectRw(ALL_LOG_LISTS_DB);
+
+$logLists = selectAllLogListsId($dbhAllLogLists, $inputParams['id']);
+if (!usedArr($logLists)) {
+  $errors[] = $inputParams['id'] .'：ログが存在しません。';
   goto outputPage;
 }
+$logfile = $logLists[0];
 
-// DB接続
-$dbhRoomlist = connectRw(ROOMS_DB);
+// ファイル削除
+$filePath = (INDEX_ROOT. '/chatrooms/rooms/' .$logfile['roomdir'] .'/logs/' .$logfile['filename']);
 
-// 削除
-$result = deleteRooms($dbhRoomlist, $inputParams['id']);
+// ファイルがない場合は削除処理をしない
+if (file_exists($filePath)) {
+  unlink($filePath);
+} else {
+  $success = $success .'ログファイルは削除済みです。';
+}
+
+if (file_exists($filePath)) {
+  $errors[] = 'ログファイルの削除に失敗しました。';
+  return $errors;
+}
+
+// DB削除
+$result = deleteAllLogListsId($dbhAllLogLists, $inputParams['id']);
 if (!$result) {
   $errors[] = '削除に失敗しました。もう一度お試しください。';
   goto outputPage;
 }
 
-$success = '削除しました。';
+$success = $success .'一覧から表示情報を削除しました。';
 
 /* goto文はコードが煩雑になるため使用するべきではないが、
- * ソースコードが複雑になるため、画面表示phpのページ出力開始ラベルのみ使用する。
- */
+  * ソースコードが複雑になるため、画面表示phpのページ出力開始ラベルのみ使用する。
+  */
 outputPage:
 ?>
 <!DOCTYPE html>
@@ -62,7 +82,7 @@ outputPage:
   <meta name="robots" content="noindex,nofollow,noarchive" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
-  <title>チャットルーム削除</title>
+  <title>ログ削除</title>
   <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
   <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
@@ -77,12 +97,14 @@ outputPage:
 </head>
 <body>
 <div class="content-wrap">
-  <h3 class="frame-title">チャットルーム削除</h3>
+  <h3 class="frame-title">ログ削除確認</h3>
 
   <?php if (isAdmin()) { /* 管理ユーザーは常に表示 */ ?>
     <div class="note-wrap">
       <p class="note">
         管理ユーザーでログインしています。<br>
+        管理ユーザーは<span class="point">ログの「削除」のみが可能</span>です。<br>
+        出力されたログファイルの内容を修正したい場合は chatrooms/rooms/《roomdir》/logs 配下のファイルを編集してください。<br>
       </p>
     </div>
   <?php } ?>
@@ -108,11 +130,20 @@ outputPage:
   <?php if (!usedStr($success) && !usedArr($errors)) { /* 成功でもエラーでもない場合にフォームを表示 */ ?>
     <div class="note-wrap">
       <p class="note">
-        <span class="point"><?php echo h($inputParams['roomdir']); ?></span> を削除します。<br>
+        <span class="point"><?php echo h($logfile['id']); ?>：<?php echo h($logfile['filename']); ?></span> を削除します。<br>
       </p>
       <p class="note">
-        ルーム内で設定した内容、ルーム内のログも<span class="point">すべて削除</span>されます。<br>
-        ログ倉庫の表示は「ファイル無し」となります。ログ倉庫の一覧を削除したい場合は、ログ倉庫から削除を行ってください。<br>
+        以下を確認してください。<br>
+      </p>
+      <p class="note">
+        削除を実行した場合、各ルーム内のログファイルが削除されます。<br>
+        <span class="point">削除されたファイルは復元できません。</span><br>
+      </p>
+      <p class="note">
+        「ファイル無し」が表示されているデータの場合、ログファイルは削除済みです。<br>
+        表示情報のみ削除されます。<span class="point">削除された表示情報は復元できません。</span><br>
+      </p>
+      <p class="note">
         よろしいですか？<br>
       </p>
     </div>
@@ -121,25 +152,27 @@ outputPage:
     </div>
     <form id="delete-form" class="hidden-form" action="./delete.php" method="POST">
       <input type="hidden" name="token" value="<?php echo h(getToken()); ?>">
-      <input type="hidden" name="roomdir" value="<?php echo h($inputParams['roomdir']); ?>">
       <input type="hidden" name="id" value="<?php echo h($inputParams['id']); ?>">
     </form>
   <?php } ?>
 
-  <div class="page-back-wrap">
-    <button type="button" class="tolist-button">一覧に戻る</button>
-  </div>
+  <?php if (usedStr($success) || usedArr($errors)) { /* 成功かエラーが起こった場合 */ ?>
+    <div class="page-back-wrap">
+      <button type="button" class="tolist-button">一覧に戻る</button>
+      <button type="button" class="sitetop-button">サイトトップへ</button><!-- jQuery -->
+    </div>
+  <?php } ?>
 
 </div>
 <script> <!-- 各ボタン制御 -->
 jQuery(function(){
-  // 移動ボタン
-  jQuery('button.tolist-button').on('click', function(){
-    window.location.href = "<?php echo h(getPrev()); ?>";
-  });
   jQuery('button.delete-button').on('click', function(){
     var deleteForm = jQuery('form#delete-form');
     deleteForm.submit();
+  });
+  // 移動ボタン
+  jQuery('button.tolist-button').on('click', function(){
+    window.location.href = "<?php echo h(getPrev()); ?>";
   });
 });
 </script>

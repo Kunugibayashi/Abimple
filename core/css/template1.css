@@ -512,6 +512,10 @@ th.cell-status { min-width: 6em; width: 6em; }
 th.cell-inoutdate { min-width: 14em; width: 14em; }
 th.cell-inoutroomtitle { min-width: 15em; width: 15em; }
 th.cell-inoutmessage { min-width: 10em; width: 30em; }
+th.cell-roomtitle { min-width: 20em; width: 20em; }
+th.cell-logentries { min-width: 10em; }
+th.cell-logfilename { min-width: 20em; width: 20em; }
+th.cell-action1button { min-width: 8em; width: 8em; }
 
 /* お知らせ */
 div.infomation-table-wrap th {
@@ -551,12 +555,6 @@ div.my-outbox-table-wrap th {
   color: #e1ece1;
 }
 
-/* ログリスト */
-div.loglist-table-wrap th {
-  background-color: #bccc9c;
-  color: #61694d;
-}
-
 /* 発言編集 */
 div.logedit-table-wrap th {
   background-color: #ded2c2;
@@ -573,6 +571,12 @@ div.roomlist-table-wrap th {
 div.inouthistory-table-wrap th {
   background-color: #fff4db;
   color: #392c1f;
+}
+
+/* ログ倉庫 */
+div.logstorage-table-wrap th {
+  background-color: #bccc9c;
+  color: #61694d;
 }
 
 
@@ -733,18 +737,6 @@ div.page-back-wrap>button {
   text-align: center;
   white-space: nowrap;
   filter: none;
-}
-
-/* ****************************************************************************
- * 過去ログ一覧
- * ****************************************************************************
- */
-ul#chat-entries {
-  display: flex;
-}
-ul#chat-entries li.entries-item {
-  margin-right: 0.5em;
-  border-radius: 0.2em;
 }
 
 /* ****************************************************************************
@@ -940,4 +932,21 @@ div.manual-wrap {
 }
 div.manual-menu-wrap {
   margin: 2em 0;
+}
+
+/* ****************************************************************************
+ * ログ倉庫
+ * ****************************************************************************
+ */
+ul.entries-item-group {
+  display: flex;
+}
+li.entries-item,
+li.entries-no-item {
+  margin-right: 0.5em;
+  border-radius: 0.2em;
+  padding: 0.2em;
+}
+td.scroll {
+  overflow-x: auto;
 }
