@@ -120,7 +120,7 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($chatentries
       $buffer = ob_get_contents();
       ob_end_clean();
 
-      $filePath = OUTPUT_LOG_DIR .$logFileName;
+      $filePath = ALL_LOG_OUTPUT_DIR .$logFileName;
       file_put_contents($filePath, $buffer, LOCK_EX);
     };
     $logoutput($logFileName, $entrykey, 1);
@@ -131,7 +131,7 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($chatentries
     // ログの中から参加者を取得
     $doc = new DOMDocument();
     libxml_use_internal_errors(true);
-    $doc->loadHTMLFile(OUTPUT_LOG_DIR .$logFileName);
+    $doc->loadHTMLFile(ALL_LOG_OUTPUT_DIR .$logFileName);
     libxml_clear_errors();
     $entries = $doc->saveHTML($doc->getElementById('chat-entries'));
     // 出力時に改行コードが <br> に変換されてしまうため削除

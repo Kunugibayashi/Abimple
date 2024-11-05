@@ -25,5 +25,3 @@ define('CHAT_LOG_TEMPLATE3', 'logtemplate3');
 define('OMIKUJI1_ID', 'omi1');
 define('OMIKUJI2_ID', 'omi2');
 define('OMIKUJI3_ID', 'omi3');
-// ログ出力場所
-define('OUTPUT_LOG_DIR', '../logs/');

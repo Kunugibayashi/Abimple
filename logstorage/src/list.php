@@ -107,9 +107,9 @@ outputPage:
             <td><?php echo h($value['roomtitle']); ?></td>
             <td class="scroll"><?php echo ht($value['entries']); ?></td>
             <?php
-              $filePath = (INDEX_ROOT. '/chatrooms/rooms/' .$value['roomdir'] .'/logs/' .$value['filename']);
+              $filePath = (ALL_LOG_OUTPUT_DIR .$value['filename']);
               // リンクURLをチェック用ファイルパスと同じにするとローカルで正しく取得できないため、絶対パスで指定
-              $filePathLink = (SITE_ROOT. '/chatrooms/rooms/' .$value['roomdir'] .'/logs/' .$value['filename']);
+              $filePathLink = (ALL_LOG_URL_LINK .$value['filename']);
               if (file_exists($filePath)) {
             ?>
               <td><a href="<?php echo h($filePathLink); ?>"><?php echo h($value['filename']); ?></a></td>
