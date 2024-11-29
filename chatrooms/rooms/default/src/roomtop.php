@@ -225,12 +225,14 @@ div.form-button-wrap {
     border-bottom: solid 2px;
     font-size: 3em;
     text-align: center;
+    word-break: break-all;
   }
   /* チャットルーム説明 */
   div.chatconfig-guide {
     margin: 1em 0;
     height: 14em;
     overflow: auto;
+    word-break: break-all;
   }
 <?php } ?>
 <?php if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE1
@@ -268,6 +270,7 @@ div.form-button-wrap {
     display: flex;
     justify-content: center;
     align-items: center;
+    word-break: break-all;
   }
   h3.chatconfig-title {
     letter-spacing: 0.2em;
@@ -276,6 +279,7 @@ div.form-button-wrap {
   div.chatconfig-guide {
     margin: 1em;
     overflow: auto;
+    word-break: break-all;
   }
 <?php } ?>
 <?php if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE2) { ?>

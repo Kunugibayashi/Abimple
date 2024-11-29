@@ -104,7 +104,7 @@ outputPage:
       <p class="note">
         管理ユーザーでログインしています。<br>
         管理ユーザーは<span class="point">ログの「削除」のみが可能</span>です。<br>
-        出力されたログファイルの内容を修正したい場合は chatrooms/rooms/《roomdir》/logs 配下のファイルを編集してください。<br>
+        出力されたログファイルの内容を修正したい場合は logstorage/logs/ 配下のファイルを編集してください。<br>
       </p>
     </div>
   <?php } ?>

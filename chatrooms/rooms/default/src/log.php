@@ -267,20 +267,23 @@ div.content-log-wrap {
 /* ヘッダー */
 header.chatroom-header-wrap {
   display: flex;
-  align-items: flex-end;
+  align-items: flex-start;
   justify-content: space-between;
   margin: 0.5em;
   border-bottom: solid 2px;
 }
 h3.chatroom-header-title {
   font-size: 1.5em;
+  word-break: break-all;
 }
 ul.chatroom-item-group {
   display: flex;
+  min-width: 8em;
 }
 li.chatroom-item-title {
   font-weight: bold;
   font-size: 1em;
+  word-break: break-all;
 }
 div.chatroom-item-wrap {
   font-size: 0.9em;
@@ -338,6 +341,7 @@ div.chatroom-header-guide {
 /* 備考ポップアップ */
 div.chat-fullname {
   position: relative;
+  word-break: break-all;
 }
 div.chat-fullname:hover div.chat-memo {
   display: block;
@@ -357,23 +361,26 @@ div.chat-memo {
   left : -1%;
   font-size: 0.8em;
   font-weight: normal;
+  word-break: break-all;
 }
 /* システム */
 div.chat-narr-wrap {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   opacity: 0.7;
   margin: 0.5em 0 0.5em 2em;
 }
 div.chat-narr-fullname {
   margin-right: 0.5em;
   font-weight: bold;
+  min-width: 5em;
 }
 div.chat-narr-fullname:after {
   content:"≫";
 }
 div.chat-narr-message {
   margin-right: 0 0.5em;
+  word-break: break-all;
 }
 div.chat-narr-message>span.fullname {
   font-weight: bold;
@@ -381,6 +388,7 @@ div.chat-narr-message>span.fullname {
 div.chat-narr-created {
   font-size: 0.5em;
   margin-left: 2em;
+  min-width: 12em;
 }
 <?php if ( $chatroom['logtemplate'] === CHAT_LOG_DEFAULT
         || $chatroom['logtemplate'] === CHAT_LOG_TEMPLATE1
@@ -415,6 +423,7 @@ div.chat-narr-created {
     margin: 0.2em 0;
     padding: 0.5em 0;
     line-height: 1.5;
+    word-break: break-all;
   }
 <?php } ?>
 <?php if ($chatroom['logtemplate'] === CHAT_LOG_TEMPLATE1) { ?>

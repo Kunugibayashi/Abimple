@@ -111,8 +111,7 @@ outputPage:
         <span class="point"><?php echo h($inputParams['roomdir']); ?></span> を削除します。<br>
       </p>
       <p class="note">
-        ルーム内で設定した内容、ルーム内のログも<span class="point">すべて削除</span>されます。<br>
-        ログ倉庫の表示は「ファイル無し」となります。ログ倉庫の一覧を削除したい場合は、ログ倉庫から削除を行ってください。<br>
+        ルーム内で設定した内容も<span class="point">すべて削除</span>されます。ログは削除されません。<br>
         よろしいですか？<br>
       </p>
     </div>

@@ -275,7 +275,7 @@ outputPage:
       <ul class="form-row">
         <li class="form-col-title">ルームイメージ画像URL<div class="optional-mark"></div></li>
         <li class="form-col-item"><input type="text" name="bgimage" value="<?php echo h($inputParams['bgimage']); ?>" maxlength="1000"></li>
-        <li class="form-col-note">最大 1000 文字。絶対パス指定を推奨。</li>
+        <li class="form-col-note">最大 1000 文字。絶対パス指定を推奨。 例）/Abimple/assets/img/sample.jpg</li>
       </ul>
       <ul class="form-row">
         <li class="form-col-title">おみくじ1を表示するか<div class="mandatory-mark"></div></li>
