@@ -221,9 +221,7 @@ outputPage:
           <div class="select-wrap">
             <select name="logtemplate">
               <option <?php echo selectedOption($inputParams['logtemplate'], CHAT_LOG_DEFAULT); ?> value="<?php echo h(CHAT_LOG_DEFAULT); ?>">デフォルト</option>
-              <option <?php echo selectedOption($inputParams['logtemplate'], CHAT_LOG_TEMPLATE1); ?> value="<?php echo h(CHAT_LOG_TEMPLATE1); ?>">シンプル上線</option>
-              <option <?php echo selectedOption($inputParams['logtemplate'], CHAT_LOG_TEMPLATE2); ?> value="<?php echo h(CHAT_LOG_TEMPLATE2); ?>">シンプル下線</option>
-              <option <?php echo selectedOption($inputParams['logtemplate'], CHAT_LOG_TEMPLATE3); ?> value="<?php echo h(CHAT_LOG_TEMPLATE3); ?>">背景透明色下線</option>
+              <option <?php echo selectedOption($inputParams['logtemplate'], CHAT_LOG_TEMPLATE1); ?> value="<?php echo h(CHAT_LOG_TEMPLATE1); ?>">背景色なし情報量重視</option>
             </select>
           </div>
         </li>

@@ -19,8 +19,6 @@ define('CHAT_TOP_TEMPLATE3', 'toptemplate3');
 // チャットログ
 define('CHAT_LOG_DEFAULT', 'default');
 define('CHAT_LOG_TEMPLATE1', 'logtemplate1');
-define('CHAT_LOG_TEMPLATE2', 'logtemplate2');
-define('CHAT_LOG_TEMPLATE3', 'logtemplate3');
 // おみくじID
 define('OMIKUJI1_ID', 'omi1');
 define('OMIKUJI2_ID', 'omi2');

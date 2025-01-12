@@ -109,8 +109,8 @@ $chatlogs = selectEqualChatlogs($dbhChatlogs, 10000, [
 ]);
 
 if (!usedArr($chatlogs)) {
- echo 'エントリーキーに対応するログがありません。';
- exit;
+  echo 'エントリーキーに対応するログがありません。';
+  exit;
 }
 
 
@@ -199,45 +199,32 @@ outputPage:
       <?php foreach ($chatlogs as $key => $value) { ?>
         <?php if ($value['fullname'] === CHAT_LOG_SYSTEM_NAME) {  /* システム */  ?>
           <div class="chat-narr-wrap">
-            <div class="chat-narr-fullname"><?php echo h($value['fullname']); ?></div>
-            <div class="chat-narr-message"><?php echo ht($value['message']); ?></div>
-            <div class="chat-narr-created"><?php echo h($value['created']); ?></div>
+            <span class="chat-narr-fullname"><?php echo h($value['fullname']); ?></span>
+            <span class="chat-narr-arrow">≫</span>
+            <span class="chat-narr-message"><?php echo ht($value['message']); ?></span>
+            <span class="chat-narr-created"><?php echo h($value['created']); ?></span>
             <div class="entrykey"><?php echo h($value['entrykey']); ?></div>
           </div>
-        <?php } else if ($chatroom['logtemplate'] === CHAT_LOG_TEMPLATE3) { ?>
-          <div class="chat-wrap" style="color: <?php echo h($value['color']); ?>;">
-            <div class="chat-line-wrap">
-              <div class="chat-fullname">
-                <?php if ($value['whisperflg'] != 0) {  /* ささやき */  ?>
-                  （<?php echo h($value['fullname']); ?>→<?php echo h($value['wtofullname']); ?>）
-                <?php } else {  ?>
-                  <?php echo h($value['fullname']); ?>
-                  <div class="chat-memo">備考：<?php echo h($value['memo']); ?></div>
-                <?php } ?>
+        <?php } else { ?>
+            <?php if ($chatroom['logtemplate'] === CHAT_LOG_TEMPLATE1) { ?>
+              <div class="chat-wrap" style="background-color: unset; color: <?php echo h($value['color']); ?>;">
+            <?php } else { ?>
+              <div class="chat-wrap" style="background-color: <?php echo h($value['bgcolor']); ?>; color: <?php echo h($value['color']); ?>;">
+            <?php } ?>
+                <span class="chat-fullname">
+                  <?php if ($value['whisperflg'] != 0) {  /* ささやき */  ?>
+                    （<?php echo h($value['fullname']); ?>→<?php echo h($value['wtofullname']); ?>）
+                  <?php } else {  ?>
+                    <?php echo h($value['fullname']); ?>
+                    <div class="chat-memo">備考：<?php echo h($value['memo']); ?></div>
+                  <?php } ?>
+                </span>
+                <span class="chat-arrow">≫</span>
+                <span class="chat-message"><?php echo ht($value['message']); ?></span>
+                <span class="chat-editing"><?php echo h(($value['modified'] == $value['created']) ? '' : '（編集済み）') ?></span>
+                <span class="chat-created"><?php echo h($value['created']); ?></span>
+                <div class="entrykey"><?php echo h($value['entrykey']); ?></div>
               </div>
-              <div class="chat-created"><?php echo h($value['created']); ?></div>
-              <div class="chat-editing"><?php echo h(($value['modified'] == $value['created']) ? '' : '（編集済み）') ?></div>
-            </div>
-            <div class="chat-message" style="<?php echo h("border-bottom: solid 1px ".$value['bgcolor'] .";")?>"><?php echo ht($value['message']); ?></div>
-            <div class="entrykey"><?php echo h($value['entrykey']); ?></div>
-          </div>
-        <?php } else { /* デフォルト */ ?>
-          <div class="chat-wrap" style="background-color: <?php echo h($value['bgcolor']); ?>; color: <?php echo h($value['color']); ?>;">
-            <div class="chat-line-wrap">
-              <div class="chat-fullname">
-                <?php if ($value['whisperflg'] != 0) {  /* ささやき */  ?>
-                  （<?php echo h($value['fullname']); ?>→<?php echo h($value['wtofullname']); ?>）
-                <?php } else {  ?>
-                  <?php echo h($value['fullname']); ?>
-                  <div class="chat-memo">備考：<?php echo h($value['memo']); ?></div>
-                <?php } ?>
-              </div>
-              <div class="chat-created"><?php echo h($value['created']); ?></div>
-              <div class="chat-editing"><?php echo h(($value['modified'] == $value['created']) ? '' : '（編集済み）') ?></div>
-            </div>
-            <div class="chat-message"><?php echo ht($value['message']); ?></div>
-            <div class="entrykey"><?php echo h($value['entrykey']); ?></div>
-          </div>
         <?php } ?>
       <?php } ?>
     <?php } ?>
@@ -259,7 +246,7 @@ body {
 li {
   list-style-type: none;
 }
-div.content-log-wrap {
+.content-log-wrap {
   margin: 0;
   padding: 0;
   display: unset;
@@ -285,7 +272,7 @@ li.chatroom-item-title {
   font-size: 1em;
   word-break: break-all;
 }
-div.chatroom-item-wrap {
+.chatroom-item-wrap {
   font-size: 0.9em;
 }
 /* エントリーキー */
@@ -293,7 +280,7 @@ div.entrykey {
   display: none;
 }
 /* 参加者 */
-div.entries-wrap {
+.entries-wrap {
   display: flex;
   align-items: center;
   margin-left: 0.5rem;
@@ -319,14 +306,15 @@ li.entries-no-item {
 h3.chatroom-header-title {
   position: relative;
 }
-h3.chatroom-header-title:hover div.chatroom-header-guide {
+h3.chatroom-header-title:hover .chatroom-header-guide {
+  z-index: 10;
   display: block;
   position: absolute;
   top: 2.5em;
   left: 2em;
   line-height: 1.2em;
 }
-div.chatroom-header-guide {
+.chatroom-header-guide {
   position: absolute;
   display: none;
   padding: 1em;
@@ -339,18 +327,19 @@ div.chatroom-header-guide {
   font-weight: normal;
 }
 /* 備考ポップアップ */
-div.chat-fullname {
+.chat-fullname {
   position: relative;
   word-break: break-all;
 }
-div.chat-fullname:hover div.chat-memo {
+.chat-fullname:hover .chat-memo {
+  z-index: 10;
   display: block;
   position: absolute;
   top: 2em;
   left: 2em;
   line-height: 1.2em;
 }
-div.chat-memo {
+.chat-memo {
   position: absolute;
   display: none;
   padding: 1em;
@@ -364,77 +353,62 @@ div.chat-memo {
   word-break: break-all;
 }
 /* システム */
-div.chat-narr-wrap {
-  display: flex;
-  align-items: flex-end;
+.chat-narr-wrap {
   opacity: 0.7;
   margin: 0.5em 0 0.5em 2em;
 }
-div.chat-narr-fullname {
-  margin-right: 0.5em;
+.chat-narr-arrow {
+  margin: 0 0.5em 0 0.2em;
+}
+.chat-narr-fullname {
   font-weight: bold;
-  min-width: 5em;
 }
-div.chat-narr-fullname:after {
-  content:"≫";
-}
-div.chat-narr-message {
+.chat-narr-message {
   margin-right: 0 0.5em;
   word-break: break-all;
 }
-div.chat-narr-message>span.fullname {
+.chat-narr-message>span.fullname {
   font-weight: bold;
 }
-div.chat-narr-created {
+.chat-narr-created {
   font-size: 0.5em;
-  margin-left: 2em;
   min-width: 12em;
+  opacity: 0.3;
 }
-<?php if ( $chatroom['logtemplate'] === CHAT_LOG_DEFAULT
-        || $chatroom['logtemplate'] === CHAT_LOG_TEMPLATE1
-        || $chatroom['logtemplate'] === CHAT_LOG_TEMPLATE2
-        || $chatroom['logtemplate'] === CHAT_LOG_TEMPLATE3
-      ) {
-?>
-  div.log-wrap {
-    margin: 1em;
+.log-wrap {
+  margin: 1em;
+}
+/* 発言欄 */
+<?php if ($chatroom['logtemplate'] === CHAT_LOG_TEMPLATE1) { ?>
+  .chat-wrap {
+    margin: 0.2em 0;
+    padding: 0;
   }
-  /* 発言欄 */
-  div.chat-wrap {
+<?php } else { ?>
+  .chat-wrap {
+    align-items: center;
     margin: 0.5em;
     padding: 1em;
     border-radius: 1em;
   }
-  div.chat-editing,
-  div.chat-created {
-    font-size: 0.8em;
-    opacity: 0.3;
-  }
-  div.chat-line-wrap {
-    display: flex;
-    align-items: flex-end;
-  }
-  div.chat-fullname {
-    font-weight: bold;
-    margin-right: 1em;
-  }
-  div.chat-message {
-    line-height: 1.5em;
-    margin: 0.2em 0;
-    padding: 0.5em 0;
-    line-height: 1.5;
-    word-break: break-all;
-  }
 <?php } ?>
-<?php if ($chatroom['logtemplate'] === CHAT_LOG_TEMPLATE1) { ?>
-  div.chat-message {
-    border-top: solid 1px;
-  }
-<?php } ?>
-<?php if ($chatroom['logtemplate'] === CHAT_LOG_TEMPLATE2) { ?>
-  div.chat-message {
-    border-bottom: solid 1px;
-  }
-<?php } ?>
+.chat-arrow {
+  margin: 0 0.5em 0 0.2em;
+}
+.chat-editing,
+.chat-created {
+  font-size: 0.5em;
+  opacity: 0.3;
+}
+.chat-fullname {
+  font-weight: bold;
+}
+.chat-message {
+  line-height: 1.5em;
+  margin: 0.2em 0;
+  padding: 0.5em 0;
+  line-height: 1.5;
+  word-break: break-all;
+}
 </body>
 </html>
