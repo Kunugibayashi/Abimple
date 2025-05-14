@@ -67,6 +67,16 @@ outputPage:
     </div>
   <?php } ?>
 
+
+  <?php if (isLogin()) { /* ログイン時 */ ?>
+    <?php if (usedArr($pages)) { /* 登録がある場合に表示 */ ?>
+      <div class="dl-all-log-wrap">
+        <a href="./localindex.php" class="link-pseudo-button" download="index.html">ローカル用IndexファイルDL</a>
+        <a href="./dlalldata.php" class="link-pseudo-button">一括DL</a>
+      </div>
+    <?php } ?>
+  <?php } ?>
+
   <?php if (!usedArr($pages)) { /* 登録がない場合に表示 */ ?>
     <div class="note-wrap">
       <p class="note">
@@ -107,9 +117,9 @@ outputPage:
             <td><?php echo h($value['roomtitle']); ?></td>
             <td class="scroll"><?php echo ht($value['entries']); ?></td>
             <?php
-              $filePath = (ALL_LOG_OUTPUT_DIR .$value['filename']);
+              $filePath = (ALL_LOG_FILE_DIR .$value['filename']);
               // リンクURLをチェック用ファイルパスと同じにするとローカルで正しく取得できないため、絶対パスで指定
-              $filePathLink = (ALL_LOG_URL_LINK .$value['filename']);
+              $filePathLink = (ALL_LOG_FILE_URL_LINK .$value['filename']);
               if (file_exists($filePath)) {
             ?>
               <td><a href="<?php echo h($filePathLink); ?>"><?php echo h($value['filename']); ?></a></td>

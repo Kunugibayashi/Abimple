@@ -4,3 +4,4 @@
 user-edit.css
 chatrooms/rooms/*
 !chatrooms/rooms/default
+logstorage/logzip/*.zip

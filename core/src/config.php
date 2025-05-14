@@ -56,7 +56,22 @@ define('SITE_LETTER_OPEN', 1);
  * CCSデザイン時は以下を指定して下さい。毎回読み込みが行われます。
  * define('SITE_UPDATE', time());
  */
-define('SITE_UPDATE', '202411291800');
+define('SITE_UPDATE', '202505150001');
+
+/* 一括DLファイル名。
+ * 編集任意。
+ *
+ * .zip は消さないようにしてください。
+ */
+define('DL_ALL_LOG_ZIP_NAME', 'AllSiteLogData.zip');
+
+/* ファイル出力時の使用メモリ。
+ * 編集任意。
+ *
+ * 値が大きいほどエラーが起きにくくなります。
+ * レンタルサーバーの設定によっては反映されない場合があります。
+ */
+define('PHP_MEMORY_LIMIT', '3072M');
 
 /* 1ページに表示する項目数。
  * 編集任意。
@@ -219,6 +234,8 @@ define('CHAT_LOGS_DB', './db/chatlogs.db');
 define('CHAT_SECRETS_DB', './db/chatchatsecrets.db');
 define('INBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/inboxletters.db'));
 define('OUTBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/outboxletters.db'));
-define('ALL_LOG_OUTPUT_DIR', (INDEX_ROOT.'/logstorage/logs/'));
-define('ALL_LOG_URL_LINK', (SITE_ROOT.'/logstorage/logs/'));
+define('ALL_LOG_PATH', '/logstorage/logs/');
+define('ALL_LOG_ZIP_DIR', INDEX_ROOT.'/logstorage/logzip/');
+define('ALL_LOG_FILE_DIR', (INDEX_ROOT.ALL_LOG_PATH));
+define('ALL_LOG_FILE_URL_LINK', (SITE_ROOT.ALL_LOG_PATH));
 define('ALL_LOG_LISTS_DB', (INDEX_ROOT.'/logstorage/src/db/allloglists.db'));

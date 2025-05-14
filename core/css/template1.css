@@ -951,3 +951,6 @@ li.entries-no-item {
 td.scroll {
   overflow-x: auto;
 }
+div.dl-all-log-wrap {
+  text-align: right;
+}
