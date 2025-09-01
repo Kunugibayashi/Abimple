@@ -194,16 +194,16 @@ ul, li {
 header.header {
   display: flex;
   justify-content: flex-end;
-  font-size: 0.8em;
+  font-size: 0.8rem;
   color: <?php echo h($chatroom['bgcolor']); ?>;
   background-color: <?php echo h($chatroom['color']); ?>;
 }
 ul.header-item-group {
   display: flex;
-  margin: 0.5em;
+  margin: 0.5rem;
 }
 li.header-item {
-  padding: 0 1em;
+  padding: 0 1rem;
   list-style-type: none;
 }
 li.header-item>a {
@@ -219,7 +219,7 @@ div.chatroom-frame-wrap {
 div.content-wrap {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 2em 30em 1fr;
+  grid-template-rows: 2rem 30rem 1fr;
   overflow: auto;
 }
 header.header {
@@ -238,7 +238,7 @@ div.chatroom-frame-wrap {
 </style>
 <style>
 div.chatroom-setting-wrap {
-  padding: 2em;
+  padding: 2rem;
 }
 /* 入力フォーム */
 div.form-wrap {
@@ -246,20 +246,20 @@ div.form-wrap {
   justify-content: center;
 }
 form {
-  margin: 1em 0;
-  padding: 2em;
-  border-radius: 1em;
+  margin: 1rem 0;
+  padding: 2rem;
+  border-radius: 1rem;
   border: solid 1px;
 }
 ul.form-row {
-  margin: 1em 0;
+  margin: 1rem 0;
 }
 li.form-col-title {
   font-weight: bold;
   margin-bottom: 2px;
 }
 li.form-col-note {
-  font-size: 0.8em;
+  font-size: 0.8rem;
   opacity: 0.6;
 }
 div.form-button-wrap {
@@ -271,37 +271,37 @@ input[name="title"] {
 }
 textarea[name="guide"] {
   width: 70vw;
-  height: 5em;
+  height: 5rem;
 }
 /* ページを戻る */
 div.page-back-wrap {
   display: flex;
   justify-content: center;
-  margin-top: 2em;
+  margin-top: 2rem;
 }
 /* メッセージ */
 div.mes-wrap {
   display: flex;
   justify-content: center;
-  margin: 2em 0;
+  margin: 2rem 0;
 }
 /* 戻るボタン */
 div.page-back-wrap {
   display: flex;
   justify-content: center;
-  margin-top: 2em;
+  margin-top: 2rem;
 }
 div.page-back-wrap>button:active,
 div.page-back-wrap>button:hover,
 div.page-back-wrap>button {
-  margin: 0 1em;
-  padding: 1em;
+  margin: 0 1rem;
+  padding: 1rem;
   background-color: #3e463b;
   color: #e3e2dc;
   background-image: unset;
   background-origin: unset;
   border: unset;
-  border-radius: 10em;
+  border-radius: 10rem;
   box-shadow: unset;
   display: inline-block;
   line-height: 1;

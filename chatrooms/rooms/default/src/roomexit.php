@@ -237,16 +237,16 @@ ul, li {
 header.header {
   display: flex;
   justify-content: flex-end;
-  font-size: 0.8em;
+  font-size: 0.8rem;
   color: <?php echo h($chatroom['bgcolor']); ?>;
   background-color: <?php echo h($chatroom['color']); ?>;
 }
 ul.header-item-group {
   display: flex;
-  margin: 0.5em;
+  margin: 0.5rem;
 }
 li.header-item {
-  padding: 0 1em;
+  padding: 0 1rem;
   list-style-type: none;
 }
 li.header-item>a {
@@ -260,7 +260,7 @@ div.chatroom-frame-wrap {
 div.content-wrap {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 2em 20em 1fr;
+  grid-template-rows: 2rem 20rem 1fr;
 }
 header.header {
   grid-column: 1 / 3;
@@ -279,28 +279,28 @@ div.exit-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 3em;
+  margin: 3rem;
 }
 div.page-back-wrap {
-  margin-top: 2em;
+  margin-top: 2rem;
 }
 /* 戻るボタン */
 div.page-back-wrap {
   display: flex;
   justify-content: center;
-  margin-top: 2em;
+  margin-top: 2rem;
 }
 div.page-back-wrap>button:active,
 div.page-back-wrap>button:hover,
 div.page-back-wrap>button {
-  margin: 0 1em;
-  padding: 1em;
+  margin: 0 1rem;
+  padding: 1rem;
   background-color: #3e463b;
   color: #e3e2dc;
   background-image: unset;
   background-origin: unset;
   border: unset;
-  border-radius: 10em;
+  border-radius: 10rem;
   box-shadow: unset;
   display: inline-block;
   line-height: 1;

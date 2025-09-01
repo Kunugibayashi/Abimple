@@ -239,7 +239,7 @@ ul, li {
 /* レイアウト */
 div.content-wrap {
   display: grid;
-  grid-template-rows: 2em 28em 1fr;
+  grid-template-rows: 2rem 28rem 1fr;
 }
 header.header {
   grid-row: 1 / 2;
@@ -255,16 +255,16 @@ div.chatroom-frame-wrap {
 header.header {
   display: flex;
   justify-content: flex-end;
-  font-size: 0.8em;
+  font-size: 0.8rem;
   color: <?php echo h($chatroom['bgcolor']); ?>;
   background-color: <?php echo h($chatroom['color']); ?>;
 }
 ul.header-item-group {
   display: flex;
-  margin: 0.5em;
+  margin: 0.5rem;
 }
 li.header-item {
-  padding: 0 1em;
+  padding: 0 1rem;
   list-style-type: none;
 }
 li.header-item>a {
@@ -280,22 +280,22 @@ div.roomchat-form-wrap {
   justify-content: center;
 }
 div.form-wrap {
-  margin: 1em 0;
+  margin: 1rem 0;
 }
 ul.form-row {
   display: flex;
 }
 li.form-col-title {
-  width: 8em;
-  padding: 0.2em;
-  margin-top: 0.6em;
+  width: 8rem;
+  padding: 0.2rem;
+  margin-top: 0.6rem;
 }
 li.form-col-item {
-  margin-top: 0.5em;
+  margin-top: 0.5rem;
 }
 div.form-button-wrap {
-  margin-top: 2em;
-  margin-right: 2em;
+  margin-top: 2rem;
+  margin-right: 2rem;
   display: flex;
   justify-content: flex-end;
 }
@@ -305,38 +305,38 @@ div.form-col-item-group {
 }
 select[name="inoutmesflg"],
 select[name="characterid"] {
-  width: 20em;
+  width: 20rem;
 }
 input[name="color"],
 input[name="bgcolor"] {
-  width: 8em;
+  width: 8rem;
 }
 input[name="memo"] {
-  width: 20em;
+  width: 20rem;
 }
 /* チャットルームタイトル */
 h3.chatconfig-title {
   border-bottom: solid 2px;
-  font-size: 2em;
+  font-size: 2rem;
   text-align: center;
 }
 /* 戻るボタン */
 div.page-back-wrap {
   display: flex;
   justify-content: center;
-  margin-top: 2em;
+  margin-top: 2rem;
 }
 div.page-back-wrap>button:active,
 div.page-back-wrap>button:hover,
 div.page-back-wrap>button {
-  margin: 0 1em;
-  padding: 1em;
+  margin: 0 1rem;
+  padding: 1rem;
   background-color: #3e463b;
   color: #e3e2dc;
   background-image: unset;
   background-origin: unset;
   border: unset;
-  border-radius: 10em;
+  border-radius: 10rem;
   box-shadow: unset;
   display: inline-block;
   line-height: 1;

@@ -458,7 +458,7 @@ jQuery(function(){
 <style>
 input[name="color"],
 input[name="bgcolor"] {
-  width: 8em;
+  width: 8rem;
 }
 </style>
 </body>

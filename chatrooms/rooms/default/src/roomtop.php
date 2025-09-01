@@ -141,7 +141,7 @@ ul, li {
 /* レイアウト */
 div.content-wrap {
   display: grid;
-  grid-template-rows: 2em 28em 1fr;
+  grid-template-rows: 2rem 28rem 1fr;
 }
 header.header {
   grid-row: 1 / 2;
@@ -157,16 +157,16 @@ div.chatroom-frame-wrap {
 header.header {
   display: flex;
   justify-content: flex-end;
-  font-size: 0.8em;
+  font-size: 0.8rem;
   color: <?php echo h($chatroom['bgcolor']); ?>;
   background-color: <?php echo h($chatroom['color']); ?>;
 }
 ul.header-item-group {
   display: flex;
-  margin: 0.5em;
+  margin: 0.5rem;
 }
 li.header-item {
-  padding: 0 1em;
+  padding: 0 1rem;
   list-style-type: none;
 }
 li.header-item>a {
@@ -188,12 +188,12 @@ ul.form-row {
   display: flex;
 }
 li.form-col-title {
-  width: 8em;
-  padding: 0.2em;
-  margin-top: 0.6em;
+  width: 8rem;
+  padding: 0.2rem;
+  margin-top: 0.6rem;
 }
 li.form-col-item {
-  margin-top: 0.5em;
+  margin-top: 0.5rem;
 }
 div.form-button-wrap {
   display: flex;
@@ -204,12 +204,12 @@ div.form-button-wrap {
        || $chatroom['toptemplate'] === CHAT_TOP_TEMPLATE2
 ) { ?>
   div.chatconfig-wrap {
-    padding: 3em 3em 1em 3em;
+    padding: 3rem 3rem 1rem 3rem;
   }
   /* チャット画面レイアウト */
   div.chatconfig-wrap {
     display: grid;
-    grid-template-rows: 4em 1fr 5em; /* 縦 */
+    grid-template-rows: 4rem 1fr 5rem; /* 縦 */
   }
   div.chatconfig-title-wrap {
     grid-row: 1 / 2; /* 縦 */
@@ -223,14 +223,14 @@ div.form-button-wrap {
   /* チャットルームタイトル */
   h3.chatconfig-title {
     border-bottom: solid 2px;
-    font-size: 3em;
+    font-size: 3rem;
     text-align: center;
     word-break: break-all;
   }
   /* チャットルーム説明 */
   div.chatconfig-guide {
-    margin: 1em 0;
-    height: 14em;
+    margin: 1rem 0;
+    height: 14rem;
     overflow: auto;
     word-break: break-all;
   }
@@ -239,13 +239,13 @@ div.form-button-wrap {
        || $chatroom['toptemplate'] === CHAT_TOP_TEMPLATE3
 ) { ?>
   div.chatconfig-wrap {
-    margin: 2em;
+    margin: 2rem;
   }
   /* チャット画面レイアウト */
   div.chatconfig-wrap {
     display: grid;
-    grid-template-rows: 1fr 2.5em; /* 縦 */
-    grid-template-columns: 24em 1fr; /* 横 */
+    grid-template-rows: 1fr 2.5rem; /* 縦 */
+    grid-template-columns: 24rem 1fr; /* 横 */
   }
   div.chatconfig-title-wrap {
     grid-column: 1 / 2; /* 横 */
@@ -262,9 +262,9 @@ div.form-button-wrap {
   /* チャットルームタイトル */
   div.chatconfig-title-wrap {
     border: double 14px;
-    width: 24em;
-    height: 24em;
-    padding: 2em;
+    width: 24rem;
+    height: 24rem;
+    padding: 2rem;
     color: <?php echo h($chatroom['bgcolor']); ?>;
     background-color: <?php echo h($chatroom['color']); ?>;
     display: flex;
@@ -273,11 +273,11 @@ div.form-button-wrap {
     word-break: break-all;
   }
   h3.chatconfig-title {
-    letter-spacing: 0.2em;
+    letter-spacing: 0.2rem;
   }
   /* チャットルーム説明 */
   div.chatconfig-guide {
-    margin: 1em;
+    margin: 1rem;
     overflow: auto;
     word-break: break-all;
   }

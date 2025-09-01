@@ -6,6 +6,6 @@
 </div>
 <style>
 div.note-wrap {
-  padding: 1em;
+  padding: 1rem;
 }
 </style>

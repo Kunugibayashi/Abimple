@@ -322,7 +322,7 @@ outputPage:
           <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
           <div class="dice-wrap">
             <input type="text" name="dice" value="" maxlength="6" placeholder="1d6 など">
-            <div class="form-col-note">最大 10d100 （100面ダイス10個）</div>
+            <div class="form-omi-note">最大 10d100 （100面ダイス10個）</div>
           </div>
           <div class="form-button-wrap dice-button-wrap">
             <button type="button" class="dice-button">ダイスを振る</button>
@@ -460,14 +460,14 @@ jQuery(function(){
   jQuery('button.change-display-button').on('click', function(){
     if (jQuery('div.random-wrap').css('display') == 'block') {
       // 隠す
-      jQuery('div.content-wrap').css('grid-template-columns', '1fr 0em');
+      jQuery('div.content-wrap').css('grid-template-columns', '1fr 0rem');
       jQuery('textarea[name="message"]').css('width', '85vw');
-      jQuery('#id-roomchat-content-wrap').css('grid-template-rows', '2em 16em 1fr');
+      jQuery('#id-roomchat-content-wrap').css('grid-template-rows', '2rem 16rem 1fr');
     } else {
       // 表示
-      jQuery('div.content-wrap').css('grid-template-columns', '1fr 18em');
-      jQuery('textarea[name="message"]').css('width', '30em');
-      jQuery('#id-roomchat-content-wrap').css('grid-template-rows', '2em 28em 1fr');
+      jQuery('div.content-wrap').css('grid-template-columns', '1fr 18rem');
+      jQuery('textarea[name="message"]').css('width', '30rem');
+      jQuery('#id-roomchat-content-wrap').css('grid-template-rows', '2rem 28rem 1fr');
     }
 
     jQuery('button.color-set-button').toggle();
@@ -683,16 +683,16 @@ ul, li {
 header.header {
   display: flex;
   justify-content: flex-end;
-  font-size: 0.8em;
+  font-size: 0.8rem;
   color: <?php echo h($chatroom['bgcolor']); ?>;
   background-color: <?php echo h($chatroom['color']); ?>;
 }
 ul.header-item-group {
   display: flex;
-  margin: 0.5em;
+  margin: 0.5rem;
 }
 li.header-item {
-  padding: 0 1em;
+  padding: 0 1rem;
   list-style-type: none;
 }
 li.header-item>a {
@@ -707,8 +707,8 @@ div.chatroom-frame-wrap {
 /* レイアウト */
 div.content-wrap {
   display: grid;
-  grid-template-columns: 1fr 18em;
-  grid-template-rows: 2em 28em 1fr;
+  grid-template-columns: 1fr 18rem;
+  grid-template-rows: 2rem 28rem 1fr;
 }
 header.header {
   grid-column: 1 / 3;
@@ -733,23 +733,20 @@ div.chatroom-frame-wrap {
 /* 入力 */
 input[name="color"],
 input[name="bgcolor"] {
-  width: 8em;
+  width: 8rem;
 }
 input[name="memo"] {
-  width: 30em;
-}
-input[name="dice"] {
-  width: 7em;
+  width: 30rem;
 }
 select[name="whisperid"],
 select[name="lognum"],
 select[name="logsec"] {
-  width: 8em;
+  width: 8rem;
 }
 textarea[name="message"] {
   resize: auto;
-  width: 30em;
-  height: 4em;
+  width: 30rem;
+  height: 4rem;
 }
 /* 通信メッセージ */
 div.mes-wrap {
@@ -762,12 +759,12 @@ div.chat-button-wrap {
   justify-content: center;
 }
 div.chat-button-wrap>button {
-  margin: 0.5em;
+  margin: 0.5rem;
 }
 /* チャットフォーム */
 div.chat-form-wrap {
   margin-bottom: 0;
-  padding: 1em;
+  padding: 1rem;
 
   display: flex;
   flex-direction: column;
@@ -779,62 +776,65 @@ ul.form-row {
   justify-content: flex-start;
 }
 li.form-col-title:not(:first-child) {
-  margin-left: 2em;
+  margin-left: 2rem;
 }
 li.form-col-title {
-  width: 7em;
-  min-width: 7em;
-  margin: 0.5em 0;
+  width: 7rem;
+  min-width: 7rem;
+  margin: 0.5rem 0;
 }
 li.form-col-item {
-  margin: 0.5em 0;
-  width: 10em;
+  margin: 0.5rem 0;
+  width: 10rem;
 }
 li.form-col-item-name {
-  width: 25em;
+  width: 25rem;
 }
 div.form-row-item-group {
   display: flex;
   align-content: center;
-  width: 13em;
+  width: 13rem;
 }
 div.form-col-item-group {
   display: flex;
   flex-direction: column;
 }
 div.form-col-note {
-  font-size: 0.8em;
+  font-size: 0.8rem;
   opacity: 0.6;
-  width: 20em;
+  width: 20rem;
 }
 div.form-col-note-message {
-  width: 30em;
+  width: 30rem;
 }
 /* ダイス おみくじ 山札 */
 div.random-border-wrap {
-  margin: 1em 0 0 0;
-
+  margin: 1rem 0 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-form.dice-form {
-  margin:  0 0 0 1.2em;
+div.dice-form-wrap {
+  width: 12rem;
 }
 h3.deck-title,
 h3.omi-title,
 h3.dice-title {
-  font-size: 1.2em;
+  font-size: 1.2rem;
   font-weight: bold;
   border-bottom: dotted 1px;
-  width: 12em;
-  margin-bottom: 0.2em;
+  width: 12rem;
+  margin-bottom: 0.2rem;
 }
 button.deck-reset-button,
 button.deck-button,
 button.omi-button,
 input[name="dice"] {
-  width: 14em;
+  width: 12rem;
+}
+div.form-omi-note {
+  font-size: 0.75rem;
+  opacity: 0.6;
 }
 </style>
 <?php if (usedStr($chatroom['roomcss'])) { ?>
