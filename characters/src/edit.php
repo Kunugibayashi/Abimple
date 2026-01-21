@@ -101,6 +101,28 @@ $characters = selectCharactersId($dbhCharacters, $character['id']);
 // 画面表示のため詰め替え
 $inputParams = $characters[0];
 
+// 名簿ファイル出力
+$tpl_vars = [
+  'SITE_TEMPLATE' => SITE_TEMPLATE,
+  'update_date' => nowYmdhi(),
+  'character' => $characters[0] ?? [],
+];
+
+$html_string = renderTemplateBuffer(
+  './templates/character_view.tpl.php',
+  $tpl_vars,
+);
+
+$out_path = CHARACTER_STORAGE_DIR .$character['id'] .'.html';
+file_put_contents($out_path, $html_string, LOCK_EX);
+
+// CSS コピー
+foreach (SITE_CSS_FILES as $css) {
+  if (is_file($css)) {
+    copy($css, CHARACTER_STORAGE_DIR .'/css/' .basename($css));
+  }
+}
+
 /* goto文はコードが煩雑になるため使用するべきではないが、
  * ソースコードが複雑になるため、画面表示phpのページ出力開始ラベルのみ使用する。
  */

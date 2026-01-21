@@ -221,11 +221,19 @@ define('NAMELIST_DETAIL_NAME', '詳細'); // 表示名
 define('DOCUMENT_ROOT', $_SERVER['DOCUMENT_ROOT']);
 define('INDEX_ROOT', DOCUMENT_ROOT.SITE_ROOT);
 define('NAMELIST_VIEW_ROOT', SITE_ROOT.'/characters/src/view.php');
+define('SITE_CSS_FILES', [
+  INDEX_ROOT .'/core/css/base.css',
+  INDEX_ROOT .'/core/css/' .SITE_TEMPLATE .'.css',
+  INDEX_ROOT .'/assets/css/user-edit.css',
+  INDEX_ROOT .'/core/css/responsive.css',
+]);
 /* 以下の変数を追加した場合は database.php の DB作成 に処理を追加すること。
  */
 define('USERS_DB', (INDEX_ROOT.'/users/src/db/users.db'));
 define('INFOMATIONS_DB', (INDEX_ROOT.'/infomation/src/db/informations.db'));
 define('CHARACTERS_DB', (INDEX_ROOT.'/characters/src/db/characters.db'));
+define('CHARACTER_STORAGE_PATH', '/character_storage/characters/');
+define('CHARACTER_STORAGE_DIR', (INDEX_ROOT.CHARACTER_STORAGE_PATH));
 define('ROOMS_DB', (INDEX_ROOT.'/chatrooms/src/db/rooms.db'));
 define('ROOM_INOUT_HISTORIES_DB', (INDEX_ROOT.'/chatrooms/src/db/roominouthistories.db'));
 define('CHAT_ROOMS_DB', './db/chatrooms.db');
