@@ -392,7 +392,7 @@ outputPage:
             <?php if (isAdmin()) { ?>
               <td><?php echo h($value['id']); ?></td>
             <?php } ?>
-            <td><a class="character-view-link" href="./view.php?id=<?php echo h($value['id']); ?>"><?php echo h($value['fullname']); ?><a></td>
+            <td><a class="character-view-link" href="./view.php?id=<?php echo h($value['id']); ?>"><?php echo h($value['fullname']); ?></a></td>
             <td><span style="color: <?php echo h($value['color']); ?>; "><?php echo h($value['color']); ?></span></td>
             <td><span style="color: <?php echo h($value['bgcolor']); ?>; "><?php echo h($value['bgcolor']); ?></span></td>
             <?php if (NAMELIST_GENDER || isAdmin()) { ?>

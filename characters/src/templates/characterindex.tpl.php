@@ -4,7 +4,7 @@
   <meta name="robots" content="noindex,nofollow,noarchive" />
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
-  <title><?php echo h($character['fullname'] ?? ''); ?></title>
+  <title>名簿一覧</title>
   <!-- 共通CSS -->
   <link rel="stylesheet" href="./css/base.css?up=<?php echo h($updateDate); ?>"/>
   <link rel="stylesheet" href="./css/<?php echo h($siteTemplate); ?>.css?up=<?php echo h($updateDate); ?>"/>
@@ -67,7 +67,7 @@
         </tr>
         <?php foreach ($characters as $key => $character) { ?>
           <tr>
-            <td><a class="character-view-link" href="./<?php echo h($character['id']); ?>.html"><?php echo h($character['fullname']); ?><a></td>
+            <td><a class="character-view-link" href="./<?php echo h($character['id']); ?>.html"><?php echo h($character['fullname']); ?></a></td>
             <td><span style="color: <?php echo h($character['color']); ?>; "><?php echo h($character['color']); ?></span></td>
             <td><span style="color: <?php echo h($character['bgcolor']); ?>; "><?php echo h($character['bgcolor']); ?></span></td>
             <?php if ($columns['gender']['enabled']) { ?>
