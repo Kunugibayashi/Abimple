@@ -294,6 +294,14 @@ outputPage:
     </div>
   <?php } ?>
 
+  <?php if (isLogin()) { /* ログイン時 */ ?>
+    <?php if (usedArr($pages)) { /* 登録がある場合に表示 */ ?>
+      <div class="export-wrap">
+        <a href="./export.php" class="link-pseudo-button">一括DL</a>
+      </div>
+    <?php } ?>
+  <?php } ?>
+
     <div class="paging-wrap">
       <?php outputPaging($characters, getNowPage()); ?>
     </div>

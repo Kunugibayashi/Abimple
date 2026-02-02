@@ -170,9 +170,12 @@ function chekErrorToken($tokenKey) {
   }
   if ($_SESSION[$tokenKey] !== $_POST['token']) {
     echo 'POSTに失敗しました。画面更新をしてください。';
-    echo ' tokenKey=' .$tokenKey;
-    echo ' SESSION=' .$_SESSION[$tokenKey];
-    echo ' POST=' .$_POST['token'];
+    // SSESSIONを出力する場合は以下のコメントを外す。開発時のデバッグ用。
+    // --- ここから ---
+    // echo ' tokenKey=' .$tokenKey;
+    // echo ' SESSION=' .$_SESSION[$tokenKey];
+    // echo ' POST=' .$_POST['token'];
+    // --- ここまで ---
     exit;
   }
 }

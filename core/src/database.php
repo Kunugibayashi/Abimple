@@ -740,6 +740,26 @@ function selectCharactersMy($dbh, $userid, $username) {
   return $data;
 }
 
+function getAllCharacterIds($dbh, $params = array()) {
+  $sql = '
+    SELECT
+      id
+    FROM characters
+    WHERE
+      id IS NOT NULL
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY id ASC
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
 /* ****************************************************************************
  * チャットルーム管理
  * ****************************************************************************

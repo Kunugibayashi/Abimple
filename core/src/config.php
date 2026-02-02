@@ -227,13 +227,15 @@ define('SITE_CSS_FILES', [
   INDEX_ROOT .'/assets/css/user-edit.css',
   INDEX_ROOT .'/core/css/responsive.css',
 ]);
+define('TEMPLATE_FILE_PATH', INDEX_ROOT.'/characters/src/templates/');
+define('CHARACTER_STORAGE_PATH', '/characterhtml/');
+define('CHARACTER_STORAGE_DIR', (INDEX_ROOT.CHARACTER_STORAGE_PATH.'html/'));
+define('CHARACTER_ZIP_DIR', (INDEX_ROOT.CHARACTER_STORAGE_PATH.'zip/'));
 /* 以下の変数を追加した場合は database.php の DB作成 に処理を追加すること。
  */
 define('USERS_DB', (INDEX_ROOT.'/users/src/db/users.db'));
 define('INFOMATIONS_DB', (INDEX_ROOT.'/infomation/src/db/informations.db'));
 define('CHARACTERS_DB', (INDEX_ROOT.'/characters/src/db/characters.db'));
-define('CHARACTER_STORAGE_PATH', '/character_storage/characters/');
-define('CHARACTER_STORAGE_DIR', (INDEX_ROOT.CHARACTER_STORAGE_PATH));
 define('ROOMS_DB', (INDEX_ROOT.'/chatrooms/src/db/rooms.db'));
 define('ROOM_INOUT_HISTORIES_DB', (INDEX_ROOT.'/chatrooms/src/db/roominouthistories.db'));
 define('CHAT_ROOMS_DB', './db/chatrooms.db');
