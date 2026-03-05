@@ -12,12 +12,12 @@ define('CHAT_LOG_SYSTEM_NAME', 'システム');
  *******************************************************************************
  */
 // トップページテンプレート
-define('CHAT_TOP_DEFAULT', 'default');
+define('CHAT_TOP_DEFAULT', 'toptemplatedef');
 define('CHAT_TOP_TEMPLATE1', 'toptemplate1');
 define('CHAT_TOP_TEMPLATE2', 'toptemplate2');
 define('CHAT_TOP_TEMPLATE3', 'toptemplate3');
 // チャットログ
-define('CHAT_LOG_DEFAULT', 'default');
+define('CHAT_LOG_DEFAULT', 'logtemplatedef');
 define('CHAT_LOG_TEMPLATE1', 'logtemplate1');
 // おみくじID
 define('OMIKUJI1_ID', 'omi1');

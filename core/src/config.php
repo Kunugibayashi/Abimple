@@ -56,7 +56,8 @@ define('SITE_LETTER_OPEN', 1);
  * CCSデザイン時は以下を指定して下さい。毎回読み込みが行われます。
  * define('SITE_UPDATE', time());
  */
-define('SITE_UPDATE', '202505150001');
+//define('SITE_UPDATE', '202505150001');
+define('SITE_UPDATE', time());
 
 /* 一括DLファイル名。
  * 編集任意。

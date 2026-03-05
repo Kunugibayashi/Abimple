@@ -11,6 +11,15 @@ function myPrepare($dbh, $sql, $params = array()) {
   return $dbh->prepare($sql);
 }
 
+// 日付形式のチェック
+function isValidDatetime(?string $value): bool {
+  if ($value === null || $value === '') {
+    return false;
+  }
+  $dt = DateTime::createFromFormat('Y-m-d H:i:s', $value);
+  return $dt && $dt->format('Y-m-d H:i:s') === $value;
+}
+
 // 配列内の値を取得。ない場合も空で登録するため
 function columnParam($array, $key) {
   if (!isset($array)) {
@@ -168,6 +177,9 @@ function setEqualArryBindValue($stmt, $params) {
 function connect($dbname) {
   try {
     $dbh = new SQLite3($dbname);
+    $dbh->exec('PRAGMA journal_mode = WAL;');
+    $dbh->exec('PRAGMA synchronous = NORMAL;');
+    $dbh->exec('PRAGMA busy_timeout = 3000;');
   } catch (Exception $e) {
     echo $e->getMessage();
   }
@@ -222,6 +234,7 @@ function connectRo($dbname) {
   checkDB($dbname);
   try {
     $dbh = new SQLite3($dbname, SQLITE3_OPEN_READONLY);
+    $dbh->exec('PRAGMA busy_timeout = 3000;');
   } catch (Exception $e) {
     echo $e->getMessage();
   }
@@ -1254,6 +1267,9 @@ function createChatlogs($dbh) {
 
   $sql = "
     CREATE INDEX IF NOT EXISTS idx_chatroom_entrykey_id ON chatlogs(entrykey, id);
+    CREATE INDEX IF NOT EXISTS idx_chatlogs_entrykey_modified ON chatlogs(entrykey, modified);
+    CREATE INDEX IF NOT EXISTS idx_chatlogs_entrykey_modified_id ON chatlogs(entrykey, modified, id);
+    CREATE INDEX IF NOT EXISTS idx_chatlogs_modified ON chatlogs(modified);
   ";
 
   $results = $dbh->query($sql);
@@ -1291,7 +1307,10 @@ function insertChatlogs($dbh, $userid, $username, $params = array()) {
   return $results;
 }
 
-function selectEqualChatlogs($dbh, $limit, $params = array()) {
+function selectEqualApendChatlogs($dbh, $limit, $dommaxid = 0,
+    $isinroom = 0, $characterid = null,
+    $params = array()
+  ) {
   $sql = '
     SELECT
       *
@@ -1299,63 +1318,32 @@ function selectEqualChatlogs($dbh, $limit, $params = array()) {
     WHERE
       id IS NOT NULL
     AND
+    (
       whisperflg = 0
   ';
-  $sql = setAndEqualArryParam($sql, $params);
-  $sql = $sql .'
-    ORDER BY id DESC
-    LIMIT :limit
-  ';
-
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setEqualArryBindValue($stmt, $params);
-  $stmt->bindValue(':limit', $limit);
-  $results = $stmt->execute();
-  $data = fetchArraytoArray($results);
-  return $data;
-}
-
-function selectEqualChatlogsAdmin($dbh, $limit, $params = array()) {
-  $sql = '
-    SELECT
-      *
-    FROM chatlogs
-    WHERE
-      id IS NOT NULL
-    AND
-      whisperflg = 0
-    OR
-      (characterid = :characterid and whisperflg = 1)
-  ';
-  $sql = setAndEqualArryParam($sql, $params);
-  $sql = $sql .'
-    ORDER BY id DESC
-    LIMIT :limit
-  ';
-
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setEqualArryBindValue($stmt, $params);
-  $stmt->bindValue(':limit', $limit);
-  $results = $stmt->execute();
-  $data = fetchArraytoArray($results);
-  return $data;
-}
-
-function selectEqualChatlogsInroom($dbh, $limit, $characterid, $params = array()) {
-  $sql = '
-    SELECT
-      *
-    FROM chatlogs
-    WHERE
-      id IS NOT NULL
-    AND
+  // 入室時はささやきを表示する（送信者本人 or 宛先本人）
+  if ($isinroom) {
+    $sql = $sql .'
+      OR
       (
-        whisperflg = 0
-      OR
-        (characterid = :characterid and whisperflg <> 0)
-      OR
-        (wtocharacterid = :wtocharacterid and whisperflg <> 0)
+        whisperflg = 1
+        AND
+        (
+          characterid = :characterid
+          OR
+          wtocharacterid = :wtocharacterid
+        )
       )
+    ';
+  }
+  if ($dommaxid != 0) {
+    $sql = $sql .'
+      AND
+        id > :dommaxid
+    ';
+  }
+  $sql = $sql . '
+    )
   ';
   $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
@@ -1365,13 +1353,19 @@ function selectEqualChatlogsInroom($dbh, $limit, $characterid, $params = array()
 
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt = setEqualArryBindValue($stmt, $params);
-  $stmt->bindValue(':characterid', $characterid);
-  $stmt->bindValue(':wtocharacterid', $characterid);
+  if ($isinroom) {
+    $stmt->bindValue(':characterid', $characterid);
+    $stmt->bindValue(':wtocharacterid', $characterid);
+  }
+  if ($dommaxid != 0) {
+    $stmt->bindValue(':dommaxid', $dommaxid);
+  }
   $stmt->bindValue(':limit', $limit);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
   return $data;
 }
+
 
 function selectEqualChatlogsEntrykey($dbh, $limit, $entrykey, $params = array()) {
   $sql = '
