@@ -1307,7 +1307,7 @@ function insertChatlogs($dbh, $userid, $username, $params = array()) {
   return $results;
 }
 
-function selectEqualApendChatlogs($dbh, $limit, $dommaxid = 0,
+function selectEqualAppendChatlogs($dbh, $limit, $dommaxid = 0,
     $isinroom = 0, $characterid = null,
     $params = array()
   ) {
@@ -1366,6 +1366,79 @@ function selectEqualApendChatlogs($dbh, $limit, $dommaxid = 0,
   return $data;
 }
 
+function selectEqualUpdateChatlogs($dbh, $limit, $dommaxid = 0,
+    $domminid = 0, $syncmodifiedts = 0,
+    $isinroom = 0, $characterid = null,
+    $params = array()
+  ) {
+  $sql = '
+    SELECT
+      *
+    FROM chatlogs
+    WHERE
+      id IS NOT NULL
+    AND
+    (
+      whisperflg = 0
+  ';
+  // 入室時はささやきを表示する（送信者本人 or 宛先本人）
+  if ($isinroom) {
+    $sql = $sql .'
+      OR
+      (
+        whisperflg = 1
+        AND
+        (
+          characterid = :characterid
+          OR
+          wtocharacterid = :wtocharacterid
+        )
+      )
+    ';
+  }
+  $sql = $sql . '
+    )
+  ';
+  $sql = $sql .'
+    AND
+      (
+        :domminid < id
+        AND
+        id > :dommaxid
+      )
+  ';
+  if (usedStr($syncmodifiedts) && $syncmodifiedts != 0) {
+    $sql = $sql .'
+      AND
+        modified >= :syncmodifiedts
+    ';
+  }
+  $sql = $sql . '
+    AND
+      created != modified
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY id DESC
+    LIMIT :limit
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  if ($isinroom) {
+    $stmt->bindValue(':characterid', $characterid);
+    $stmt->bindValue(':wtocharacterid', $characterid);
+  }
+  $stmt->bindValue(':domminid', $domminid);
+  $stmt->bindValue(':dommaxid', $dommaxid);
+  if (usedStr($syncmodifiedts) && $syncmodifiedts != 0) {
+    $stmt->bindValue(':syncmodifiedts', $syncmodifiedts);
+  }
+  $stmt->bindValue(':limit', $limit);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
 
 function selectEqualChatlogsEntrykey($dbh, $limit, $entrykey, $params = array()) {
   $sql = '

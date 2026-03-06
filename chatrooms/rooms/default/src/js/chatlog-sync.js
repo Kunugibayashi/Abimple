@@ -57,7 +57,7 @@
   function chatReload() {
     var domminid = parseInt(jQuery('#id-domminid').val(), 10);
     var dommaxid = parseInt(jQuery('#id-dommaxid').val(), 10);
-    var syncmodifiedts = parseInt(jQuery('#id-syncmodifiedts').val(), 10);
+    var syncmodifiedts = jQuery('#id-syncmodifiedts').val();
     var lognum = parseInt(jQuery('#id-lognum').val(), 10);
 
     // DEBUG: API URL確認用。確認時はコメントを外すこと。
@@ -65,7 +65,6 @@
 
     if (Number.isNaN(domminid)) domminid = 0;
     if (Number.isNaN(dommaxid)) dommaxid = 0;
-    if (Number.isNaN(syncmodifiedts)) syncmodifiedts = 0;
     if (Number.isNaN(lognum) || lognum <= 0) lognum = 100;
 
     jQuery.ajax({
@@ -87,7 +86,7 @@
       applyupdate(updatelist);
       applyappend(appendlist, lognum);
 
-      if (data.syncmodifiedts !== undefined && data.syncmodifiedts !== null) {
+      if (data.syncmodifiedts != 0) {
         jQuery('#id-syncmodifiedts').val(String(data.syncmodifiedts));
       }
 

@@ -1,11 +1,58 @@
 <?php
+require_once(__DIR__ .'/../../../../../core/src/config.php');
+require_once(__DIR__ .'/../../../../../core/src/functions.php');
+require_once(__DIR__ .'/../../../../../core/src/session.php');
+require_once(__DIR__ .'/../../../../../core/src/database.php');
+require_once(__DIR__ .'/../../../../../core/src/administrator.php');
+
+require_once(__DIR__ .'/../config.php');
+require_once(__DIR__ .'/../functions.php');
+
+$errors = array();
+$inputParams = array();
+
+// DB接続
+$dbhChatrooms = connectRo(__DIR__ .'/../' .CHAT_ROOMS_DB);
+$dbhChatsecrets = connectRo(__DIR__ .'/../' .CHAT_SECRETS_DB);
+
+$chatrooms = selectChatroomsConfig($dbhChatrooms);
+if (!usedArr($chatrooms)) {
+  firstAccessChatroom(__DIR__ .'/../' .CHAT_ROOMS_DB);
+  $chatrooms = selectChatroomsConfig($dbhChatrooms);
+}
+$chatroom = $chatrooms[0];
+
 header('Content-Type: text/css; charset=UTF-8');
 
 ?>
-/* 共通 */
+/* ------------------------------------------------------------------------------------------------- */
+/* 共通                                                                                              */
+/* ------------------------------------------------------------------------------------------------- */
 body, h1, h2, h3, h4, ul, li, div {
   margin: 0;
   padding: 0;
+}
+body {
+  color: <?php echo h($chatroom['color']); ?>;
+  background-color: <?php echo h($chatroom['bgcolor']); ?>;
+}
+<?php if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE2) { ?>
+  body {
+    <?php if (usedStr($chatroom['bgimage'])) { ?>
+      background-image: url("<?php echo h($chatroom['bgimage']); ?>");
+    <?php } ?>
+    background-repeat: repeat;
+  }
+<?php } ?>
+a {
+  color: <?php echo h($chatroom['color']); ?>;
+}
+header.roomtop-header {
+  color: <?php echo h($chatroom['bgcolor']); ?>;
+  background-color: <?php echo h($chatroom['color']); ?>;
+}
+li.roomtop-header-item>a {
+  color: <?php echo h($chatroom['bgcolor']); ?>;
 }
 #id-roomtop-content-wrap {
   margin: 0;
@@ -21,7 +68,7 @@ ul, li {
   display: grid;
   grid-template-rows: 2rem 28rem 1fr;
 }
-header.header {
+header.roomtop-header {
   grid-row: 1 / 2;
 }
 div.chatconfig-wrap {
@@ -32,20 +79,30 @@ div.chatroom-frame-wrap {
   grid-row: 3 / 4;
 }
 /* ヘッダー */
-header.header {
+header.roomtop-header {
   display: flex;
   justify-content: flex-end;
   font-size: 0.8rem;
 }
-ul.header-item-group {
+ul.roomtop-header-item-group {
   display: flex;
   margin: 0.5rem;
 }
-li.header-item {
+li.roomtop-header-item {
   padding: 0 1rem;
   list-style-type: none;
 }
-/* チャット画面フォーム */
+/* ------------------------------------------------------------------------------------------------- */
+/* チャット画面フォーム                                                                              */
+/* ------------------------------------------------------------------------------------------------- */
+<?php if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE3) { ?>
+  div.chatconfig-title-wrap {
+    <?php if (usedStr($chatroom['bgimage'])) { ?>
+      background-image: url("<?php echo h($chatroom['bgimage']); ?>");
+    <?php } ?>
+    background-repeat: repeat;
+  }
+<?php } ?>
 div.roomenter-form-wrap {
   overflow: auto;
 }
@@ -68,8 +125,12 @@ div.form-button-wrap {
   display: flex;
   justify-content: flex-end;
 }
-/* チャットログ */
+/* ------------------------------------------------------------------------------------------------- */
+/* チャットログ                                                                                      */
+/* ------------------------------------------------------------------------------------------------- */
 .content-log-wrap {
+  color: <?php echo h($chatroom['color']); ?>;
+  background-color: <?php echo h($chatroom['bgcolor']); ?>;
   margin: 0;
   padding: 0;
   display: unset;
@@ -140,6 +201,8 @@ h3.chatroom-header-title:hover .chatroom-header-guide {
   line-height: 1.2rem;
 }
 .chatroom-header-guide {
+  color: <?php echo h($chatroom['color']); ?>;
+  background-color: <?php echo h($chatroom['bgcolor']); ?>;
   position: absolute;
   display: none;
   padding: 1rem;
@@ -163,6 +226,8 @@ h3.chatroom-header-title:hover .chatroom-header-guide {
   line-height: 1.2rem;
 }
 .chat-memo {
+  color: <?php echo h($chatroom['color']); ?>;
+  background-color: <?php echo h($chatroom['bgcolor']); ?>;
   position: absolute;
   display: none;
   padding: 1rem;

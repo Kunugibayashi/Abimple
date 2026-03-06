@@ -20,6 +20,13 @@ $inputParams['domminid'] = inputParam('domminid', 20); // 小さい方。int最�
 $inputParams['dommaxid'] = inputParam('dommaxid', 20); // 大きい方。int最大桁
 $inputParams['syncmodifiedts'] = inputParam('syncmodifiedts', 20);
 
+// 日付ではない場合は 0 に変換
+$tmpsync = trim((string)$inputParams['syncmodifiedts']);
+if (!usedStr($tmpsync)  || strtotime($tmpsync) === false) {
+  $inputParams['syncmodifiedts'] = 0;
+}
+
+// 戻り値初期値
 $jsonArray['code'] = 0;
 $jsonArray['errorMessage'] = '';
 $jsonArray['dommaxid'] = 0;
@@ -27,86 +34,133 @@ $jsonArray['syncmodifiedts'] = 0;
 $jsonArray['appendlog'] = [];
 $jsonArray['updatelog'] = [];
 
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
-  // DB接続
-  $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
-  $dbhChatlogs = connectRo(CHAT_LOGS_DB);
-  $dbhChatsecrets = connectRo(CHAT_SECRETS_DB);
+// DB接続
+$dbhChatrooms = connectRo(CHAT_ROOMS_DB);
+$dbhChatlogs = connectRo(CHAT_LOGS_DB);
+$dbhChatsecrets = connectRo(CHAT_SECRETS_DB);
 
+$chatrooms = selectChatroomsConfig($dbhChatrooms);
+if (!usedArr($chatrooms)) {
+  firstAccessChatroom(CHAT_ROOMS_DB);
   $chatrooms = selectChatroomsConfig($dbhChatrooms);
-  if (!usedArr($chatrooms)) {
-    firstAccessChatroom(CHAT_ROOMS_DB);
-    $chatrooms = selectChatroomsConfig($dbhChatrooms);
-  }
-  $chatroom = $chatrooms[0];
+}
+$chatroom = $chatrooms[0];
 
-  // 秘匿ルームの場合
-  if ($chatroom['issecret'] == 1) {
+
+// 秘匿ルームの場合
+if ($chatroom['issecret'] == 1) {
+  $chatsecrets = selectChatsecrets($dbhChatsecrets);
+  if (!usedArr($chatsecrets)) {
+    firstAccessChatsecrets(CHAT_SECRETS_DB);
     $chatsecrets = selectChatsecrets($dbhChatsecrets);
-    if (!usedArr($chatsecrets)) {
-      firstAccessChatsecrets(CHAT_SECRETS_DB);
-      $chatsecrets = selectChatsecrets($dbhChatsecrets);
-    }
-    $dbKeyword = $chatsecrets[0]['keyword'];
-    $sessionKeyword = getSecretKeyword();
-    if (!usedStr($dbKeyword) || !usedStr($sessionKeyword) || $dbKeyword != $sessionKeyword) {
-      $jsonArray['code'] = 1;
-      $jsonArray['errorMessage'] = '秘匿ルームです。入室キーワードを入力してください。';
-      goto outputPage;
-    }
   }
-
-  // 入室時はささやきを表示する
-  if (isChatEntry()) {
-    $isinroom = 1;
-    $sessionChatEntry = getChatEntry();
-    $chatlogs = selectEqualApendChatlogs(
-      $dbhChatlogs,
-      $inputParams['lognum'],
-      $inputParams['dommaxid'],
-      $isinroom,
-      $sessionChatEntry['characterid'],
-    );
-  } else {
-    $isinroom = 0;
-    $chatlogs = selectEqualApendChatlogs(
-      $dbhChatlogs,
-      $inputParams['lognum'],
-      $inputParams['dommaxid'],
-      $isinroom,
-      null,
-    );
+  $dbKeyword = $chatsecrets[0]['keyword'];
+  $sessionKeyword = getSecretKeyword();
+  if (!usedStr($dbKeyword) || !usedStr($sessionKeyword) || $dbKeyword != $sessionKeyword) {
+    $jsonArray['code'] = 1;
+    $jsonArray['errorMessage'] = '秘匿ルームです。入室キーワードを入力してください。';
+    goto outputPage;
   }
-
 }
 
-// ログがない場合
-if (!usedArr($chatlogs)) {
-  $jsonArray['code'] = 1;
-  $jsonArray['errorMessage'] = 'ログがありません。';
+
+// 追加用ログ
+// 入室時はささやきを含めてログを取得する
+if (isChatEntry()) {
+  $isinroom = 1;
+  $sessionChatEntry = getChatEntry();
+  $appendlogs = selectEqualAppendChatlogs(
+    $dbhChatlogs,
+    $inputParams['lognum'],
+    $inputParams['dommaxid'],
+    $isinroom,
+    $sessionChatEntry['characterid'],
+  );
+} else {
+  $isinroom = 0;
+  $appendlogs = selectEqualAppendChatlogs(
+    $dbhChatlogs,
+    $inputParams['lognum'],
+    $inputParams['dommaxid'],
+    $isinroom,
+    null,
+  );
+}
+// ログがない場合は整形処理をしない
+if (usedArr($appendlogs)) {
+  // 最新データの目印を保持
+  $jsonArray['dommaxid'] = $appendlogs[0]['id'];
+  $jsonArray['syncmodifiedts'] = $appendlogs[0]['created'];
+  foreach ($appendlogs as $key => $chatline) {
+    if ($chatline['fullname'] === CHAT_LOG_SYSTEM_NAME) {
+        // システム
+        $stringHtml = renderSystemLog($chatline);
+        $jsonArray['appendlog'][] = [
+          'id' => $chatline['id'],
+          'loghtml' => $stringHtml,
+        ];
+      } else {
+        // システム以外
+        $stringHtml = renderChatLog($chatline, $chatroom);
+        $jsonArray['appendlog'][] = [
+          'id' => $chatline['id'],
+          'loghtml' => $stringHtml,
+        ];
+    }
+  }
+}
+
+
+// 編集時更新用ログ
+// 初期取得時は処理をしない
+if ((int)$inputParams['dommaxid'] === 0 || (int)$inputParams['domminid'] === 0) {
   goto outputPage;
 }
-
-
-// 最新データの目印を保持
-$jsonArray['dommaxid'] = $chatlogs[0]['id'];
-$jsonArray['syncmodifiedts'] = $chatlogs[0]['created'];
-foreach ($chatlogs as $key => $chatline) {
-  if ($chatline['fullname'] === CHAT_LOG_SYSTEM_NAME) {
-      // システム
-      $stringHtml = renderSystemLog($chatline);
-      $jsonArray['appendlog'][] = [
-        'id' => $chatline['id'],
-        'loghtml' => $stringHtml,
-      ];
-    } else {
-      // システム以外
-      $stringHtml = renderChatLog($chatline, $chatroom);
-      $jsonArray['appendlog'][] = [
-        'id' => $chatline['id'],
-        'loghtml' => $stringHtml,
-      ];
+// 入室時はささやきを含めてログを取得する
+if (isChatEntry()) {
+  $isinroom = 1;
+  $sessionChatEntry = getChatEntry();
+  $updatelogs = selectEqualUpdateChatlogs(
+    $dbhChatlogs,
+    $inputParams['lognum'],
+    $inputParams['dommaxid'],
+    $inputParams['domminid'],
+    $inputParams['syncmodifiedts'],
+    $isinroom,
+    $sessionChatEntry['characterid'],
+  );
+} else {
+  $isinroom = 0;
+  $updatelogs = selectEqualUpdateChatlogs(
+    $dbhChatlogs,
+    $inputParams['lognum'],
+    $inputParams['dommaxid'],
+    $inputParams['domminid'],
+    $inputParams['syncmodifiedts'],
+    $isinroom,
+    null,
+  );
+}
+// ログがない場合は整形処理をしない
+if (usedArr($updatelogs)) {
+  // 最新データの目印を保持
+  foreach ($updatelogs as $key => $chatline) {
+    if ($chatline['fullname'] === CHAT_LOG_SYSTEM_NAME) {
+        // システム
+        $stringHtml = renderSystemLog($chatline);
+        $jsonArray['updatelog'][] = [
+          'id' => $chatline['id'],
+          'loghtml' => $stringHtml,
+        ];
+      } else {
+        // システム以外
+        $stringHtml = renderChatLog($chatline, $chatroom);
+        $jsonArray['updatelog'][] = [
+          'id' => $chatline['id'],
+          'loghtml' => $stringHtml,
+        ];
+    }
   }
 }
 
