@@ -105,9 +105,9 @@ outputPage:
   <script src="<?php echo h($CHAT_ROOM_SRC_DIR); ?>/js/chatlog-sync.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
-<div id="id-roomtop-content-wrap" class="content-wrap">
+<div id="id-roomtop-content-wrap" class="content-wrap"><!-- roomtopと共通 -->
 
-  <header id="id-roomtop-header" class="roomtop-header">
+  <header id="id-roomtop-header" class="roomtop-header"><!-- roomtopと共通 -->
     <nav class="roomtop-header-menu">
       <ul class="roomtop-header-item-group">
         <?php if ($chatroom['isfree']) { ?>
@@ -136,8 +136,8 @@ outputPage:
       <h3 class="chatconfig-title"><?php echo h($chatroom['title']); ?></h3>
     </div>
     <div class="chatconfig-guide"><?php echo hb($chatroom['guide']); ?></div>
-    <div class="form-wrap roomenter-form-wrap">
-      <form name="roomenter-form" class="roomenter-form" action="./roomenter.php" method="GET">
+    <div class="form-wrap roometop-form-wrap">
+      <form name="roometop-form" class="roometop-form" action="<?php echo h($CHAT_ROOM_SRC_DIR); ?>/roomenter.php" method="GET">
         <div class="form-button-wrap submit-wrap">
           <button type="submit">入室キャラクター選択</button>
         </div>
@@ -156,11 +156,11 @@ outputPage:
       <div class="chatroom-item-wrap">
         <ul class="chatroom-item-group">
           <li class="chatroom-item-title">ログ表示</li>
-          <li class="chatroom-item">100行</li>
+          <li class="chatroom-item"><span id="id-info-lognum">100</span>行</li>
         </ul>
         <ul class="chatroom-item-group">
           <li class="chatroom-item-title">ログ更新</li>
-          <li class="chatroom-item">60秒</li>
+          <li class="chatroom-item"><span id="id-info-logsec">60</span>秒</li>
         </ul>
       </div>
     </header>

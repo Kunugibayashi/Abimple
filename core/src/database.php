@@ -1336,15 +1336,15 @@ function selectEqualAppendChatlogs($dbh, $limit, $dommaxid = 0,
       )
     ';
   }
+  $sql = $sql . '
+    )
+  ';
   if ($dommaxid != 0) {
     $sql = $sql .'
       AND
         id > :dommaxid
     ';
   }
-  $sql = $sql . '
-    )
-  ';
   $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
     ORDER BY id DESC
@@ -1407,7 +1407,7 @@ function selectEqualUpdateChatlogs($dbh, $limit, $dommaxid = 0,
         id > :dommaxid
       )
   ';
-  if (usedStr($syncmodifiedts) && $syncmodifiedts != 0) {
+  if ($syncmodifiedts != 0) {
     $sql = $sql .'
       AND
         modified >= :syncmodifiedts
@@ -1482,7 +1482,7 @@ function updateChatlogs($dbh, $id, $params = array()) {
   return $results;
 }
 
-function deleteChatlogsLimit1000($dbh) {
+function deleteChatlogsLimit5000($dbh) {
   $sql = "
     DELETE FROM chatlogs
     WHERE
@@ -1491,7 +1491,7 @@ function deleteChatlogsLimit1000($dbh) {
         SELECT id
         FROM chatlogs
         ORDER BY id DESC
-        LIMIT 1000
+        LIMIT 5000
       )
   ";
 

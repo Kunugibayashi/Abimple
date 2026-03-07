@@ -111,7 +111,7 @@ button.menu-button {
     font-size: 0.8rem;
     height: auto;
   }
-  form.roomchat-form ul.form-row {
+  form.roomenter-form ul.form-row {
     display: flex;
     flex-direction: column;
   }

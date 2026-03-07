@@ -7,7 +7,7 @@ header('Content-Type: text/css; charset=UTF-8');
 /* ------------------------------------------------------------------------------------------------- */
 /* 各種テンプレート個別設定 */
 div.chatconfig-wrap {
-  padding: 3rem 3rem 1rem 3rem;
+  padding: 2rem 2rem 1rem 2rem;
 }
 /* チャット画面レイアウト */
 div.chatconfig-wrap {

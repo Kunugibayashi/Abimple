@@ -34,7 +34,6 @@ $jsonArray['syncmodifiedts'] = 0;
 $jsonArray['appendlog'] = [];
 $jsonArray['updatelog'] = [];
 
-
 // DB接続
 $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
 $dbhChatlogs = connectRo(CHAT_LOGS_DB);

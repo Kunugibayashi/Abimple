@@ -9,5 +9,5 @@ header('Content-Type: text/css; charset=UTF-8');
   align-items: center;
   margin: 0.5rem;
   padding: 0.7rem 1rem;
-  border-radius: 1rem;
+  border-radius: 0.5rem;
 }

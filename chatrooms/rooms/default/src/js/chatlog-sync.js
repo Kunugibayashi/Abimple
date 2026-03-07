@@ -59,13 +59,22 @@
     var dommaxid = parseInt(jQuery('#id-dommaxid').val(), 10);
     var syncmodifiedts = jQuery('#id-syncmodifiedts').val();
     var lognum = parseInt(jQuery('#id-lognum').val(), 10);
+    var logsec = parseInt(jQuery('#id-logsec').val(), 10);
 
     // DEBUG: API URL確認用。確認時はコメントを外すこと。
     // console.log('CHATLOG_API=', CHATLOG_API);
+    // console.log('domminid=', domminid);
+    // console.log('dommaxid=', dommaxid);
+    // console.log('syncmodifiedts=', syncmodifiedts);
 
     if (Number.isNaN(domminid)) domminid = 0;
     if (Number.isNaN(dommaxid)) dommaxid = 0;
     if (Number.isNaN(lognum) || lognum <= 0) lognum = 100;
+    if (Number.isNaN(logsec) || logsec < 0) logsec = 60000;
+
+    // ログ上の表示を更新
+    $('#id-info-lognum').text(lognum);
+    $('#id-info-logsec').text(logsec / 1000);
 
     jQuery.ajax({
       url: CHATLOG_API,
