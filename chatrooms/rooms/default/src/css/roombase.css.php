@@ -117,6 +117,12 @@ div.page-back-wrap>button {
   white-space: nowrap;
   filter: none;
 }
+/* 通信メッセージ */
+div.mes-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+}
 /* ------------------------------------------------------------------------------------------------- */
 /* チャットTOP画面                                                                                   */
 /* ------------------------------------------------------------------------------------------------- */
@@ -128,7 +134,7 @@ div.page-back-wrap>button {
     background-repeat: repeat;
   }
 <?php } ?>
-div.roometop-form-wrap {
+div.roomtop-form-wrap {
   overflow: auto;
   margin: 0;
   padding: 0;
@@ -215,12 +221,12 @@ div.random-wrap {
   width: 8rem;
 }
 .chat-form textarea[name="message"] {
-  resize: auto;
+  resize: both;
   width: 30rem;
   height: 4rem;
 }
-/* 通信メッセージ */
-div.mes-wrap {
+/* エラーメッセージ */
+div.result-mes-wrap {
   display: flex;
   justify-content: center;
 }
@@ -236,46 +242,54 @@ div.chat-button-wrap>button {
 div.chat-form-wrap {
   margin-bottom: 0;
   padding: 1rem;
-
   display: flex;
   flex-direction: column;
 }
-ul.form-row {
+.reload-form ul.form-row,
+.chat-form ul.form-row {
   border-bottom: dotted 1px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
 }
-li.form-col-title:not(:first-child) {
+.reload-form li.form-col-title:not(:first-child),
+.chat-form li.form-col-title:not(:first-child) {
   margin-left: 2rem;
 }
-li.form-col-title {
+.reload-form li.form-col-title,
+.chat-form li.form-col-title {
   width: 7rem;
   min-width: 7rem;
   margin: 0.5rem 0;
 }
-li.form-col-item {
+.reload-form li.form-col-item,
+.chat-form li.form-col-item {
   margin: 0.5rem 0;
   width: 10rem;
 }
-li.form-col-item-name {
+.reload-form li.form-col-item-name,
+.chat-form li.form-col-item-name {
   width: 25rem;
 }
-div.form-row-item-group {
+.reload-form div.form-row-item-group,
+.chat-form div.form-row-item-group {
   display: flex;
   align-content: center;
   width: 13rem;
 }
-div.form-col-item-group {
+.reload-form div.form-col-item-group,
+.chat-form div.form-col-item-group {
   display: flex;
   flex-direction: column;
 }
-div.form-col-note {
+.reload-form div.form-col-note,
+.chat-form div.form-col-note {
   font-size: 0.8rem;
   opacity: 0.6;
   width: 20rem;
 }
-div.form-col-note-message {
+.reload-form div.form-col-note-message,
+.chat-form div.form-col-note-message {
   width: 30rem;
 }
 /* ダイス おみくじ 山札 */
@@ -315,7 +329,7 @@ div.form-omi-note {
   background-color: <?php echo h($chatroom['bgcolor']); ?>;
   margin: 0;
   padding: 0;
-  display: unset;
+  display: block;
 }
 /* ヘッダー */
 header.chatroom-header-wrap {
@@ -432,7 +446,7 @@ h3.chatroom-header-title:hover .chatroom-header-guide {
   font-weight: bold;
 }
 .chat-narr-message {
-  margin-right: 0 0.5rem;
+  margin: 0 0.5rem;
   word-break: break-all;
 }
 .chat-narr-message>span.fullname {
@@ -461,6 +475,5 @@ h3.chatroom-header-title:hover .chatroom-header-guide {
   line-height: 1.5rem;
   margin: 0.2em 0;
   padding: 0.5em 0;
-  line-height: 1.5;
   word-break: break-all;
 }

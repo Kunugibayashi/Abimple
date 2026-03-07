@@ -136,7 +136,7 @@ outputPage:
       <h3 class="chatconfig-title"><?php echo h($chatroom['title']); ?></h3>
     </div>
     <div class="chatconfig-guide"><?php echo hb($chatroom['guide']); ?></div>
-    <div class="form-wrap roometop-form-wrap">
+    <div class="form-wrap roomtop-form-wrap">
       <form name="roometop-form" class="roometop-form" action="<?php echo h($CHAT_ROOM_SRC_DIR); ?>/roomenter.php" method="GET">
         <div class="form-button-wrap submit-wrap">
           <button type="submit">入室キャラクター選択</button>

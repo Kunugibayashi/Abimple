@@ -333,7 +333,7 @@ outputPage:
           <button type="button" class="reload-button">リロード</button>
           <button type="button" class="change-display-button">表示切替</button>
         </div>
-        <div class="mes-wrap">
+        <div class="result-mes-wrap">
           <div id="id-result-mes"><!-- エラーメッセージ表示箇所 --></div>
         </div>
       </div>
