@@ -24,6 +24,16 @@
     jQuery('#id-dommaxid').val(maxId);
   }
 
+  // DOM状態をリセット
+  function resetChatState() {
+    var wrap = jQuery('#id-log-wrap');
+    wrap.empty();
+
+    jQuery('#id-domminid').val('0');
+    jQuery('#id-dommaxid').val('0');
+    jQuery('#id-syncmodifiedts').val('0');
+  }
+
   // 既存ログを差分更新（HTML置換）
   function applyupdate(list) {
     if (!Array.isArray(list) || list.length === 0) return;
@@ -50,8 +60,21 @@
       frag.appendChild(div);
     });
 
-    container[0].appendChild(frag);
+    container[0].insertBefore(frag, container[0].firstChild);
+
+    var logs = container.children('[id^="id-chatlog-"]');
+    if (lognum > 0 && logs.length > lognum) {
+      logs.slice(lognum).remove();
+    }
   }
+
+  // ログ行数、リロード時間の変更時は全再取得
+  jQuery(function() {
+    jQuery('#id-lognum, #id-logsec').on('change', function() {
+      resetChatState();
+      chatReload();
+    });
+  });
 
   // サーバから差分ログを取得して update → append を適用
   function chatReload() {

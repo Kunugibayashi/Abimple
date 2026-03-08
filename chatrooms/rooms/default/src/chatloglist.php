@@ -11,7 +11,7 @@ require_once(__DIR__ .'/./functions.php');
 $inputParams = array();
 $jsonArray = array();
 
-$inputParams['lognum'] = (int) (inputParam('lognum', 5) ? inputParam('lognum', 4) : '100');
+$inputParams['lognum'] = (int) (inputParam('lognum', 5) ? inputParam('lognum', 5) : '100');
 $inputParams['lognum'] = round($inputParams['lognum']);
 $inputParams['lognum'] = min([$inputParams['lognum'], 10000]);
 $inputParams['lognum'] = max([$inputParams['lognum'], 25]);
@@ -193,7 +193,9 @@ function renderSystemLog(array $chatline): string {
   <div class="entrykey"><?php echo h($chatline['entrykey']); ?></div>
 </div>
 <?php
-  return ob_get_clean();
+  $html = ob_get_clean();
+  $html = preg_replace('/>\s+</', '><', $html);
+  return $html;
 }
 
 // システムログ成形
@@ -220,6 +222,8 @@ function renderChatLog(array $chatline, array $chatroom): string {
     <div class="entrykey"><?php echo h($chatline['entrykey']); ?></div>
   </div>
 <?php
-  return ob_get_clean();
+  $html = ob_get_clean();
+  $html = preg_replace('/>\s+</', '><', $html);
+  return $html;
 }
 
