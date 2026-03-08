@@ -1,4 +1,6 @@
 (function(global){
+  // タイマー保持
+  var chatTimerId = null;
 
   // id-chatlog-123 → 123 の数値IDを取り出す
   function parseChatlogId(idstr) {
@@ -68,14 +70,6 @@
     }
   }
 
-  // ログ行数、リロード時間の変更時は全再取得
-  jQuery(function() {
-    jQuery('#id-lognum, #id-logsec').on('change', function() {
-      resetChatState();
-      chatReload();
-    });
-  });
-
   // サーバから差分ログを取得して update → append を適用
   function chatReload() {
     var domminid = parseInt(jQuery('#id-domminid').val(), 10);
@@ -126,14 +120,40 @@
     });
   }
 
-  // タイマー保持
-  var chatTimer = null;
-
   // チャット更新タイマーを開始（既存タイマーは停止）
-  function startChatTimer(logsec) {
-    if (chatTimer !== null) clearInterval(chatTimer);
-    chatTimer = setInterval(chatReload, logsec);
+function startChatTimer() {
+  var sec = parseInt(jQuery('#id-logsec').val(), 10);
+
+  if (chatTimerId !== null) {
+    clearInterval(chatTimerId);
+    chatTimerId = null;
   }
+
+  if (sec === 0) {
+    return;
+  }
+
+  chatTimerId = setInterval(function() {
+    chatReload();
+  }, sec);
+}
+
+  jQuery(function() {
+
+    // ログ行数の変更時は全再取得
+    jQuery('#id-lognum').on('change', function() {
+      resetChatState();
+      chatReload();
+    });
+
+    // リロード時間の変更時は全再取得
+    jQuery('#id-logsec').on('change', function() {
+      resetChatState();
+      chatReload();
+      startChatTimer();
+    });
+
+  });
 
   // 外部公開
   global.syncHiddenIdsFromDom = syncHiddenIdsFromDom;

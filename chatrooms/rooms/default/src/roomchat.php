@@ -319,7 +319,7 @@ outputPage:
                 <select name="logsec" id="id-logsec">
                   <option value="25000">25秒</option><?php /* 25000 = 25秒 */ ?>
                   <option value="60000">60秒</option><?php /* 60000 = 60秒 */ ?>
-                  <option value="300000">5分</option>
+                  <option value="0">0秒（手動）</option>
                 </select>
               </div>
             </li>
