@@ -2,14 +2,14 @@
 /* ログに発言を出力する。
  * jQuery による POSTリクエストからのアクセスを想定。
  */
-require_once('../../../../core/src/config.php');
-require_once('../../../../core/src/functions.php');
-require_once('../../../../core/src/session.php');
-require_once('../../../../core/src/database.php');
-require_once('../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/config.php');
+require_once(__DIR__ .'/../../../../core/src/functions.php');
+require_once(__DIR__ .'/../../../../core/src/session.php');
+require_once(__DIR__ .'/../../../../core/src/database.php');
+require_once(__DIR__ .'/../../../../core/src/administrator.php');
 
-require_once('./config.php');
-require_once('./functions.php');
+require_once(__DIR__ .'/./config.php');
+require_once(__DIR__ .'/./functions.php');
 
 $jsonArray = array();
 $inputParams = array();
@@ -108,7 +108,7 @@ if (count($tailArray) === 0) {
     'color' => $chatroom['color'],
     'bgcolor' => $chatroom['bgcolor'],
     'message' => ('<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-                 .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .'山札が空です。リセットしてください。' .'</span>'
+                  .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .'山札が空です。リセットしてください。' .'</span>'
     ),
   ]);
   goto outputPage;

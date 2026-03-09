@@ -1,12 +1,12 @@
 <?php
-require_once('../../../../core/src/config.php');
-require_once('../../../../core/src/functions.php');
-require_once('../../../../core/src/session.php');
-require_once('../../../../core/src/database.php');
-require_once('../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/config.php');
+require_once(__DIR__ .'/../../../../core/src/functions.php');
+require_once(__DIR__ .'/../../../../core/src/session.php');
+require_once(__DIR__ .'/../../../../core/src/database.php');
+require_once(__DIR__ .'/../../../../core/src/administrator.php');
 
-require_once('./config.php');
-require_once('./functions.php');
+require_once(__DIR__ .'/./config.php');
+require_once(__DIR__ .'/./functions.php');
 
 $success = '';
 $inputParams = array();
