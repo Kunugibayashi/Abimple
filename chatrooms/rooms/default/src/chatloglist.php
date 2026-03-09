@@ -31,11 +31,13 @@ $jsonArray['code'] = 0;
 $jsonArray['errorMessage'] = '';
 $jsonArray['dommaxid'] = 0;
 $jsonArray['syncmodifiedts'] = 0;
+$jsonArray['chatentry'] = '';
 $jsonArray['appendlog'] = [];
 $jsonArray['updatelog'] = [];
 
 // DB接続
 $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
+$dbhChatentries = connectRo(CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRo(CHAT_LOGS_DB);
 $dbhChatsecrets = connectRo(CHAT_SECRETS_DB);
 
@@ -63,6 +65,11 @@ if ($chatroom['issecret'] == 1) {
   }
 }
 
+// 入室者取得
+$chatentries = selectEqualChatentries($dbhChatentries);
+// 入室者がいない場合も何らかの表示を行うため整形処理をする
+$stringHtml = renderChatentries($chatentries);
+$jsonArray['chatentry'] = $stringHtml;
 
 // 追加用ログ
 // 入室時はささやきを含めてログを取得する
@@ -143,7 +150,13 @@ if (isChatEntry()) {
 }
 // ログがない場合は整形処理をしない
 if (usedArr($updatelogs)) {
-  // 最新データの目印を保持
+  // 最新データの日付を保持
+  $syncTs = $jsonArray['syncmodifiedts'];
+  $updateTs = $updatelogs[0]['modified'];
+  if ($syncTs === null || $updateTs > $syncTs) {
+    $jsonArray['syncmodifiedts'] = $updateTs;
+  }
+
   foreach ($updatelogs as $key => $chatline) {
     if ($chatline['fullname'] === CHAT_LOG_SYSTEM_NAME) {
         // システム
@@ -181,6 +194,27 @@ exit;
  *******************************************************************************
  */
 
+// 参加者整形
+function renderChatentries(array $chatentries): string {
+  ob_start();
+?>
+  <?php if (!usedArr($chatentries)) { /* 参加者がいない場合 */ ?>
+    <li class="entries-no-item">なし</li>
+  <?php } ?>
+  <?php if (usedArr($chatentries)) { /* 参加者がいる場合 */ ?>
+    <?php foreach ($chatentries as $key => $value) { ?>
+      <li class="entries-item" style="background-color: <?php echo h($value['bgcolor']); ?>;" value="<?php echo h($value['characterid']); ?>">
+        <span style="color: <?php echo h($value['color']); ?>;" ><?php echo h($value['fullname']); ?></span>
+      </li>
+    <?php } ?>
+  <?php } ?>
+<?php
+  $html = ob_get_clean();
+  $html = preg_replace('/^[ \t]+/m', '', $html);
+  $html = preg_replace('/>\s+</', '><', $html);
+  return $html;
+}
+
 // システムログ成形
 function renderSystemLog(array $chatline): string {
   ob_start();
@@ -194,6 +228,7 @@ function renderSystemLog(array $chatline): string {
 </div>
 <?php
   $html = ob_get_clean();
+  $html = preg_replace('/^[ \t]+/m', '', $html);
   $html = preg_replace('/>\s+</', '><', $html);
   return $html;
 }
@@ -223,6 +258,7 @@ function renderChatLog(array $chatline, array $chatroom): string {
   </div>
 <?php
   $html = ob_get_clean();
+  $html = preg_replace('/^[ \t]+/m', '', $html);
   $html = preg_replace('/>\s+</', '><', $html);
   return $html;
 }

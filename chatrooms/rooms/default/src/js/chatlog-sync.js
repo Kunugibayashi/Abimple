@@ -36,6 +36,12 @@
     jQuery('#id-syncmodifiedts').val('0');
   }
 
+  // 参加者を更新
+  function applychatentry(string) {
+    var elm = jQuery('#id-chat-entries');
+    if (elm.length) elm.html(string);
+  }
+
   // 既存ログを差分更新（HTML置換）
   function applyupdate(list) {
     if (!Array.isArray(list) || list.length === 0) return;
@@ -106,9 +112,11 @@
     }).done(function(data) {
       if (!data || data.code !== 0) return;
 
+      var chatentry = data.chatentry || '';
       var updatelist = data.updatelog || [];
       var appendlist = data.appendlog || [];
 
+      applychatentry(chatentry);
       applyupdate(updatelist);
       applyappend(appendlist, lognum);
 

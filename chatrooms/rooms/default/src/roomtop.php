@@ -166,7 +166,7 @@ outputPage:
     </header>
     <div class="entries-wrap">
       <h5 class="entries-title">参加者：</h5>
-      <ul id="chat-entries" class="entries-item-group"></ul><?php /* id="chat-entries" は変更しないこと。ログ一覧で使うため */ ?>
+      <ul id="id-chat-entries" class="entries-item-group"></ul><?php /* id="id-chat-entries" は変更しないこと。ログ一覧で使うため */ ?>
     </div>
     <input type="hidden" id="id-lognum" value="100">
     <input type="hidden" id="id-logsec" value="60000"><?php /* 60000 = 60秒 */ ?>

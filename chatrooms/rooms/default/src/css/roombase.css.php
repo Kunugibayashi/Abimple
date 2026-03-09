@@ -77,7 +77,6 @@ div.chatconfig-wrap {
 }
 div.content-log-wrap {
   grid-row: 3 / 4;
-  border-top: 3px solid <?php echo h($chatroom['color']); ?>;
 }
 /* ヘッダー */
 header.roomtop-header {
@@ -327,9 +326,11 @@ div.form-omi-note {
 .content-log-wrap {
   color: <?php echo h($chatroom['color']); ?>;
   background-color: <?php echo h($chatroom['bgcolor']); ?>;
+  border-top: 3px solid <?php echo h($chatroom['color']); ?>;
   margin: 0;
   padding: 0;
   display: block;
+  overflow: scroll;
 }
 /* ヘッダー */
 header.chatroom-header-wrap {

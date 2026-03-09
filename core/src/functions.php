@@ -38,7 +38,7 @@ function ht($str) {
   $changeStr = preg_replace('/(&lt;)\/div(&gt;)/i', '</div>', $changeStr);
 
   // ログ一覧用
-  $changeStr = preg_replace('/(&lt;)ul id=(&quot;)chat-entries(&quot;) class=(&quot;)entries-item-group/i', '<ul id="chat-entries" class="entries-item-group', $changeStr);
+  $changeStr = preg_replace('/(&lt;)ul id=(&quot;)id-chat-entries(&quot;) class=(&quot;)entries-item-group/i', '<ul id="id-chat-entries" class="entries-item-group', $changeStr);
   $changeStr = preg_replace('/(&lt;)\/ul(&gt;)/i', '</ul>', $changeStr);
   $changeStr = preg_replace('/(&lt;)li class=(&quot;)entries-item(&quot;) style=(&quot;)/i', '<li class="entries-item" style="', $changeStr);
   $changeStr = preg_replace('/;(&quot;) value=(&quot;)1/i', ';" value="', $changeStr);
