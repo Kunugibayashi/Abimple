@@ -100,21 +100,12 @@ if (usedArr($appendlogs)) {
   $jsonArray['dommaxid'] = $appendlogs[0]['id'];
   $jsonArray['syncmodifiedts'] = $appendlogs[0]['created'];
   foreach ($appendlogs as $key => $chatline) {
-    if ($chatline['fullname'] === CHAT_LOG_SYSTEM_NAME) {
-        // システム
-        $stringHtml = renderSystemLog($chatline);
-        $jsonArray['appendlog'][] = [
-          'id' => $chatline['id'],
-          'loghtml' => $stringHtml,
-        ];
-      } else {
-        // システム以外
-        $stringHtml = renderChatLog($chatline, $chatroom);
-        $jsonArray['appendlog'][] = [
-          'id' => $chatline['id'],
-          'loghtml' => $stringHtml,
-        ];
-    }
+    // システム
+    $stringHtml = renderChatLog($chatline, $chatroom);
+    $jsonArray['appendlog'][] = [
+      'id' => $chatline['id'],
+      'loghtml' => $stringHtml,
+    ];
   }
 }
 

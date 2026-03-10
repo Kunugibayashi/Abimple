@@ -42,7 +42,7 @@ foreach ($characterIds as $key => $characterId) {
   ];
 
   $htmlString = renderTemplateBuffer(
-    TEMPLATE_FILE_PATH .'characterexport.tpl.php',
+    CHARACTER_TEMPLATE_FILE_PATH .'characterexport.tpl.php',
     $tplVars,
   );
 
@@ -66,7 +66,7 @@ $indexTplVars = [
 ];
 
 $indexHtmlString = renderTemplateBuffer(
-  TEMPLATE_FILE_PATH .'characterindex.tpl.php',
+  CHARACTER_TEMPLATE_FILE_PATH .'characterindex.tpl.php',
   $indexTplVars,
 );
 

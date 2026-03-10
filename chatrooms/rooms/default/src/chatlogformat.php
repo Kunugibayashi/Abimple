@@ -35,6 +35,17 @@ function renderChatentries(array $chatentries): string {
   return $html;
 }
 
+// システムログ or 発言ログ を判定して該当 html を返却
+function renderChatLog(array $chatline, array $chatroom): string {
+  if ($chatline['fullname'] === CHAT_LOG_SYSTEM_NAME) {
+    // システム
+    return renderSystemLog($chatline);
+  } else {
+    // システム以外
+    return renderCharacterLog($chatline, $chatroom);
+  }
+}
+
 // システムログ成形
 function renderSystemLog(array $chatline): string {
   ob_start();
@@ -53,8 +64,8 @@ function renderSystemLog(array $chatline): string {
   return $html;
 }
 
-// システムログ成形
-function renderChatLog(array $chatline, array $chatroom): string {
+// 発言ログ成形
+function renderCharacterLog(array $chatline, array $chatroom): string {
   ob_start();
 ?>
 <?php if ($chatroom['logtemplate'] === CHAT_LOG_TEMPLATE1) { ?>

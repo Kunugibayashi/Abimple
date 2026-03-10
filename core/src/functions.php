@@ -61,6 +61,21 @@ function selectedOption($param, $inputValue) {
   return '';
 }
 
+function removeUnsafeChars(?string $value): string
+{
+  if ($value === null) {
+    return '';
+  }
+
+  // 制御文字を除去
+  $result = preg_replace('/[\x00-\x1F\x7F]/u', '', $value);
+
+  // 許可しない記号を除去
+  $result = preg_replace('/[!"#$%&\'()\-\^\\\\@\[\];:\/|*?<>`~+=,]/u', '', $result);
+
+  // 前後空白を削除
+  return trim($result);
+}
 
 function usedArr($array) {
   if (!isset($array)) {

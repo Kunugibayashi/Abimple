@@ -228,25 +228,26 @@ define('SITE_CSS_FILES', [
   INDEX_ROOT .'/assets/css/user-edit.css',
   INDEX_ROOT .'/core/css/responsive.css',
 ]);
-define('TEMPLATE_FILE_PATH', INDEX_ROOT.'/characters/src/templates/');
+define('CHARACTER_TEMPLATE_FILE_PATH', INDEX_ROOT.'/characters/src/templates/');
 define('CHARACTER_STORAGE_PATH', '/characterhtml/');
 define('CHARACTER_STORAGE_DIR', (INDEX_ROOT.CHARACTER_STORAGE_PATH.'html/'));
 define('CHARACTER_ZIP_DIR', (INDEX_ROOT.CHARACTER_STORAGE_PATH.'zip/'));
+define('CHAT_LOG_STORAGE_PATH', '/chatloghtml/');
+define('CHAT_LOG_STORAGE_DIR', (INDEX_ROOT.CHAT_LOG_STORAGE_PATH.'html/'));
+define('CHAT_LOG_ZIP_DIR', (INDEX_ROOT.CHAT_LOG_STORAGE_PATH.'zip/'));
+define('CHAT_LOG_URL_LINK', (SITE_ROOT.CHAT_LOG_STORAGE_PATH.'html/'));
 /* 以下の変数を追加した場合は database.php の DB作成 に処理を追加すること。
- */
+*/
 define('USERS_DB', (INDEX_ROOT.'/users/src/db/users.db'));
 define('INFOMATIONS_DB', (INDEX_ROOT.'/infomation/src/db/informations.db'));
 define('CHARACTERS_DB', (INDEX_ROOT.'/characters/src/db/characters.db'));
 define('ROOMS_DB', (INDEX_ROOT.'/chatrooms/src/db/rooms.db'));
 define('ROOM_INOUT_HISTORIES_DB', (INDEX_ROOT.'/chatrooms/src/db/roominouthistories.db'));
-define('CHAT_ROOMS_DB', './db/chatrooms.db');
-define('CHAT_ENTRIES_DB', './db/chatentries.db');
-define('CHAT_LOGS_DB', './db/chatlogs.db');
 define('CHAT_SECRETS_DB', './db/chatchatsecrets.db');
 define('INBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/inboxletters.db'));
 define('OUTBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/outboxletters.db'));
-define('ALL_LOG_PATH', '/logstorage/logs/');
-define('ALL_LOG_ZIP_DIR', INDEX_ROOT.'/logstorage/logzip/');
-define('ALL_LOG_FILE_DIR', (INDEX_ROOT.ALL_LOG_PATH));
-define('ALL_LOG_FILE_URL_LINK', (SITE_ROOT.ALL_LOG_PATH));
-define('ALL_LOG_LISTS_DB', (INDEX_ROOT.'/logstorage/src/db/allloglists.db'));
+define('CHAT_LOG_FILES_DB', (INDEX_ROOT.'/logstorage/src/db/chatlogfiles.db'));
+// 以下の変数はPathが可変のため相対Path設定。DB作成は同様に追加すること。
+define('CHAT_ROOMS_DB', './db/chatrooms.db');
+define('CHAT_ENTRIES_DB', './db/chatentries.db');
+define('CHAT_LOGS_DB', './db/chatlogs.db');

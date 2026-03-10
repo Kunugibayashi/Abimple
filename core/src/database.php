@@ -209,14 +209,14 @@ function checkDB($dbname) {
     createChatentries($dbh);
   } else if (CHAT_LOGS_DB === $dbname) {
     createChatlogs($dbh);
+  } else if (CHAT_LOG_FILES_DB === $dbname) {
+    createChatlogfiles($dbh);
   } else if (CHAT_SECRETS_DB === $dbname) {
     createChatsecrets($dbh);
   } else if (INBOX_LETTERS_DB === $dbname) {
     createInboxLetters($dbh);
   } else if (OUTBOX_LETTERS_DB === $dbname) {
     createOutboxLetters($dbh);
-  } else if (ALL_LOG_LISTS_DB === $dbname) {
-    createAllloglists($dbh);
   }
   // この関数内のみでコネクションを完結する
   $dbh->close();
@@ -1463,6 +1463,38 @@ function selectEqualChatlogsEntrykey($dbh, $limit, $entrykey, $params = array())
   return $data;
 }
 
+function selectEqualChatlogsEntrykeyChunk($dbh, $limit, $entrykey, $beforeid = 0, $params = array()) {
+  $sql = '
+    SELECT
+      *
+    FROM chatlogs
+    WHERE
+      entrykey = :entrykey
+  ';
+  if ($beforeid != 0) {
+    $sql = $sql .'
+      AND
+        id < :beforeid
+    ';
+  }
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY id DESC
+    LIMIT :limit
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $stmt->bindValue(':entrykey', $entrykey, SQLITE3_TEXT);
+  if ($beforeid != 0) {
+    $stmt->bindValue(':beforeid', $beforeid, SQLITE3_INTEGER);
+  }
+  $stmt->bindValue(':limit', $limit, SQLITE3_INTEGER);
+  $results = $stmt->execute();
+  // ログ出力負荷軽減のため fetchArraytoArray は噛ませない
+  return $results;
+}
+
 function updateChatlogs($dbh, $id, $params = array()) {
   $sql = "
     UPDATE chatlogs
@@ -1936,12 +1968,12 @@ function selectOutboxMessageId($dbh, $id) {
 }
 
 /* ****************************************************************************
- * 全てのログ一覧
+ * ログファイル一覧
  * ****************************************************************************
  */
-function createAllloglists($dbh) {
+function createChatlogfiles($dbh) {
   $sql = "
-    CREATE TABLE allloglists (
+    CREATE TABLE chatlogfiles (
       id             INTEGER        PRIMARY KEY AUTOINCREMENT,
       entrykey       VARCHAR(40)    NOT NULL,
       roomdir        VARCHAR(20)    NOT NULL,
@@ -1961,7 +1993,7 @@ function createAllloglists($dbh) {
   }
 
   $sql = "
-    CREATE INDEX IF NOT EXISTS idx_allloglists_roomdir ON allloglists(roomdir);
+    CREATE INDEX IF NOT EXISTS idx_chatlogfiles_roomdir ON chatlogfiles(roomdir);
   ";
 
   $results = $dbh->query($sql);
@@ -1970,7 +2002,7 @@ function createAllloglists($dbh) {
   }
 }
 
-function selectEqualAllloglistsList($dbh, $params = array()) {
+function selectEqualChatlogfiles($dbh, $params = array()) {
   $sql = '
     SELECT
       id,
@@ -1979,7 +2011,7 @@ function selectEqualAllloglistsList($dbh, $params = array()) {
       filename,
       entries,
       created
-    FROM allloglists
+    FROM chatlogfiles
     WHERE
       id IS NOT NULL
   ';
@@ -1997,7 +2029,7 @@ function selectEqualAllloglistsList($dbh, $params = array()) {
 
 function insertAllloglists($dbh, $entrykey, $roomdir, $roomtitle, $filename, $entries) {
   $sql = '
-    INSERT INTO allloglists (
+    INSERT INTO chatlogfiles (
       entrykey,
       roomdir,
       roomtitle,
@@ -2026,13 +2058,13 @@ function insertAllloglists($dbh, $entrykey, $roomdir, $roomtitle, $filename, $en
   return $results;
 }
 
-function selectAllLogListsId($dbh, $id) {
+function selectChatlogfilesById($dbh, $id) {
   $sql = '
     SELECT
       id,
       roomdir,
       filename
-    FROM allloglists
+    FROM chatlogfiles
     WHERE
       id = :id
     LIMIT 1
@@ -2045,9 +2077,9 @@ function selectAllLogListsId($dbh, $id) {
   return $data;
 }
 
-function deleteAllLogListsId($dbh, $id) {
+function deleteChatlogfilesById($dbh, $id) {
   $sql = '
-    DELETE FROM allloglists
+    DELETE FROM chatlogfiles
     WHERE
       id = :id
   ';

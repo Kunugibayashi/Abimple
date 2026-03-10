@@ -190,7 +190,7 @@ jQuery(function() {
   chatReload();
 
   var logsec = parseInt(jQuery('#id-logsec').val(), 10);
-  if (Number.isNaN(logsec) || logsec <= 0) logsec = 60000;
+  if (Number.isNaN(logsec) || logsec < 0) logsec = 60000;
 
   startChatTimer(logsec);
 

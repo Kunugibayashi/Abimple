@@ -7,8 +7,10 @@ require_once(__DIR__ .'/../../../../core/src/administrator.php');
 
 require_once(__DIR__ .'/./config.php');
 require_once(__DIR__ .'/./functions.php');
+require_once(__DIR__ .'/./chatlogformat.php');
 
 $success = '';
+$errors = array();
 $inputParams = array();
 
 // セッションが切れていても退出はできるようにフォームから値を取得
@@ -35,7 +37,7 @@ $dbhChatentries = connectRw(CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRw(CHAT_LOGS_DB);
 $dbhInouthistory = connectRw(ROOM_INOUT_HISTORIES_DB);
 $dbhChatsecrets = connectRw(CHAT_SECRETS_DB);
-$dbhAllLogLists = connectRw(ALL_LOG_LISTS_DB);
+$dbhChatlogfiles = connectRw(CHAT_LOG_FILES_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0]; // 必ずある想定
@@ -97,27 +99,82 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($chatentries
   // 秘匿パスワードのリセット
   updateChatsecrets($dbhChatsecrets, '');
 
-  // 余分なログを削除
+  // 余分な参加者ログを削除
   deleteChatentriesExit($dbhChatentries);
 
 } else if (usedArr($myChatentry) && !usedArr($chatentries)) {
   // 最終退室者の場合はログを出力
   $entrykey = $myChatentry['entrykey'];
 
-  // 最大10000行
-  $chatlogs = selectEqualAppendChatlogs($dbhChatlogs, 10000, 0, 0, null, [
-    'entrykey' => $entrykey,
-  ]);
+  // 100行ごとにループ
+  $beforeid = 0;
+  $chatrows = selectEqualChatlogsEntrykeyChunk($dbhChatlogs, 100, $entrykey, $beforeid);
+  if ($chatrows === false) {
+    $success = '退室しました。'; // 退室処理済みのため、退室のメッセージは表示する。
+    $errors[] = 'ログ取得に失敗しました。管理者にお問い合わせください。';
+    goto outputPage;
+  }
 
-  // 入退室ログも発言もなければログ出力しない
-  if (usedArr($chatlogs)) {
-    $firstDate = $chatlogs[0]['created'];
-    $dt = new DateTime($firstDate);
+  $firstrow = $chatrows->fetchArray(SQLITE3_ASSOC);
+  if ($firstrow === false) {
+    $success = '退室しました。'; // 退室処理済みのため、退室のメッセージは表示する。
+    $success = $success .'出力するログはありません。';
+    goto outputPage;
+  }
 
-    $logFileName = $dt->format('Ymd_His') ."_" .$roomdir .'.html';
+  // 最初の一行からファイル名を作成する
+  $firstDate = $firstrow['created'];
+  $dt = new DateTime($firstDate);
 
-    // ログ出力
-    // TODO あとで
+  $chatroomTitle = $chatroom['title'];
+  $filename = removeUnsafeChars($chatroomTitle);
+
+  $logFileName = $dt->format('Ymd_His') ."_" .$filename .'.html';
+  $filepath = CHAT_LOG_STORAGE_DIR .$logFileName;
+
+  $fp = fopen($filepath, 'w');
+  if ($fp === false) {
+    $success = '退室しました。'; // 退室処理済みのため、退室のメッセージは表示する。
+    $errors[] = 'ログファイルの展開に失敗しました。管理者にお問い合わせください。';
+    goto outputPage;
+  }
+
+  try {
+    // 最初に読んだ1件を先に書く
+    $stringHtml = renderChatLog($firstrow, $chatroom);
+    fwrite($fp, $stringHtml);
+    $beforeid = $firstrow['id'];
+
+    // 同じ結果セットの残りを書く
+    while ($row = $chatrows->fetchArray(SQLITE3_ASSOC)) {
+      $stringHtml = renderChatLog($row, $chatroom);
+      fwrite($fp, $stringHtml);
+      $beforeid = $row['id'];
+    }
+
+    // 2チャンク目以降
+    while (true) {
+      $chatrows = selectEqualChatlogsEntrykeyChunk($dbhChatlogs, 100, $entrykey, $beforeid);
+      if ($chatrows === false) {
+        $success = '退室しました。'; // 退室処理済みのため、退室のメッセージは表示する。
+        $errors[] = 'ログ出力が正常に実行できませんでした。管理者にお問い合わせください。';
+        goto outputPage;
+      }
+
+      $hasRows = false;
+      while ($row = $chatrows->fetchArray(SQLITE3_ASSOC)) {
+        $hasRows = true;
+        $stringHtml = renderChatLog($row, $chatroom);
+        fwrite($fp, $stringHtml);
+        $beforeid = $row['id'];
+      }
+
+      // 現在のチャンクで1件も取れなかったら終了する
+      if (!$hasRows) break;
+    }
+  } finally {
+    fclose($fp);
+  }
 
     // ログの中から参加者を取得
     // TODO あとで
@@ -131,10 +188,10 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($chatentries
 
     // ログ倉庫に登録
     // TODO あとで
-  }
 
-  // 余分なログを削除
+  // 不可対策として指定数以上のログを削除
   deleteChatlogsLimit5000($dbhChatlogs);
+  // 余分な参加者ログを削除
   deleteChatentriesExit($dbhChatentries);
 }
 
@@ -204,6 +261,15 @@ outputPage:
         </ul>
       </div>
     <?php } ?>
+    <?php if (usedArr($errors)) { /* エラーメッセージ */ ?>
+      <div class="mes-wrap">
+        <ul class="err-mes-wrap">
+          <?php foreach ($errors as $key => $value) { ?>
+            <li class="err-mes">エラー：<?php echo h($value); ?></li>
+          <?php } ?>
+        </ul>
+      </div>
+    <?php } ?>
     <div class="page-back-wrap">
       <button type="button" class="tochatroom-button">トップに戻る</button>
     </div>
@@ -261,7 +327,7 @@ jQuery(function() {
   chatReload();
 
   var logsec = parseInt(jQuery('#id-logsec').val(), 10);
-  if (Number.isNaN(logsec) || logsec <= 0) logsec = 60000;
+  if (Number.isNaN(logsec) || logsec < 0) logsec = 60000;
 
   startChatTimer(logsec);
 
