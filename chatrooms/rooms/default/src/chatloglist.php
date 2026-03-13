@@ -5,8 +5,6 @@ require_once(__DIR__ .'/../../../../core/src/session.php');
 require_once(__DIR__ .'/../../../../core/src/database.php');
 require_once(__DIR__ .'/../../../../core/src/administrator.php');
 
-require_once(__DIR__ .'/./config.php');
-require_once(__DIR__ .'/./functions.php');
 require_once(__DIR__ .'/./chatlogformat.php');
 
 $inputParams = array();

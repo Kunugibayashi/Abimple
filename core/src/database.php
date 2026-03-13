@@ -2089,3 +2089,22 @@ function deleteChatlogfilesById($dbh, $id) {
   $results = $stmt->execute();
   return $results;
 }
+
+/* ****************************************************************************
+ * チャットルーム用関数
+ * ****************************************************************************
+ */
+function firstAccessChatroom($dbname) {
+  $dbh = connectRw($dbname);
+  insertInitChatrooms($dbh);
+  // この関数内のみでコネクションを完結する
+  $dbh->close();
+}
+
+function firstAccessChatsecrets($dbname) {
+  $dbh = connectRw($dbname);
+  insertChatsecrets($dbh, '');
+  // この関数内のみでコネクションを完結する
+  $dbh->close();
+}
+

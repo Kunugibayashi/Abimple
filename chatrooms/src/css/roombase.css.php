@@ -1,27 +1,4 @@
 <?php
-require_once(__DIR__ .'/../../../../../core/src/config.php');
-require_once(__DIR__ .'/../../../../../core/src/functions.php');
-require_once(__DIR__ .'/../../../../../core/src/session.php');
-require_once(__DIR__ .'/../../../../../core/src/database.php');
-require_once(__DIR__ .'/../../../../../core/src/administrator.php');
-
-require_once(__DIR__ .'/../config.php');
-require_once(__DIR__ .'/../functions.php');
-
-$errors = array();
-$inputParams = array();
-
-// DB接続
-$dbhChatrooms = connectRo(__DIR__ .'/../' .CHAT_ROOMS_DB);
-$dbhChatsecrets = connectRo(__DIR__ .'/../' .CHAT_SECRETS_DB);
-
-$chatrooms = selectChatroomsConfig($dbhChatrooms);
-if (!usedArr($chatrooms)) {
-  firstAccessChatroom(__DIR__ .'/../' .CHAT_ROOMS_DB);
-  $chatrooms = selectChatroomsConfig($dbhChatrooms);
-}
-$chatroom = $chatrooms[0];
-
 header('Content-Type: text/css; charset=UTF-8');
 
 ?>
@@ -33,26 +10,20 @@ body, h1, h2, h3, h4, ul, li, div {
   padding: 0;
 }
 body {
-  color: <?php echo h($chatroom['color']); ?>;
-  background-color: <?php echo h($chatroom['bgcolor']); ?>;
+  color: var(--chat-color);
+  background-color: var(--chat-bgcolor);
+  background-image: var(--chat-bgimage);
+  background-repeat: var(--chat-bg-repeat);
 }
-<?php if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE2) { ?>
-  body {
-    <?php if (usedStr($chatroom['bgimage'])) { ?>
-      background-image: url("<?php echo h($chatroom['bgimage']); ?>");
-    <?php } ?>
-    background-repeat: repeat;
-  }
-<?php } ?>
 a {
-  color: <?php echo h($chatroom['color']); ?>;
+  color: var(--chat-color);
 }
 header.roomtop-header {
-  color: <?php echo h($chatroom['bgcolor']); ?>;
-  background-color: <?php echo h($chatroom['color']); ?>;
+  color: var(--chat-bgcolor);
+  background-color: var(--chat-color);
 }
-li.roomtop-header-item>a {
-  color: <?php echo h($chatroom['bgcolor']); ?>;
+li.roomtop-header-item > a {
+  color: var(--chat-bgcolor);
 }
 #id-roomtop-content-wrap {
   margin: 0;
@@ -125,14 +96,10 @@ div.mes-wrap {
 /* ------------------------------------------------------------------------------------------------- */
 /* チャットTOP画面                                                                                   */
 /* ------------------------------------------------------------------------------------------------- */
-<?php if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE3) { ?>
-  div.chatconfig-title-wrap {
-    <?php if (usedStr($chatroom['bgimage'])) { ?>
-      background-image: url("<?php echo h($chatroom['bgimage']); ?>");
-    <?php } ?>
-    background-repeat: repeat;
-  }
-<?php } ?>
+div.chatconfig-title-wrap {
+  background-image: var(--chat-bgimage);
+  background-repeat: var(--chat-bg-repeat);
+}
 div.roomtop-form-wrap {
   overflow: auto;
   margin: 0;
@@ -324,9 +291,9 @@ div.form-omi-note {
 /* チャットログ                                                                                      */
 /* ------------------------------------------------------------------------------------------------- */
 .content-log-wrap {
-  color: <?php echo h($chatroom['color']); ?>;
-  background-color: <?php echo h($chatroom['bgcolor']); ?>;
-  border-top: 3px solid <?php echo h($chatroom['color']); ?>;
+  color: var(--chat-color);
+  background-color: var(--chat-bgcolor);
+  border-top: 3px solid var(--chat-color);
   margin: 0;
   padding: 0;
   display: block;
@@ -398,8 +365,8 @@ h3.chatroom-header-title:hover .chatroom-header-guide {
   line-height: 1.2rem;
 }
 .chatroom-header-guide {
-  color: <?php echo h($chatroom['color']); ?>;
-  background-color: <?php echo h($chatroom['bgcolor']); ?>;
+  color: var(--chat-color);
+  background-color: var(--chat-bgcolor);
   position: absolute;
   display: none;
   padding: 1rem;
@@ -423,8 +390,8 @@ h3.chatroom-header-title:hover .chatroom-header-guide {
   line-height: 1.2rem;
 }
 .chat-memo {
-  color: <?php echo h($chatroom['color']); ?>;
-  background-color: <?php echo h($chatroom['bgcolor']); ?>;
+  color: var(--chat-color);
+  background-color: var(--chat-bgcolor);
   position: absolute;
   display: none;
   padding: 1rem;

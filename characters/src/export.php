@@ -46,14 +46,14 @@ foreach ($characterIds as $key => $characterId) {
     $tplVars,
   );
 
-  $outPath = CHARACTER_STORAGE_DIR  .$targetCharacter['id'] .'.html';
+  $outPath = CHARACTER_STORAGE_PATH  .$targetCharacter['id'] .'.html';
   file_put_contents($outPath, $htmlString, LOCK_EX);
 }
 
 // CSS コピー
 foreach (SITE_CSS_FILES as $css) {
   if (is_file($css)) {
-    copy($css, CHARACTER_STORAGE_DIR .'css/' .basename($css));
+    copy($css, CHARACTER_STORAGE_PATH .'css/' .basename($css));
   }
 }
 
@@ -70,11 +70,11 @@ $indexHtmlString = renderTemplateBuffer(
   $indexTplVars,
 );
 
-$indexOutPath = CHARACTER_STORAGE_DIR  .'index.html';
+$indexOutPath = CHARACTER_STORAGE_PATH  .'index.html';
 file_put_contents($indexOutPath, $indexHtmlString, LOCK_EX);
 
 // zip ファイル変換
-$zipPath = CHARACTER_ZIP_DIR . '/Character.zip';
+$zipPath = CHARACTER_ZIP_PATH . '/Character.zip';
 $zip = new ZipArchive();
 $opened = false;
 
@@ -84,7 +84,7 @@ try {
     throw new RuntimeException('ZIP open failed: ' . $result);
   }
   $opened = true;
-  addDirToZip($zip, CHARACTER_STORAGE_DIR, CHARACTER_STORAGE_DIR);
+  addDirToZip($zip, CHARACTER_STORAGE_PATH, CHARACTER_STORAGE_PATH);
 } finally {
   if ($opened) {
     $zip->close();

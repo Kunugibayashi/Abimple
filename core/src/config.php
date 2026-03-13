@@ -59,6 +59,11 @@ define('SITE_LETTER_OPEN', 1);
 //define('SITE_UPDATE', '202505150001');
 define('SITE_UPDATE', time());
 
+/* システムメッセージ発言者。
+ * 編集任意。
+ */
+define('CHAT_LOG_SYSTEM_NAME', 'システム');
+
 /* 一括DLファイル名。
  * 編集任意。
  *
@@ -229,13 +234,24 @@ define('SITE_CSS_FILES', [
   INDEX_ROOT .'/core/css/responsive.css',
 ]);
 define('CHARACTER_TEMPLATE_FILE_PATH', INDEX_ROOT.'/characters/src/templates/');
-define('CHARACTER_STORAGE_PATH', '/characterhtml/');
-define('CHARACTER_STORAGE_DIR', (INDEX_ROOT.CHARACTER_STORAGE_PATH.'html/'));
-define('CHARACTER_ZIP_DIR', (INDEX_ROOT.CHARACTER_STORAGE_PATH.'zip/'));
-define('CHAT_LOG_STORAGE_PATH', '/chatloghtml/');
-define('CHAT_LOG_STORAGE_DIR', (INDEX_ROOT.CHAT_LOG_STORAGE_PATH.'html/'));
-define('CHAT_LOG_ZIP_DIR', (INDEX_ROOT.CHAT_LOG_STORAGE_PATH.'zip/'));
-define('CHAT_LOG_URL_LINK', (SITE_ROOT.CHAT_LOG_STORAGE_PATH.'html/'));
+define('CHARACTER_STORAGE_DIR', '/characterhtml/');
+define('CHARACTER_STORAGE_PATH', (INDEX_ROOT.CHARACTER_STORAGE_DIR.'html/'));
+define('CHARACTER_ZIP_PATH', (INDEX_ROOT.CHARACTER_STORAGE_DIR.'zip/'));
+define('CHAT_LOG_STORAGE_DIR', '/chatloghtml/');
+define('CHAT_LOG_STORAGE_PATH', (INDEX_ROOT.CHAT_LOG_STORAGE_DIR.'html/'));
+define('CHAT_LOG_ZIP_PATH', (INDEX_ROOT.CHAT_LOG_STORAGE_DIR.'zip/'));
+define('CHAT_LOG_URL_LINK', (SITE_ROOT.CHAT_LOG_STORAGE_DIR.'html/'));
+define('CHAT_ROOM_SRC_PATH', SITE_ROOT.'/chatrooms/src/');
+/* チャットルーム用 */
+define('CHAT_TOP_DEFAULT', 'toptemplatedef');
+define('CHAT_TOP_TEMPLATE1', 'toptemplate1');
+define('CHAT_TOP_TEMPLATE2', 'toptemplate2');
+define('CHAT_TOP_TEMPLATE3', 'toptemplate3');
+define('CHAT_LOG_DEFAULT', 'logtemplatedef');
+define('CHAT_LOG_TEMPLATE1', 'logtemplate1');
+define('OMIKUJI1_ID', 'omi1');
+define('OMIKUJI2_ID', 'omi2');
+define('OMIKUJI3_ID', 'omi3');
 /* 以下の変数を追加した場合は database.php の DB作成 に処理を追加すること。
 */
 define('USERS_DB', (INDEX_ROOT.'/users/src/db/users.db'));

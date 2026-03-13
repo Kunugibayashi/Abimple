@@ -5,9 +5,6 @@ require_once(__DIR__ .'/../../../../core/src/session.php');
 require_once(__DIR__ .'/../../../../core/src/database.php');
 require_once(__DIR__ .'/../../../../core/src/administrator.php');
 
-require_once(__DIR__ .'/./config.php');
-require_once(__DIR__ .'/./functions.php');
-
 $errors = array();
 $inputParams = array();
 
@@ -51,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // roomdir
   $roomdir = getPageRoomdir();
-  $CHAT_ROOM_SRC_DIR = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
+  $ROOMS_SRC_DIR = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
 
   // DB接続
   $dbhChatentries = connectRo(CHAT_ENTRIES_DB);
@@ -83,20 +80,29 @@ outputPage:
   <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
   <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h($CHAT_ROOM_SRC_DIR); ?>/css/roombase.css.php?up=<?php echo h(SITE_UPDATE); ?>">
+  <!-- DB参照値用 -->
+  <style>
+    :root {
+      --chat-color: <?php echo h($chatroom['color']); ?>;
+      --chat-bgcolor: <?php echo h($chatroom['bgcolor']); ?>;
+      --chat-bgimage: <?php echo usedStr($chatroom['bgimage']) ? 'url("' . h($chatroom['bgimage']) . '")' : 'none'; ?>;
+      --chat-bg-repeat: <?php echo ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE2 || $chatroom['toptemplate'] === CHAT_TOP_TEMPLATE3) ? 'repeat' : 'initial'; ?>;
+    }
+  </style>
+  <link rel="stylesheet" href="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/css/roombase.css.php?up=<?php echo h(SITE_UPDATE); ?>">
   <?php if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE1) { ?>
-    <link rel="stylesheet" href="<?php echo h($CHAT_ROOM_SRC_DIR); ?>/css/toptemplate1.css.php?up=<?php echo h(SITE_UPDATE); ?>">
+    <link rel="stylesheet" href="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/css/toptemplate1.css.php?up=<?php echo h(SITE_UPDATE); ?>">
   <?php } else if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE2 ) { ?>
-    <link rel="stylesheet" href="<?php echo h($CHAT_ROOM_SRC_DIR); ?>/css/toptemplate2.css.php?up=<?php echo h(SITE_UPDATE); ?>">
+    <link rel="stylesheet" href="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/css/toptemplate2.css.php?up=<?php echo h(SITE_UPDATE); ?>">
   <?php } else if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE3 ) { ?>
-    <link rel="stylesheet" href="<?php echo h($CHAT_ROOM_SRC_DIR); ?>/css/toptemplate3.css.php?up=<?php echo h(SITE_UPDATE); ?>">
+    <link rel="stylesheet" href="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/css/toptemplate3.css.php?up=<?php echo h(SITE_UPDATE); ?>">
   <?php } else { ?>
-    <link rel="stylesheet" href="<?php echo h($CHAT_ROOM_SRC_DIR); ?>/css/toptemplatedef.css.php?up=<?php echo h(SITE_UPDATE); ?>">
+    <link rel="stylesheet" href="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/css/toptemplatedef.css.php?up=<?php echo h(SITE_UPDATE); ?>">
   <?php } ?>
   <?php if ($chatroom['toptemplate'] === CHAT_LOG_TEMPLATE1) { ?>
-    <link rel="stylesheet" href="<?php echo h($CHAT_ROOM_SRC_DIR); ?>/css/logtemplate1.css.php?up=<?php echo h(SITE_UPDATE); ?>">
+    <link rel="stylesheet" href="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/css/logtemplate1.css.php?up=<?php echo h(SITE_UPDATE); ?>">
   <?php } else { ?>
-    <link rel="stylesheet" href="<?php echo h($CHAT_ROOM_SRC_DIR); ?>/css/logtemplatedef.css.php?up=<?php echo h(SITE_UPDATE); ?>">
+    <link rel="stylesheet" href="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/css/logtemplatedef.css.php?up=<?php echo h(SITE_UPDATE); ?>">
   <?php } ?>
   <!-- レスポンシブ用 -->
   <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
@@ -109,7 +115,7 @@ outputPage:
   <!-- script -->
   <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
   <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
-  <script src="<?php echo h($CHAT_ROOM_SRC_DIR); ?>/js/chatlog-sync.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/js/chatlog-sync.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
 <div id="id-roomtop-content-wrap" class="content-wrap"><!-- roomtopと共通 -->
@@ -143,7 +149,7 @@ outputPage:
             すでに入室しています。<br>
           </p>
         </div>
-        <form name="roomreenter-form" class="roomreenter-form" action="<?php echo h($CHAT_ROOM_SRC_DIR); ?>/roomchat.php" method="POST">
+        <form name="roomreenter-form" class="roomreenter-form" action="<?php echo h($ROOMS_SRC_DIR); ?>/roomchat.php" method="POST">
           <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
           <div class="form-button-wrap submit-wrap">
             <button type="submit">再入室</button>
@@ -151,7 +157,7 @@ outputPage:
         </form>
       <?php } else if (usedArr($characters)) { /* 入室していない & キャラクター登録をしている場合のみに入室を表示 */ ?>
         <?php setChatToken(); /* フォーム表示時にトークンをセット */ ?>
-        <form name="roomenter-form" class="roomenter-form" action="<?php echo h($CHAT_ROOM_SRC_DIR); ?>/roomchat.php" method="POST">
+        <form name="roomenter-form" class="roomenter-form" action="<?php echo h($ROOMS_SRC_DIR); ?>/roomchat.php" method="POST">
           <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
           <ul class="form-row fullname-wrap">
             <li class="form-col-title">キャラクター</li>
@@ -281,7 +287,7 @@ outputPage:
 <?php } ?>
 <script>
 // js 内使用変数
-var CHATLOG_API = "<?php echo h($CHAT_ROOM_SRC_DIR); ?>/chatloglist.php";
+var CHATLOG_API = "<?php echo h($ROOMS_SRC_DIR); ?>/chatloglist.php";
 
 // ログ取得起動
 jQuery(function() {

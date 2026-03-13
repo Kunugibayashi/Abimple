@@ -400,3 +400,13 @@ function deleteRoomdir($roomdir) {
 function nowYmdhi(): string {
   return date('YmdHi');
 }
+
+/* ------------------------------------------------------------------------------------------------- */
+/* チャットルーム用                                                                                  */
+/* ------------------------------------------------------------------------------------------------- */
+function getPageRoomdir() {
+  $path = $_SERVER['SCRIPT_NAME'];
+  $path = preg_replace('/^.*\/rooms\//', '', $path);
+  $path = preg_replace('/\/src\/.*.php/', '', $path);
+  return $path;
+}
