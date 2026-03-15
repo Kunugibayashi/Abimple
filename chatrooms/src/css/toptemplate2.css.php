@@ -1,5 +1,7 @@
 <?php
-header('Content-Type: text/css; charset=UTF-8');
+if (!defined('CSS_STRING_MODE')) {
+  header('Content-Type: text/css; charset=UTF-8');
+}
 
 ?>
 /* ------------------------------------------------------------------------------------------------- */

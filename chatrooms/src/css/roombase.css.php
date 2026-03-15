@@ -1,5 +1,7 @@
 <?php
-header('Content-Type: text/css; charset=UTF-8');
+if (!defined('CSS_STRING_MODE')) {
+  header('Content-Type: text/css; charset=UTF-8');
+}
 
 ?>
 /* ------------------------------------------------------------------------------------------------- */
@@ -297,7 +299,7 @@ div.form-omi-note {
   margin: 0;
   padding: 0;
   display: block;
-  overflow: scroll;
+  overflow-y: auto;
 }
 /* ヘッダー */
 header.chatroom-header-wrap {

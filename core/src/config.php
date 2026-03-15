@@ -226,22 +226,24 @@ define('NAMELIST_DETAIL_NAME', '詳細'); // 表示名
  */
 define('DOCUMENT_ROOT', $_SERVER['DOCUMENT_ROOT']);
 define('INDEX_ROOT', DOCUMENT_ROOT.SITE_ROOT);
-define('NAMELIST_VIEW_ROOT', SITE_ROOT.'/characters/src/view.php');
-define('SITE_CSS_FILES', [
+define('NAMELIST_VIEW_ROOT_LINK', SITE_ROOT.'/characters/src/view.php');
+define('SITE_CSS_FILES_PATH', [
   INDEX_ROOT .'/core/css/base.css',
   INDEX_ROOT .'/core/css/' .SITE_TEMPLATE .'.css',
   INDEX_ROOT .'/assets/css/user-edit.css',
   INDEX_ROOT .'/core/css/responsive.css',
 ]);
-define('CHARACTER_TEMPLATE_FILE_PATH', INDEX_ROOT.'/characters/src/templates/');
+define('CHARACTER_TEMPLATE_FILE_PATH', (INDEX_ROOT.'/characters/src/templates/'));
 define('CHARACTER_STORAGE_DIR', '/characterhtml/');
 define('CHARACTER_STORAGE_PATH', (INDEX_ROOT.CHARACTER_STORAGE_DIR.'html/'));
 define('CHARACTER_ZIP_PATH', (INDEX_ROOT.CHARACTER_STORAGE_DIR.'zip/'));
+define('CHAT_LOG_TEMPLATE_FILE_PATH', (INDEX_ROOT.'/chatrooms/src/templates/'));
 define('CHAT_LOG_STORAGE_DIR', '/chatloghtml/');
 define('CHAT_LOG_STORAGE_PATH', (INDEX_ROOT.CHAT_LOG_STORAGE_DIR.'html/'));
 define('CHAT_LOG_ZIP_PATH', (INDEX_ROOT.CHAT_LOG_STORAGE_DIR.'zip/'));
 define('CHAT_LOG_URL_LINK', (SITE_ROOT.CHAT_LOG_STORAGE_DIR.'html/'));
-define('CHAT_ROOM_SRC_PATH', SITE_ROOT.'/chatrooms/src/');
+define('CHAT_ROOM_CSS_FILE_PATH', (INDEX_ROOT.'/chatrooms/src/css/'));
+define('CHAT_ROOM_SRC_LINK', (SITE_ROOT.'/chatrooms/src/'));
 /* チャットルーム用 */
 define('CHAT_TOP_DEFAULT', 'toptemplatedef');
 define('CHAT_TOP_TEMPLATE1', 'toptemplate1');

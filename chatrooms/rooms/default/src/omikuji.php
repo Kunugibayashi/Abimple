@@ -106,7 +106,7 @@ $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
   'color' => $chatroom['color'],
   'bgcolor' => $chatroom['bgcolor'],
   'message' => ('<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-               .'<span class="omikuji">（' .$omiName .'）＞ [' .$me .'] ＞ ' .$text .'</span>'
+                .'<span class="omikuji">（' .$omiName .'）＞ [' .$me .'] ＞ ' .$text .'</span>'
   ),
 ]);
 if (!$result) {

@@ -51,7 +51,7 @@ foreach ($characterIds as $key => $characterId) {
 }
 
 // CSS コピー
-foreach (SITE_CSS_FILES as $css) {
+foreach (SITE_CSS_FILES_PATH as $css) {
   if (is_file($css)) {
     copy($css, CHARACTER_STORAGE_PATH .'css/' .basename($css));
   }

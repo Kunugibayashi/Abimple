@@ -5,6 +5,8 @@ require_once(__DIR__ .'/../../../../core/src/session.php');
 require_once(__DIR__ .'/../../../../core/src/database.php');
 require_once(__DIR__ .'/../../../../core/src/administrator.php');
 
+require_once(__DIR__ .'/../../../src/chatlogformat.php');
+
 $inputParams = array();
 
 $inputParams['characterid'] = inputParam('characterid', 20);
@@ -175,41 +177,17 @@ outputPage:
   <!-- 共通CSS -->
   <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- DB参照値用 -->
-  <style>
-    :root {
-      --chat-color: <?php echo h($chatroom['color']); ?>;
-      --chat-bgcolor: <?php echo h($chatroom['bgcolor']); ?>;
-      --chat-bgimage: <?php echo usedStr($chatroom['bgimage']) ? 'url("' . h($chatroom['bgimage']) . '")' : 'none'; ?>;
-      --chat-bg-repeat: <?php echo ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE2 || $chatroom['toptemplate'] === CHAT_TOP_TEMPLATE3) ? 'repeat' : 'initial'; ?>;
-    }
-  </style>
-  <link rel="stylesheet" href="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/css/roombase.css.php?up=<?php echo h(SITE_UPDATE); ?>">
-  <?php if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE1) { ?>
-    <link rel="stylesheet" href="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/css/toptemplate1.css.php?up=<?php echo h(SITE_UPDATE); ?>">
-  <?php } else if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE2 ) { ?>
-    <link rel="stylesheet" href="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/css/toptemplate2.css.php?up=<?php echo h(SITE_UPDATE); ?>">
-  <?php } else if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE3 ) { ?>
-    <link rel="stylesheet" href="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/css/toptemplate3.css.php?up=<?php echo h(SITE_UPDATE); ?>">
-  <?php } else { ?>
-    <link rel="stylesheet" href="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/css/toptemplatedef.css.php?up=<?php echo h(SITE_UPDATE); ?>">
-  <?php } ?>
-  <?php if ($chatroom['toptemplate'] === CHAT_LOG_TEMPLATE1) { ?>
-    <link rel="stylesheet" href="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/css/logtemplate1.css.php?up=<?php echo h(SITE_UPDATE); ?>">
-  <?php } else { ?>
-    <link rel="stylesheet" href="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/css/logtemplatedef.css.php?up=<?php echo h(SITE_UPDATE); ?>">
-  <?php } ?>
+  <?php echo renderDbCssVariables($chatroom); ?>
+  <!-- チャット画面用CSS -->
+  <?php echo renderCssLinkUrl($chatroom); ?>
   <!-- レスポンシブ用 -->
   <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <?php if (usedStr($chatroom['roomcss'])) { ?>
-    <!-- DB登録のCSS記載 -->
-    <style>
-      <?php echo h($chatroom['roomcss']) ?>
-    </style>
-  <?php } ?>
+  <!-- DB登録のCSS記載 -->
+  <?php if (usedStr($chatroom['roomcss'])) echo '<style>' . h($chatroom['roomcss']) . '</style>'; ?>
   <!-- script -->
   <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
   <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
-  <script src="<?php echo h(CHAT_ROOM_SRC_PATH); ?>/js/chatlog-sync.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(CHAT_ROOM_SRC_LINK); ?>/js/chatlog-sync.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
 <div id="id-roomtop-content-wrap" class="content-wrap"><!-- roomtopと共通 -->
