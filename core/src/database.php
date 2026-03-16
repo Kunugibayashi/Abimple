@@ -1201,13 +1201,15 @@ function selectEqualChatentries($dbh, $params = array()) {
   return $data;
 }
 
-function selectEqualLogChatentries($dbh, $params = array()) {
+function selectEqualLogChatentries($dbh, $entrykey, $params = array()) {
   $sql = '
     SELECT
       *
     FROM chatentries
     WHERE
-      id IS NOT NULL
+      deleteflg = 1
+    AND
+      entrykey = :entrykey
   ';
   $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
@@ -1215,6 +1217,7 @@ function selectEqualLogChatentries($dbh, $params = array()) {
   ';
 
   $stmt = myPrepare($dbh, $sql, $params);
+  $stmt->bindValue(':entrykey', $entrykey);
   $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);

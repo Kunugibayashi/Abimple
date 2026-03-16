@@ -146,7 +146,7 @@ $myChatentry = $myChatentries[0];
 
 // roomdir
 $roomdir = getPageRoomdir();
-$ROOMS_SRC_DIR = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
+$ROOMDIR_SRC_PATH = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
 
 // 入室情報の保存
 $save = [
@@ -425,7 +425,7 @@ outputPage:
 </div>
 <script>
 // js 内使用変数
-var CHATLOG_API = "<?php echo h($ROOMS_SRC_DIR); ?>/chatloglist.php";
+var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_PATH); ?>/chatloglist.php";
 
 // ログ取得起動
 jQuery(function() {

@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // roomdir
   $roomdir = getPageRoomdir();
-  $ROOMS_SRC_DIR = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
+  $ROOMDIR_SRC_PATH = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
 
   // DB接続
   $dbhChatentries = connectRo(CHAT_ENTRIES_DB);
@@ -127,7 +127,7 @@ outputPage:
             すでに入室しています。<br>
           </p>
         </div>
-        <form name="roomreenter-form" class="roomreenter-form" action="<?php echo h($ROOMS_SRC_DIR); ?>/roomchat.php" method="POST">
+        <form name="roomreenter-form" class="roomreenter-form" action="<?php echo h($ROOMDIR_SRC_PATH); ?>/roomchat.php" method="POST">
           <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
           <div class="form-button-wrap submit-wrap">
             <button type="submit">再入室</button>
@@ -135,7 +135,7 @@ outputPage:
         </form>
       <?php } else if (usedArr($characters)) { /* 入室していない & キャラクター登録をしている場合のみに入室を表示 */ ?>
         <?php setChatToken(); /* フォーム表示時にトークンをセット */ ?>
-        <form name="roomenter-form" class="roomenter-form" action="<?php echo h($ROOMS_SRC_DIR); ?>/roomchat.php" method="POST">
+        <form name="roomenter-form" class="roomenter-form" action="<?php echo h($ROOMDIR_SRC_PATH); ?>/roomchat.php" method="POST">
           <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
           <ul class="form-row fullname-wrap">
             <li class="form-col-title">キャラクター</li>
@@ -265,7 +265,7 @@ outputPage:
 <?php } ?>
 <script>
 // js 内使用変数
-var CHATLOG_API = "<?php echo h($ROOMS_SRC_DIR); ?>/chatloglist.php";
+var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_PATH); ?>/chatloglist.php";
 
 // ログ取得起動
 jQuery(function() {

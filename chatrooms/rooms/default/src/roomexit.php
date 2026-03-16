@@ -29,7 +29,7 @@ checkChatToken();
 
 // roomdir
 $roomdir = getPageRoomdir();
-$ROOMS_SRC_DIR = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
+$ROOMDIR_SRC_PATH = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
 
 // DB接続
 $dbhChatrooms  = connectRo(CHAT_ROOMS_DB);
@@ -91,9 +91,9 @@ updateChatentries($dbhChatentries, $inputParams['characterid'], [
 $save = array();
 setChatEntry($save);
 
-$chatentries = selectEqualChatentries($dbhChatentries);
+$nowChatentries = selectEqualChatentries($dbhChatentries);
 
-if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($chatentries)) {
+if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($nowChatentries)) {
   // 秘匿ルーム、かつ、最終退室者の場合はログを削除
   deleteChatlogs($dbhChatlogs);
 
@@ -103,9 +103,10 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($chatentries
   // 余分な参加者ログを削除
   deleteChatentriesExit($dbhChatentries);
 
-} else if (isset($myChatentry) && usedArr($myChatentry) && !usedArr($chatentries)) {
+} else if (isset($myChatentry) && usedArr($myChatentry) && !usedArr($nowChatentries)) {
   // 最終退室者の場合はログを出力
   $entrykey = $myChatentry['entrykey'];
+  $chatentries = selectEqualLogChatentries($dbhChatentries, $entrykey);
 
   // 100行ごとにループ
   $beforeid = 0;
@@ -196,14 +197,13 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($chatentries
   }
 
     // ログの中から参加者を取得
-    // TODO あとで
-    // $doc = new DOMDocument();
-    // libxml_use_internal_errors(true);
-    // $doc->loadHTMLFile(ALL_LOG_FILE_DIR .$logFileName);
-    // libxml_clear_errors();
-    // $entries = $doc->saveHTML($doc->getElementById('chat-entries'));
+    $doc = new DOMDocument();
+    libxml_use_internal_errors(true);
+    $doc->loadHTMLFile($filepath);
+    libxml_clear_errors();
+    $entries = $doc->saveHTML($doc->getElementById('id-chat-entries'));
     // 出力時に改行コードが <br> に変換されてしまうため削除
-    // $entries = str_replace(array("\r\n", "\r", "\n"), '', $entries);
+    $entries = str_replace(array("\r\n", "\r", "\n"), '', $entries);
 
     // ログ倉庫に登録
     // TODO あとで
@@ -322,7 +322,7 @@ outputPage:
 </script>
 <script>
 // js 内使用変数
-var CHATLOG_API = "<?php echo h($ROOMS_SRC_DIR); ?>/chatloglist.php";
+var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_PATH); ?>/chatloglist.php";
 
 // ログ取得起動
 jQuery(function() {
