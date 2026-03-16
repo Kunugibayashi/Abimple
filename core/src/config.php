@@ -219,7 +219,7 @@ define('NAMELIST_DETAIL_NAME', '詳細'); // 表示名
  */
 define('DOCUMENT_ROOT', $_SERVER['DOCUMENT_ROOT']);
 define('INDEX_ROOT', DOCUMENT_ROOT.SITE_ROOT);
-define('NAMELIST_VIEW_ROOT_LINK', SITE_ROOT.'/characters/src/view.php');
+define('NAMELIST_VIEW_LINK', SITE_ROOT.'/characters/src/view.php');
 define('SITE_CSS_FILES_PATH', [
   INDEX_ROOT .'/core/css/base.css',
   INDEX_ROOT .'/core/css/' .SITE_TEMPLATE .'.css',
@@ -234,6 +234,7 @@ define('CHAT_LOG_TEMPLATE_FILE_PATH', (INDEX_ROOT.'/chatrooms/src/templates/'));
 define('CHAT_LOG_HTML_DIR', '/chatloghtml/');
 define('CHAT_LOG_HTML_PATH', (INDEX_ROOT.CHAT_LOG_HTML_DIR.'html/'));
 define('CHAT_LOG_HTML_LINK', (SITE_ROOT.CHAT_LOG_HTML_DIR.'html/'));
+define('CHAT_LOG_SRC_LINK', (SITE_ROOT.CHAT_LOG_HTML_DIR.'src/'));
 define('CHAT_LOG_ZIP_PATH', (INDEX_ROOT.CHAT_LOG_HTML_DIR.'zip/'));
 define('CHAT_ROOM_CSS_FILE_PATH', (INDEX_ROOT.'/chatrooms/src/css/'));
 define('CHAT_ROOM_SRC_LINK', (SITE_ROOT.'/chatrooms/src/'));

@@ -7,7 +7,6 @@
 user-edit.css
 chatrooms/rooms/*
 !chatrooms/rooms/default
-logstorage/logzip/*.zip
+chatloghtml/zip/*.zip
 characterhtml/html/css/*.css
-characterhtml/html/*.html
 characterhtml/zip/*.zip

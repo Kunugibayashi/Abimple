@@ -71,8 +71,8 @@ outputPage:
   <?php if (isLogin()) { /* ログイン時 */ ?>
     <?php if (usedArr($pages)) { /* 登録がある場合に表示 */ ?>
       <div class="dl-all-log-wrap">
-        <a href="./localindex.php" class="link-pseudo-button" download="index.html">ローカル用IndexファイルDL</a>
-        <a href="./dlalldata.php" class="link-pseudo-button">一括DL</a>
+        <a href="<?php echo h(CHAT_LOG_SRC_LINK); ?>localindex.php?up=<?php echo h(SITE_UPDATE); ?>" class="link-pseudo-button" download="index.html">ローカル用IndexファイルDL</a>
+        <a href="<?php echo h(CHAT_LOG_SRC_LINK); ?>dlall.php?up=<?php echo h(SITE_UPDATE); ?>" class="link-pseudo-button">一括DL</a>
       </div>
     <?php } ?>
   <?php } ?>
@@ -113,18 +113,18 @@ outputPage:
               <td><?php echo h($value['id']); ?></td>
             <?php } ?>
             <td><?php echo h($value['created']); ?></td>
-            <?php
-              $filePath = (CHAT_LOG_HTML_PATH .$value['filename']);
-              $filePathLink = (CHAT_LOG_HTML_LINK .$value['filename']);
-              if (file_exists($filePath)) {
-            ?>
-              <td><a href="<?php echo h($filePathLink); ?>"><?php echo h($value['roomtitle']); ?></a></td>
-              <td class="scroll"><?php echo ht($value['entries']); ?></td>
-              <td><a href="<?php echo h($filePathLink); ?>" download>DL</a></td>
-            <?php } else { ?>
-              <td><?php echo h($value['roomtitle']); ?></td>
-              <td class="scroll"><?php echo ht($value['entries']); ?></td>
-              <td>ファイル無し</td>
+              <?php
+                $filePath = (CHAT_LOG_HTML_PATH .$value['filename']);
+                $filePathLink = (CHAT_LOG_HTML_LINK .$value['filename']);
+              ?>
+              <?php if (file_exists($filePath)) { ?>
+                <td><a href="<?php echo h($filePathLink); ?>"><?php echo h($value['roomtitle']); ?></a></td>
+                <td class="scroll"><?php echo ht($value['entries']); ?></td>
+                <td><a href="<?php echo h($filePathLink); ?>" download>DL</a></td>
+              <?php } else { ?>
+                <td><?php echo h($value['roomtitle']); ?></td>
+                <td class="scroll"><?php echo ht($value['entries']); ?></td>
+                <td>ファイル無し</td>
             <?php } ?>
           </tr>
         <?php } ?>

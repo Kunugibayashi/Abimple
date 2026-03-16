@@ -526,7 +526,6 @@ th.cell-inoutroomtitle { min-width: 15rem; width: 15rem; }
 th.cell-inoutmessage { min-width: 10rem; width: 30rem; }
 th.cell-roomtitle { min-width: 20rem; width: 20rem; }
 th.cell-logentries { min-width: 10rem; }
-th.cell-logfilename { min-width: 20rem; width: 20rem; }
 th.cell-action1button { min-width: 8rem; width: 8rem; }
 
 /* お知らせ */

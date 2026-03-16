@@ -118,14 +118,6 @@ li.entries-no-item {
 .cell-logentries {
   min-width: 10rem;
 }
-.cell-logfilename {
-  min-width: 20rem;
-  width: 20rem;
-}
-.cell-action1button {
-  min-width: 8rem;
-  width: 8rem;
-}
 </style>
 </head>
 <body>
@@ -137,21 +129,20 @@ li.entries-no-item {
           <th class="cell-created">作成日</th>
           <th class="cell-roomtitle">ルーム</th>
           <th class="cell-logentries">参加者</th>
-          <th class="cell-logfilename">ログファイル名</th>
         </tr>
         <?php foreach ($logLists as $key => $value) { ?>
           <tr>
             <td><?php echo h($value['created']); ?></td>
-            <td><?php echo h($value['roomtitle']); ?></td>
-            <td class="scroll"><?php echo ht($value['entries']); ?></td>
             <?php
-              $filePath = (CHAT_LOG_HTML_LINK .$value['filename']);
-              $filePathLink = (CHAT_LOG_HTML_LINK .$value['filename']);
-              if (file_exists($filePath)) {
+              $filePath = (CHAT_LOG_HTML_PATH .$value['filename']);
+              $filePathLink = ($value['filename']);
             ?>
-              <td><a href="<?php echo h($filePathLink); ?>"><?php echo h($value['filename']); ?></a></td>
+            <?php if (file_exists($filePath)) { ?>
+              <td><a href="<?php echo h($filePathLink); ?>"><?php echo h($value['roomtitle']); ?></a></td>
+              <td class="scroll"><?php echo ht($value['entries']); ?></td>
             <?php } else { ?>
-              <td>ファイル無し</td>
+              <td><?php echo h($value['roomtitle']); ?></td>
+              <td class="scroll"><?php echo ht($value['entries']); ?></td>
             <?php } ?>
           </tr>
         <?php } ?>

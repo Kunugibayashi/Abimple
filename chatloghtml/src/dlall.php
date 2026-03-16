@@ -26,9 +26,10 @@ $createLocalIndex();
 
 // zipファイル作成
 $zip = new ZipArchive();
-$allLogZipFile = CHAT_LOG_HTML_PATH .'SiteLogData.zip';
+$zipName = 'SiteLogData.zip';
+$logZipFile = CHAT_LOG_ZIP_PATH .$zipName;
 
-if ($zip->open($allLogZipFile, ZipArchive::CREATE) !== TRUE) {
+if ($zip->open($logZipFile, ZipArchive::CREATE) !== TRUE) {
   echo 'ZIPファイルを作成できません。';
   exit;
 }
@@ -54,17 +55,25 @@ foreach ($logFiles as $logFile) {
 
 $zip->close();
 
+// DL名。使用不可文字が混じらないように変換。
+$siteTitle = removeUnsafeChars(SITE_TITLE);
+$downloadName = nowYmdhi() .'_' .$siteTitle .'_' .$zipName;
+
 // zipファイルをダウンロード用に出力
 header('Content-Type: application/zip');
 header('X-Content-Type-Options: nosniff');
-header('Content-Length: ' .filesize($allLogZipFile));
-header('Content-Disposition: attachment; filename="' .basename($allLogZipFile) .'"');
+header('Content-Length: ' .filesize($logZipFile));
+header(
+  'Content-Disposition: attachment; ' .
+  'filename="' .$zipName .'"; ' .
+  "filename*=UTF-8''" .rawurlencode($downloadName)
+);
 header('Connection: close');
 
-// 出力バッファリングを無効化
+// バイナリ出力前に出力バッファを全クリア
 while (ob_get_level()) { ob_end_clean(); }
 
 // ファイルの内容を出力
-readfile($allLogZipFile);
+readfile($logZipFile);
 
 exit;
