@@ -64,13 +64,6 @@ define('SITE_UPDATE', time());
  */
 define('CHAT_LOG_SYSTEM_NAME', 'システム');
 
-/* 一括DLファイル名。
- * 編集任意。
- *
- * .zip は消さないようにしてください。
- */
-define('DL_ALL_LOG_ZIP_NAME', 'AllSiteLogData.zip');
-
 /* ファイル出力時の使用メモリ。
  * 編集任意。
  *
@@ -234,14 +227,14 @@ define('SITE_CSS_FILES_PATH', [
   INDEX_ROOT .'/core/css/responsive.css',
 ]);
 define('CHARACTER_TEMPLATE_FILE_PATH', (INDEX_ROOT.'/characters/src/templates/'));
-define('CHARACTER_STORAGE_DIR', '/characterhtml/');
-define('CHARACTER_STORAGE_PATH', (INDEX_ROOT.CHARACTER_STORAGE_DIR.'html/'));
-define('CHARACTER_ZIP_PATH', (INDEX_ROOT.CHARACTER_STORAGE_DIR.'zip/'));
+define('CHARACTER_HTML_DIR', '/characterhtml/');
+define('CHARACTER_HTML_PATH', (INDEX_ROOT.CHARACTER_HTML_DIR.'html/'));
+define('CHARACTER_ZIP_PATH', (INDEX_ROOT.CHARACTER_HTML_DIR.'zip/'));
 define('CHAT_LOG_TEMPLATE_FILE_PATH', (INDEX_ROOT.'/chatrooms/src/templates/'));
-define('CHAT_LOG_STORAGE_DIR', '/chatloghtml/');
-define('CHAT_LOG_STORAGE_PATH', (INDEX_ROOT.CHAT_LOG_STORAGE_DIR.'html/'));
-define('CHAT_LOG_ZIP_PATH', (INDEX_ROOT.CHAT_LOG_STORAGE_DIR.'zip/'));
-define('CHAT_LOG_URL_LINK', (SITE_ROOT.CHAT_LOG_STORAGE_DIR.'html/'));
+define('CHAT_LOG_HTML_DIR', '/chatloghtml/');
+define('CHAT_LOG_HTML_PATH', (INDEX_ROOT.CHAT_LOG_HTML_DIR.'html/'));
+define('CHAT_LOG_HTML_LINK', (SITE_ROOT.CHAT_LOG_HTML_DIR.'html/'));
+define('CHAT_LOG_ZIP_PATH', (INDEX_ROOT.CHAT_LOG_HTML_DIR.'zip/'));
 define('CHAT_ROOM_CSS_FILE_PATH', (INDEX_ROOT.'/chatrooms/src/css/'));
 define('CHAT_ROOM_SRC_LINK', (SITE_ROOT.'/chatrooms/src/'));
 /* チャットルーム用 */
@@ -264,7 +257,7 @@ define('ROOM_INOUT_HISTORIES_DB', (INDEX_ROOT.'/chatrooms/src/db/roominouthistor
 define('CHAT_SECRETS_DB', './db/chatchatsecrets.db');
 define('INBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/inboxletters.db'));
 define('OUTBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/outboxletters.db'));
-define('CHAT_LOG_FILES_DB', (INDEX_ROOT.'/logstorage/src/db/chatlogfiles.db'));
+define('CHAT_LOG_FILES_DB', (INDEX_ROOT.'/chatloghtml/src/db/chatlogfiles.db'));
 // 以下の変数はPathが可変のため相対Path設定。DB作成は同様に追加すること。
 define('CHAT_ROOMS_DB', './db/chatrooms.db');
 define('CHAT_ENTRIES_DB', './db/chatentries.db');

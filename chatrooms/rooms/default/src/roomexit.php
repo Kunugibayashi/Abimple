@@ -132,7 +132,7 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($nowChatentr
   $filename = removeUnsafeChars($chatroomTitle);
 
   $logFileName = $dt->format('Ymd_His') ."_" .$filename .'.html';
-  $filepath = CHAT_LOG_STORAGE_PATH .$logFileName;
+  $filepath = CHAT_LOG_HTML_PATH .$logFileName;
 
   $fp = fopen($filepath, 'w');
   if ($fp === false) {
@@ -196,17 +196,24 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($nowChatentr
     fclose($fp);
   }
 
-    // ログの中から参加者を取得
-    $doc = new DOMDocument();
-    libxml_use_internal_errors(true);
-    $doc->loadHTMLFile($filepath);
-    libxml_clear_errors();
-    $entries = $doc->saveHTML($doc->getElementById('id-chat-entries'));
-    // 出力時に改行コードが <br> に変換されてしまうため削除
-    $entries = str_replace(array("\r\n", "\r", "\n"), '', $entries);
+  // ログの中から参加者を取得
+  $doc = new DOMDocument();
+  libxml_use_internal_errors(true);
+  $doc->loadHTMLFile($filepath);
+  libxml_clear_errors();
+  $entries = $doc->saveHTML($doc->getElementById('id-chat-entries'));
+  // 出力時に改行コードが <br> に変換されてしまうため削除
+  $entries = str_replace(array("\r\n", "\r", "\n"), '', $entries);
 
-    // ログ倉庫に登録
-    // TODO あとで
+  // ログ倉庫に登録
+  insertChatlogfiles(
+    $dbhChatlogfiles,
+    $entrykey,
+    $roomdir,
+    $chatroom['title'],
+    $logFileName,
+    $entries
+  );
 
   // 不可対策として指定数以上のログを削除
   deleteChatlogsLimit5000($dbhChatlogs);

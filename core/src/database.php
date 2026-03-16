@@ -2030,7 +2030,7 @@ function selectEqualChatlogfiles($dbh, $params = array()) {
   return $data;
 }
 
-function insertAllloglists($dbh, $entrykey, $roomdir, $roomtitle, $filename, $entries) {
+function insertChatlogfiles($dbh, $entrykey, $roomdir, $roomtitle, $filename, $entries) {
   $sql = '
     INSERT INTO chatlogfiles (
       entrykey,
