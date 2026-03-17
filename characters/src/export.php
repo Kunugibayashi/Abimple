@@ -1,12 +1,12 @@
 <?php
-require_once('../../core/src/config.php');
-require_once('../../core/src/functions.php');
-require_once('../../core/src/session.php');
-require_once('../../core/src/database.php');
-require_once('../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/config.php');
+require_once(__DIR__ . '/../../core/src/functions.php');
+require_once(__DIR__ . '/../../core/src/session.php');
+require_once(__DIR__ . '/../../core/src/database.php');
+require_once(__DIR__ . '/../../core/src/administrator.php');
 
-require_once('../../core/src/lib/exportlib.php');
-require_once('../../core/src/lib/templatelib.php');
+require_once(__DIR__ . '/../../core/src/lib/exportlib.php');
+require_once(__DIR__ . '/../../core/src/lib/templatelib.php');
 
 loginOnly();
 
@@ -74,14 +74,16 @@ $indexOutPath = CHARACTER_HTML_PATH  .'index.html';
 file_put_contents($indexOutPath, $indexHtmlString, LOCK_EX);
 
 // zip ファイル変換
-$zipPath = CHARACTER_ZIP_PATH . '/Character.zip';
 $zip = new ZipArchive();
+$zipName = 'CharacterData.zip';
+$zipFilePath = CHARACTER_ZIP_PATH .'' .$zipName;
 $opened = false;
 
 try {
-  $result = $zip->open($zipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+  $result = $zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE);
   if ($result !== true) {
-    throw new RuntimeException('ZIP open failed: ' . $result);
+    echo 'ZIPファイルを作成できません。';
+    exit;
   }
   $opened = true;
   addDirToZip($zip, CHARACTER_HTML_PATH, CHARACTER_HTML_PATH);
@@ -91,9 +93,25 @@ try {
   }
 }
 
-// DLとして返却
+// DL名。使用不可文字が混じらないように変換。
+$siteTitle = removeUnsafeChars(SITE_TITLE);
+$downloadName = nowYmdhi() .'_' .$siteTitle .'_' .$zipName;
+
+// zipファイルをダウンロード用に出力
 header('Content-Type: application/zip');
-header('Content-Disposition: attachment; filename="Character.zip"');
-header('Content-Length: ' . filesize($zipPath));
-readfile($zipPath);
+header('X-Content-Type-Options: nosniff');
+header('Content-Length: ' .filesize($zipFilePath));
+header(
+  'Content-Disposition: attachment; ' .
+  'filename="' .$zipName .'"; ' .
+  "filename*=UTF-8''" .rawurlencode($downloadName)
+);
+header('Connection: close');
+
+// バイナリ出力前に出力バッファを全クリア
+while (ob_get_level()) { ob_end_clean(); }
+
+// ファイルの内容を出力
+readfile($zipFilePath);
+
 exit;

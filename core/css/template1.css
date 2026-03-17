@@ -964,3 +964,26 @@ td.scroll {
 div.dl-all-log-wrap {
   text-align: right;
 }
+
+/* ****************************************************************************
+ * チャットルーム管理画面
+ * ****************************************************************************
+ */
+.adminlog-wrap {
+  width: 100%;
+  background-color: #e4e0dd;
+  margin: 1rem 0;
+  padding: 2rem;
+  border-radius: 1rem;
+}
+ul.adminlog-row {
+  margin: 1rem 0;
+}
+li.adminlog-col-title {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+li.adminlog-col-note {
+  font-size: 0.8rem;
+  opacity: 0.6;
+}

@@ -5,7 +5,7 @@ require_once(__DIR__ .'/../../../../core/src/session.php');
 require_once(__DIR__ .'/../../../../core/src/database.php');
 require_once(__DIR__ .'/../../../../core/src/administrator.php');
 
-require_once(__DIR__ .'/../../../src/chatlogformat.php');
+require_once(__DIR__ .'/../../../src/chatlogexport.php');
 
 $inputParams = array();
 
@@ -203,13 +203,6 @@ outputPage:
       <ul class="roomtop-header-item-group">
         <li class="roomtop-header-item">
           <a href="./editlist.php" target="log">発言編集</a>
-        </li>
-        <li class="roomtop-header-item">
-          <span class="link new-window-submit">ログ別窓表示</span>
-          <form name="new-window-form" class="hidden-form" action="./log.php" target="_blank" method="GET">
-            <input type="hidden" name="lognum" value="">
-            <input type="hidden" name="logsec" value="">
-          </form>
         </li>
         <li class="roomtop-header-item">
           <span class="link form-submit">退室メッセージを表示させずに退室</span>
@@ -564,7 +557,7 @@ jQuery(function(){
   jQuery('button.whisperid-set-button').on('click', function(){
     var sendData = jQuery('form#id-chat-form').serialize();
     jQuery.ajax({
-      url: './whisperlist.php',
+      url: './updatewhisperlist.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',

@@ -5,7 +5,7 @@ require_once(__DIR__ .'/../../../../core/src/session.php');
 require_once(__DIR__ .'/../../../../core/src/database.php');
 require_once(__DIR__ .'/../../../../core/src/administrator.php');
 
-require_once(__DIR__ .'/../../../src/chatlogformat.php');
+require_once(__DIR__ .'/../../../src/chatlogexport.php');
 
 $errors = array();
 $inputParams = array();

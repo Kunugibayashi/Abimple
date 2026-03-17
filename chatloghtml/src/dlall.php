@@ -27,9 +27,9 @@ $createLocalIndex();
 // zipファイル作成
 $zip = new ZipArchive();
 $zipName = 'SiteLogData.zip';
-$logZipFile = CHAT_LOG_ZIP_PATH .$zipName;
+$zipFilePath = CHAT_LOG_ZIP_PATH .$zipName;
 
-if ($zip->open($logZipFile, ZipArchive::CREATE) !== TRUE) {
+if ($zip->open($zipFilePath, ZipArchive::CREATE) !== TRUE) {
   echo 'ZIPファイルを作成できません。';
   exit;
 }
@@ -62,7 +62,7 @@ $downloadName = nowYmdhi() .'_' .$siteTitle .'_' .$zipName;
 // zipファイルをダウンロード用に出力
 header('Content-Type: application/zip');
 header('X-Content-Type-Options: nosniff');
-header('Content-Length: ' .filesize($logZipFile));
+header('Content-Length: ' .filesize($zipFilePath));
 header(
   'Content-Disposition: attachment; ' .
   'filename="' .$zipName .'"; ' .
@@ -74,6 +74,6 @@ header('Connection: close');
 while (ob_get_level()) { ob_end_clean(); }
 
 // ファイルの内容を出力
-readfile($logZipFile);
+readfile($zipFilePath);
 
 exit;

@@ -36,6 +36,10 @@ $inputParams['roomcss'] = inputParam('roomcss', 10000);
 $inputParams['created'] = inputParam('created', 20);
 $inputParams['modified'] = inputParam('modified', 20);
 
+// roomdir
+$roomdir = getPageRoomdir();
+$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策
   setToken();
@@ -182,8 +186,23 @@ outputPage:
     </div>
   <?php } ?>
 
+  <div class="adminlog-wrap">
+    <h4 class="adminlog-title">ログ取得</h4>
+    <ul class="adminlog-row">
+      <li class="adminlog-col-title"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>/adminroomlog.php?up=<?php echo h(SITE_UPDATE); ?>" class="link-pseudo-button">ルームログ全出力</a></li>
+      <li class="adminlog-col-note">DB に残っているログをすべてダウンロードします。対象は現ルームのみです。</li>
+      <li class="adminlog-col-note">ログ出力に失敗した場合に使用することを想定しています。負荷が高いため短時間に連続で行わないでください。</li>
+    </ul>
+    <ul class="adminlog-row">
+      <li class="adminlog-col-title"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>/adminwhisperlog.php?up=<?php echo h(SITE_UPDATE); ?>" class="link-pseudo-button">ささやきログ全出力</a></li>
+      <li class="adminlog-col-note">DB に残っているすべてのユーザーのささやきをダウンロードします。対象は現ルームのみです。</li>
+      <li class="adminlog-col-note">管理者はささやきが管理者から見えることを事前に通達するようお願いします。</li>
+    </ul>
+  </div>
+
   <div class="form-wrap">
-    <form name="characters-form" class="characters-form" action="./admin.php" method="POST">
+    <form name="characters-form" class="characters-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>/admin.php" method="POST">
+      <h4 class="characters-form-title">チャットルーム設定</h4>
       <input type="hidden" name="token" value="<?php echo h(getToken()); ?>">
       <ul class="form-row">
         <li class="form-col-title">ルームDIR</li>
@@ -407,7 +426,7 @@ outputPage:
 <script> <!-- 各ボタン制御 -->
 jQuery(function(){
   jQuery('button.tochatroom-button').on('click', function(){
-    window.location.href = './roomtop.php';
+    window.location.href = '<?php echo h($ROOMDIR_SRC_LINK); ?>/roomtop.php';
   });
   // プレビュー機能
   jQuery('button.preview-button').on('click', function(){

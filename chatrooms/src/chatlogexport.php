@@ -180,3 +180,105 @@ function renderTemplateCssString(array $chatroom): string {
   return $css;
 }
 
+// ログファイル出力
+// filepath が指定されている場合は、そのファイルを出力。
+// filepath が指定されていない場合は、デフォルトのログファイルを出力。
+function exportChatLogFile(
+  ?string $filepath,
+  ?SQLite3 $dbhChatlogs,
+  string $entrykey,
+  array $chatroom,
+  array $chatentries,
+  array $dbParams = array()
+): string {
+
+  if ($dbhChatlogs === null) {
+    return '';
+  }
+
+  // 100行ごとにループ
+  $beforeid = 0;
+  $chatrows = selectEqualChatlogsChunk($dbhChatlogs, 100, $entrykey, $beforeid, $dbParams);
+  if ($chatrows === false) {
+    return '';
+  }
+
+  $firstrow = $chatrows->fetchArray(SQLITE3_ASSOC);
+  if ($firstrow === false) {
+    return '';
+  }
+
+  // ファイルパスが指定されていなかった場合、最初の一行からファイルパスを作成する
+  // 出力場所は固定とする
+  if (!usedStr($filepath)) {
+    $firstDate = $firstrow['created'];
+    $dt = new DateTime($firstDate);
+
+    $chatroomTitle = $chatroom['title'];
+    $filename = removeUnsafeChars($chatroomTitle);
+
+    $logFileName = $dt->format('Ymd_His') ."_" .$filename .'.html';
+    $filepath = CHAT_LOG_HTML_PATH .$logFileName;
+  }
+
+  $fp = fopen($filepath, 'w');
+  if ($fp === false) {
+    return '';
+  }
+
+  try {
+    // ログより上を出力
+    $tplVars = [
+      'chatroom' => $chatroom,
+      'chatentries' => $chatentries,
+    ];
+    $htmlTopString = renderTemplateBuffer(
+      CHAT_LOG_TEMPLATE_FILE_PATH .'chatlogstart.tpl.php',
+      $tplVars,
+    );
+    fwrite($fp, $htmlTopString);
+
+    // 最初に読んだ1件を先に書く
+    $stringHtml = renderChatLog($firstrow, $chatroom);
+    fwrite($fp, $stringHtml);
+    $beforeid = $firstrow['id'];
+
+    // 同じ結果セットの残りを書く
+    while ($row = $chatrows->fetchArray(SQLITE3_ASSOC)) {
+      $stringHtml = renderChatLog($row, $chatroom);
+      fwrite($fp, $stringHtml);
+      $beforeid = $row['id'];
+    }
+
+    // 2チャンク目以降
+    while (true) {
+      $chatrows = selectEqualChatlogsChunk($dbhChatlogs, 100, $entrykey, $beforeid, $dbParams);
+      if ($chatrows === false) {
+        return '';
+      }
+
+      $hasRows = false;
+      while ($row = $chatrows->fetchArray(SQLITE3_ASSOC)) {
+        $hasRows = true;
+        $stringHtml = renderChatLog($row, $chatroom);
+        fwrite($fp, $stringHtml);
+        $beforeid = $row['id'];
+      }
+
+      // 現在のチャンクで1件も取れなかったら終了する
+      if (!$hasRows) break;
+    }
+    // ログより下の出力
+    $tplVars = [];
+    $htmlEndString = renderTemplateBuffer(
+      CHAT_LOG_TEMPLATE_FILE_PATH .'chatlogend.tpl.php',
+      $tplVars,
+    );
+    fwrite($fp, $htmlEndString);
+  } finally {
+    fclose($fp);
+  }
+
+  return $filepath;
+}
+

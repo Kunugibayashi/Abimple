@@ -8,7 +8,7 @@ require_once(__DIR__ .'/../../../../core/src/administrator.php');
 require_once(__DIR__ .'/../../../../core/src/lib/exportlib.php');
 require_once(__DIR__ .'/../../../../core/src/lib/templatelib.php');
 
-require_once(__DIR__ .'/../../../src/chatlogformat.php');
+require_once(__DIR__ .'/../../../src/chatlogexport.php');
 
 $success = '';
 $errors = array();
@@ -108,93 +108,18 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($nowChatentr
   $entrykey = $myChatentry['entrykey'];
   $chatentries = selectEqualLogChatentries($dbhChatentries, $entrykey);
 
-  // 100行ごとにループ
-  $beforeid = 0;
-  $chatrows = selectEqualChatlogsEntrykeyChunk($dbhChatlogs, 100, $entrykey, $beforeid);
-  if ($chatrows === false) {
+  // ささやきはログ出力しない
+  $dbParams = [
+    'whisperflg' => '0'
+  ];
+
+  $filepath = exportChatLogFile(null, $dbhChatlogs, $entrykey, $chatroom, $chatentries, $dbParams);
+  if (!usedStr($filepath)) {
     $success = '退室しました。'; // 退室処理済みのため、退室のメッセージは表示する。
-    $errors[] = 'ログ取得に失敗しました。管理者にお問い合わせください。';
+    $errors[] = 'ログ出力が正常に実行できませんでした。管理者にお問い合わせください。';
     goto outputPage;
   }
-
-  $firstrow = $chatrows->fetchArray(SQLITE3_ASSOC);
-  if ($firstrow === false) {
-    $success = '退室しました。'; // 退室処理済みのため、退室のメッセージは表示する。
-    $success = $success .'出力するログはありません。';
-    goto outputPage;
-  }
-
-  // 最初の一行からファイル名を作成する
-  $firstDate = $firstrow['created'];
-  $dt = new DateTime($firstDate);
-
-  $chatroomTitle = $chatroom['title'];
-  $filename = removeUnsafeChars($chatroomTitle);
-
-  $logFileName = $dt->format('Ymd_His') ."_" .$filename .'.html';
-  $filepath = CHAT_LOG_HTML_PATH .$logFileName;
-
-  $fp = fopen($filepath, 'w');
-  if ($fp === false) {
-    $success = '退室しました。'; // 退室処理済みのため、退室のメッセージは表示する。
-    $errors[] = 'ログファイルの展開に失敗しました。管理者にお問い合わせください。';
-    goto outputPage;
-  }
-
-  try {
-    // ログより上を出力
-    $tplVars = [
-      'chatroom' => $chatroom,
-      'chatentries' => $chatentries,
-    ];
-    $htmlTopString = renderTemplateBuffer(
-      CHAT_LOG_TEMPLATE_FILE_PATH .'chatlogstart.tpl.php',
-      $tplVars,
-    );
-    fwrite($fp, $htmlTopString);
-
-    // 最初に読んだ1件を先に書く
-    $stringHtml = renderChatLog($firstrow, $chatroom);
-    fwrite($fp, $stringHtml);
-    $beforeid = $firstrow['id'];
-
-    // 同じ結果セットの残りを書く
-    while ($row = $chatrows->fetchArray(SQLITE3_ASSOC)) {
-      $stringHtml = renderChatLog($row, $chatroom);
-      fwrite($fp, $stringHtml);
-      $beforeid = $row['id'];
-    }
-
-    // 2チャンク目以降
-    while (true) {
-      $chatrows = selectEqualChatlogsEntrykeyChunk($dbhChatlogs, 100, $entrykey, $beforeid);
-      if ($chatrows === false) {
-        $success = '退室しました。'; // 退室処理済みのため、退室のメッセージは表示する。
-        $errors[] = 'ログ出力が正常に実行できませんでした。管理者にお問い合わせください。';
-        goto outputPage;
-      }
-
-      $hasRows = false;
-      while ($row = $chatrows->fetchArray(SQLITE3_ASSOC)) {
-        $hasRows = true;
-        $stringHtml = renderChatLog($row, $chatroom);
-        fwrite($fp, $stringHtml);
-        $beforeid = $row['id'];
-      }
-
-      // 現在のチャンクで1件も取れなかったら終了する
-      if (!$hasRows) break;
-    }
-    // ログより下の出力
-    $tplVars = [];
-    $htmlEndString = renderTemplateBuffer(
-      CHAT_LOG_TEMPLATE_FILE_PATH .'chatlogend.tpl.php',
-      $tplVars,
-    );
-    fwrite($fp, $htmlEndString);
-  } finally {
-    fclose($fp);
-  }
+  $logFileName = basename($filepath);
 
   // ログの中から参加者を取得
   $doc = new DOMDocument();

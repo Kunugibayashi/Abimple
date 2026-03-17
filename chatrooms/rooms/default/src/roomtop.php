@@ -5,7 +5,7 @@ require_once(__DIR__ .'/../../../../core/src/session.php');
 require_once(__DIR__ .'/../../../../core/src/database.php');
 require_once(__DIR__ .'/../../../../core/src/administrator.php');
 
-require_once(__DIR__ .'/../../../src/chatlogformat.php');
+require_once(__DIR__ .'/../../../src/chatlogexport.php');
 
 $errors = array();
 $inputParams = array();
@@ -97,7 +97,6 @@ outputPage:
         <?php if ($chatroom['isfree']) { ?>
           <li class="roomtop-header-item"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>/roomseting.php">ルーム設定変更</a></li>
         <?php } ?>
-        <li class="roomtop-header-item"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>/chatlogwindow.php" target="_blank">ログ別窓表示</a></li>
         <?php if (isAdmin()) { ?>
           <li class="roomtop-header-item"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>/admin.php">管理画面</a></li>
         <?php } ?>

@@ -1466,14 +1466,20 @@ function selectEqualChatlogsEntrykey($dbh, $limit, $entrykey, $params = array())
   return $data;
 }
 
-function selectEqualChatlogsEntrykeyChunk($dbh, $limit, $entrykey, $beforeid = 0, $params = array()) {
+function selectEqualChatlogsChunk($dbh, $limit, $entrykey = '', $beforeid = 0, $params = array()) {
   $sql = '
     SELECT
       *
     FROM chatlogs
     WHERE
-      entrykey = :entrykey
+      id IS NOT NULL
   ';
+  if ($entrykey != '') {
+    $sql = $sql .'
+      AND
+        entrykey = :entrykey
+    ';
+  }
   if ($beforeid != 0) {
     $sql = $sql .'
       AND
@@ -1488,7 +1494,9 @@ function selectEqualChatlogsEntrykeyChunk($dbh, $limit, $entrykey, $beforeid = 0
 
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt = setEqualArryBindValue($stmt, $params);
-  $stmt->bindValue(':entrykey', $entrykey, SQLITE3_TEXT);
+  if ($entrykey != '') {
+    $stmt->bindValue(':entrykey', $entrykey, SQLITE3_TEXT);
+  }
   if ($beforeid != 0) {
     $stmt->bindValue(':beforeid', $beforeid, SQLITE3_INTEGER);
   }
