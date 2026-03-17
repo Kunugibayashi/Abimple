@@ -79,12 +79,6 @@ outputPage:
   <?php echo renderDbCssVariables($chatroom); ?>
   <!-- チャット画面用CSS -->
   <?php echo renderCssLinkUrl($chatroom); ?>
-  <!-- チャット画面のみ設定 -->
-  <style>
-    li.entries-item {
-      cursor: pointer;
-    }
-  </style>
   <!-- レスポンシブ用 -->
   <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- DB登録のCSS記載 -->
@@ -168,7 +162,19 @@ outputPage:
   </div>
 
 </div>
-
+<!-- チャット画面のみ設定 -->
+<style>
+  li.entries-item {
+    cursor: pointer;
+  }
+</style>
+<script>
+  jQuery(document).on('click', '#id-chat-entries li.entries-item', function() {
+    var characterId = jQuery(this).data('characterid');
+    var url = '<?php echo h(NAMELIST_VIEW_LINK); ?>' + '?id=' + characterId;
+    window.open(url);
+  });
+</script>
 <script>
 // js 内使用変数
 var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_LINK); ?>/chatloglist.php";

@@ -20,7 +20,7 @@ function renderChatentries(array $chatentries): string {
   <?php } ?>
   <?php if (usedArr($chatentries)) { /* 参加者がいる場合 */ ?>
     <?php foreach ($chatentries as $key => $value) { ?>
-      <li class="entries-item" style="background-color: <?php echo h($value['bgcolor']); ?>;" value="<?php echo h($value['characterid']); ?>">
+      <li class="entries-item" style="background-color: <?php echo h($value['bgcolor']); ?>;" data-characterid="<?php echo h($value['characterid']); ?>">
         <span style="color: <?php echo h($value['color']); ?>;" ><?php echo h($value['fullname']); ?></span>
       </li>
     <?php } ?>

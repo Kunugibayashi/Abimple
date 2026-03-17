@@ -429,6 +429,19 @@ outputPage:
   </div>
 
 </div>
+<!-- チャット画面のみ設定 -->
+<style>
+  li.entries-item {
+    cursor: pointer;
+  }
+</style>
+<script>
+  jQuery(document).on('click', '#id-chat-entries li.entries-item', function() {
+    var characterId = jQuery(this).data('characterid');
+    var url = '<?php echo h(NAMELIST_VIEW_LINK); ?>' + '?id=' + characterId;
+    window.open(url);
+  });
+</script>
 <script>
 // js 内使用変数
 var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_LINK); ?>/chatloglist.php";

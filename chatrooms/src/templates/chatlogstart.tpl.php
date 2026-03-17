@@ -41,7 +41,7 @@
       <?php } ?>
       <?php if (usedArr($chatentries)) { /* 参加者がいる場合 */ ?>
         <?php foreach ($chatentries as $key => $chatentry) { ?>
-          <li class="entries-item" style="background-color: <?php echo h($chatentry['bgcolor']); ?>;" value="<?php echo h($chatentry['characterid']); ?>">
+          <li class="entries-item" style="background-color: <?php echo h($chatentry['bgcolor']); ?>;" data-characterid="<?php echo h($chatentry['characterid']); ?>">
             <span style="color: <?php echo h($chatentry['color']); ?>;" ><?php echo h($chatentry['fullname']); ?></span>
           </li>
         <?php } ?>
