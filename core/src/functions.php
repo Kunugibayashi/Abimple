@@ -61,18 +61,31 @@ function selectedOption($param, $inputValue) {
   return '';
 }
 
+function isUnsafeChars(?string $value): bool
+{
+  if ($value === null || $value === '') {
+    return false;
+  }
+  // 制御文字チェック
+  if (preg_match('/[\x00-\x1F\x7F]/u', $value)) {
+    return true;
+  }
+  // 許可しない記号チェック
+  if (preg_match('/[!"#$%&\'()\-\^\\\\@\[\];:\/|*?<>`~+=,]/u', $value)) {
+    return true;
+  }
+  return false;
+}
+
 function removeUnsafeChars(?string $value): string
 {
   if ($value === null) {
     return '';
   }
-
   // 制御文字を除去
   $result = preg_replace('/[\x00-\x1F\x7F]/u', '', $value);
-
   // 許可しない記号を除去
   $result = preg_replace('/[!"#$%&\'()\-\^\\\\@\[\];:\/|*?<>`~+=,]/u', '', $result);
-
   // 前後空白を削除
   return trim($result);
 }

@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // roomdir
   $roomdir = getPageRoomdir();
-  $ROOMDIR_SRC_PATH = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
+  $ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
 
   // DB接続
   $dbhChatentries = connectRo(CHAT_ENTRIES_DB);
@@ -79,10 +79,16 @@ outputPage:
   <?php echo renderDbCssVariables($chatroom); ?>
   <!-- チャット画面用CSS -->
   <?php echo renderCssLinkUrl($chatroom); ?>
+  <!-- チャット画面のみ設定 -->
+  <style>
+    li.entries-item {
+      cursor: pointer;
+    }
+  </style>
   <!-- レスポンシブ用 -->
   <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- DB登録のCSS記載 -->
-  <?php if (usedStr($chatroom['roomcss'])) echo '<style>' . h($chatroom['roomcss']) . '</style>'; ?>
+  <?php if (usedStr($chatroom['roomcss'])) echo '<style>' . h($chatroom['roomcss']) . '</>'; ?>
   <!-- script -->
   <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
   <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
@@ -95,11 +101,11 @@ outputPage:
     <nav class="roomtop-header-menu">
       <ul class="roomtop-header-item-group">
         <?php if ($chatroom['isfree']) { ?>
-          <li class="roomtop-header-item"><a href="<?php echo h($ROOMDIR_SRC_PATH); ?>/roomseting.php">ルーム設定変更</a></li>
+          <li class="roomtop-header-item"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>/roomseting.php">ルーム設定変更</a></li>
         <?php } ?>
-        <li class="roomtop-header-item"><a href="<?php echo h($ROOMDIR_SRC_PATH); ?>/chatlogwindow.php" target="_blank">ログ別窓表示</a></li>
+        <li class="roomtop-header-item"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>/chatlogwindow.php" target="_blank">ログ別窓表示</a></li>
         <?php if (isAdmin()) { ?>
-          <li class="roomtop-header-item"><a href="<?php echo h($ROOMDIR_SRC_PATH); ?>/admin.php">管理画面</a></li>
+          <li class="roomtop-header-item"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>/admin.php">管理画面</a></li>
         <?php } ?>
       </ul>
     </nav>
@@ -121,7 +127,7 @@ outputPage:
     </div>
     <div class="chatconfig-guide"><?php echo hb($chatroom['guide']); ?></div>
     <div class="form-wrap roomtop-form-wrap">
-      <form name="roometop-form" class="roometop-form" action="<?php echo h($ROOMDIR_SRC_PATH); ?>/roomenter.php" method="GET">
+      <form name="roometop-form" class="roometop-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>/roomenter.php" method="GET">
         <div class="form-button-wrap submit-wrap">
           <button type="submit">入室キャラクター選択</button>
         </div>
@@ -165,7 +171,7 @@ outputPage:
 
 <script>
 // js 内使用変数
-var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_PATH); ?>/chatloglist.php";
+var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_LINK); ?>/chatloglist.php";
 
 // ログ取得起動
 jQuery(function() {

@@ -20,6 +20,12 @@ body {
 a {
   color: var(--chat-color);
 }
+div.note-wrap {
+  margin: 0;
+}
+p.note {
+  margin: 1rem 0;
+}
 header.roomtop-header {
   color: var(--chat-bgcolor);
   background-color: var(--chat-color);
@@ -290,6 +296,61 @@ div.form-omi-note {
   opacity: 0.6;
 }
 /* ------------------------------------------------------------------------------------------------- */
+/* 自由設定項目変更                                                                                  */
+/* ------------------------------------------------------------------------------------------------- */
+h3.chatroom-setting-title {
+  border-bottom: solid 2px;
+  font-size: 2rem;
+  text-align: center;
+}
+.chatroom-setting-wrap {
+  display: grid;
+  grid-column: 1 / 2;
+  grid-row: 2 / 3;
+  overflow: auto;
+  justify-content: center;
+}
+.chatroom-frame-wrap {
+  grid-column: 1 / 3;
+  grid-row: 3 / 4;
+}
+.chatroom-setting-wrap {
+  padding: 2rem;
+}
+/* 入力フォーム */
+.setting-form-wrap {
+  display: flex;
+  justify-content: center;
+}
+.setting-form {
+  margin: 1rem 0;
+  padding: 2rem;
+  border-radius: 1rem;
+  border: solid 1px;
+}
+.setting-form ul.form-row {
+  margin: 1rem 0;
+}
+.setting-form li.form-col-title {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+.setting-form li.form-col-note {
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+.setting-form div.form-button-wrap {
+  display: flex;
+  justify-content: center;
+}
+.setting-form input[name="title"] {
+  width: 70vw;
+}
+.setting-form textarea[name="guide"] {
+  width: 70vw;
+  height: 5rem;
+}
+/* ------------------------------------------------------------------------------------------------- */
 /* チャットログ                                                                                      */
 /* ------------------------------------------------------------------------------------------------- */
 .content-log-wrap {
@@ -350,9 +411,6 @@ li.entries-no-item {
   border-radius: 0.2rem;
   padding: 0.2rem;
   font-size: 0.8rem;
-}
-li.entries-item {
-  cursor: pointer;
 }
 /* 部屋案内ポップアップ */
 h3.chatroom-header-title {

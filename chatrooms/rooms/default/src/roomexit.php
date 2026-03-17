@@ -29,7 +29,7 @@ checkChatToken();
 
 // roomdir
 $roomdir = getPageRoomdir();
-$ROOMDIR_SRC_PATH = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
+$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
 
 // DB接続
 $dbhChatrooms  = connectRo(CHAT_ROOMS_DB);
@@ -249,6 +249,12 @@ outputPage:
   <?php echo renderDbCssVariables($chatroom); ?>
   <!-- チャット画面用CSS -->
   <?php echo renderCssLinkUrl($chatroom); ?>
+  <!-- チャット画面のみ設定 -->
+  <style>
+    li.entries-item {
+      cursor: pointer;
+    }
+  </style>
   <!-- レスポンシブ用 -->
   <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- DB登録のCSS記載 -->
@@ -323,13 +329,13 @@ outputPage:
 <script> <!-- 各ボタン制御 -->
   jQuery(function(){
     jQuery('button.tochatroom-button').on('click', function(){
-      window.location.href = './roomtop.php';
+      window.location.href = '<?php echo h($ROOMDIR_SRC_LINK); ?>/roomtop.php';
     });
   });
 </script>
 <script>
 // js 内使用変数
-var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_PATH); ?>/chatloglist.php";
+var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_LINK); ?>/chatloglist.php";
 
 // ログ取得起動
 jQuery(function() {
