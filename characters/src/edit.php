@@ -347,28 +347,28 @@ outputPage:
           <ul class="form-row">
             <li class="form-col-title"><?php echo h(NAMELIST_FREE10_NAME); ?><div class="optional-mark"></div><div class="htmltag-mark"></div></li>
             <li class="form-col-item"><textarea name="free10" maxlength="10000"><?php echo h($inputParams['free10']); ?></textarea></li>
-            <li class="form-col-note">最大 10000 文字。<a href="../../manual/src/htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
+            <li class="form-col-note">最大 10000 文字。<a href="<?php echo h(MANUAL_SEC_LINK); ?>htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
           </ul>
         <?php } ?>
         <?php if (NAMELIST_FREE11 || isAdmin()) { ?>
           <ul class="form-row">
             <li class="form-col-title"><?php echo h(NAMELIST_FREE11_NAME); ?><div class="optional-mark"></div><div class="htmltag-mark"></div></li>
             <li class="form-col-item"><textarea name="free11" maxlength="10000"><?php echo h($inputParams['free11']); ?></textarea></li>
-            <li class="form-col-note">最大 10000 文字。<a href="../../manual/src/htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
+            <li class="form-col-note">最大 10000 文字。<a href="<?php echo h(MANUAL_SEC_LINK); ?>htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
           </ul>
         <?php } ?>
         <?php if (NAMELIST_FREE12 || isAdmin()) { ?>
           <ul class="form-row">
             <li class="form-col-title"><?php echo h(NAMELIST_FREE12_NAME); ?><div class="optional-mark"></div><div class="htmltag-mark"></div></li>
             <li class="form-col-item"><textarea name="free12" maxlength="10000"><?php echo h($inputParams['free12']); ?></textarea></li>
-            <li class="form-col-note">最大 10000 文字。<a href="../../manual/src/htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
+            <li class="form-col-note">最大 10000 文字。<a href="<?php echo h(MANUAL_SEC_LINK); ?>htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
           </ul>
         <?php } ?>
         <?php if (NAMELIST_DETAIL || isAdmin()) { ?>
           <ul class="form-row">
             <li class="form-col-title"><?php echo h(NAMELIST_DETAIL_NAME); ?><div class="optional-mark"></div><div class="htmltag-mark"></div></li>
             <li class="form-col-item"><textarea name="detail" maxlength="10000"><?php echo h($inputParams['detail']); ?></textarea></li>
-            <li class="form-col-note">最大 10000 文字。<a href="../../manual/src/htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
+            <li class="form-col-note">最大 10000 文字。<a href="<?php echo h(MANUAL_SEC_LINK); ?>htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
           </ul>
         <?php } ?>
         <div class="form-button-wrap">

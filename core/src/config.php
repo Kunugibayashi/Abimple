@@ -59,6 +59,17 @@ define('SITE_LETTER_OPEN', 1);
 //define('SITE_UPDATE', '202505150001');
 define('SITE_UPDATE', time());
 
+/* ベル音。
+ * 編集任意。
+ * ベル音を変更したい場合は assets/sound 内にファイルを置いて、このファイル名を変更してください。
+ * ファイル名は拡張子まで含めて記載してください。
+ *
+ * 例）
+ * pipipi.wav … WAV形式通知音
+ * pipipi.mp3 … MP3形式通知音
+ */
+define('CHAT_SOUND_FILE', 'pipipi.mp3');
+
 /* システムメッセージ発言者。
  * 編集任意。
  */
@@ -226,6 +237,8 @@ define('SITE_CSS_FILES_PATH', [
   INDEX_ROOT .'/assets/css/user-edit.css',
   INDEX_ROOT .'/core/css/responsive.css',
 ]);
+define('ASSETS_LINK', (SITE_ROOT.'/assets/'));
+define('MANUAL_SEC_LINK', (SITE_ROOT.'/manual/src/'));
 define('CHARACTER_TEMPLATE_FILE_PATH', (INDEX_ROOT.'/characters/src/templates/'));
 define('CHARACTER_HTML_DIR', '/characterhtml/');
 define('CHARACTER_HTML_PATH', (INDEX_ROOT.CHARACTER_HTML_DIR.'html/'));

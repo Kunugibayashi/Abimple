@@ -28,6 +28,7 @@ if (!usedStr($tmpsync)  || strtotime($tmpsync) === false) {
 // 戻り値初期値
 $jsonArray['code'] = 0;
 $jsonArray['errorMessage'] = '';
+$jsonArray['isringbell'] = 0;
 $jsonArray['dommaxid'] = 0;
 $jsonArray['syncmodifiedts'] = 0;
 $jsonArray['chatentry'] = '';
@@ -97,6 +98,14 @@ if (usedArr($appendlogs)) {
   // 最新データの目印を保持
   $jsonArray['dommaxid'] = $appendlogs[0]['id'];
   $jsonArray['syncmodifiedts'] = $appendlogs[0]['created'];
+
+  // 最新のログが自分の発言でない場合はベルを鳴らす
+  $myCharacterid = (int)($sessionChatEntry['characterid'] ?? 0);
+  $logCharacterid = (int)($appendlogs[0]['characterid'] ?? 0);
+  if ($myCharacterid !== $logCharacterid) {
+    $jsonArray['isringbell'] = 1;
+  }
+
   foreach ($appendlogs as $key => $chatline) {
     // システム
     $stringHtml = renderChatLog($chatline, $chatroom);

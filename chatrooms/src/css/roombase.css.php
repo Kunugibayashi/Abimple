@@ -187,16 +187,17 @@ div.random-wrap {
   width: 8rem;
 }
 .chat-form input[name="memo"] {
-  width: 30rem;
+  width: 60vw;
 }
 .chat-form select[name="whisperid"],
 .reload-form select[name="lognum"],
-.reload-form select[name="logsec"] {
+.reload-form select[name="logsec"],
+.reload-form select[name="usebell"] {
   width: 8rem;
 }
 .chat-form textarea[name="message"] {
   resize: both;
-  width: 30rem;
+  width: 60vw;
   height: 4rem;
 }
 /* エラーメッセージ */

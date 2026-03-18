@@ -270,7 +270,7 @@ outputPage:
               <div class="form-col-item-group">
                 <div class="htmltag-mark"></div>
                 <textarea name="message" maxlength="3000" placeholder="Ctrl+Enterで発言可能"></textarea>
-                <div class="form-col-note form-col-note-message">最大 3000 文字。<a href="../../../../manual/src/htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></div>
+                <div class="form-col-note form-col-note-message">最大 3000 文字。<a href="<?php echo h(MANUAL_SEC_LINK); ?>htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></div>
               </div>
             </li>
           </ul>
@@ -303,6 +303,15 @@ outputPage:
                   <option value="25000">25秒</option><?php /* 25000 = 25秒 */ ?>
                   <option value="60000">60秒</option><?php /* 60000 = 60秒 */ ?>
                   <option value="0">0秒（手動）</option>
+                </select>
+              </div>
+            </li>
+            <li class="form-col-title">ベル通知</li>
+            <li class="form-col-item">
+              <div class="select-wrap">
+                <select name="usebell" id="id-usebell">
+                  <option value="1">ON</option>
+                  <option value="0">OFF</option>
                 </select>
               </div>
             </li>
@@ -438,6 +447,10 @@ outputPage:
 <script>
 // js 内使用変数
 var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_LINK); ?>/chatloglist.php";
+var BELL_FILE_LINK = "<?php echo h(ASSETS_LINK); ?>/sound/<?php echo h(CHAT_SOUND_FILE); ?>";
+
+const bellAudio = new Audio(BELL_FILE_LINK);
+bellAudio.volume = 0.5;
 
 // ログ取得起動
 jQuery(function() {
@@ -527,7 +540,8 @@ jQuery(function(){
 
   // Ctrl + Enter 発言
   textMesElm.on('keydown', function(event){
-    if(event.ctrlKey === true && event.which === 13){
+    if((event.ctrlKey || event.metaKey) && event.key === 'Enter'){
+      event.preventDefault();
       chatBtElm.trigger('click');
     }
   });
@@ -541,7 +555,7 @@ jQuery(function(){
       jQuery('#id-roomtop-content-wrap').css('grid-template-rows', '2rem 16rem 1fr');
     } else {
       // 表示
-      jQuery('textarea[name="message"]').css('width', '30rem');
+      jQuery('textarea[name="message"]').css('width', '60vw');
       jQuery('div.roomchat-content-wrap').css('grid-template-columns', '1fr 16rem');
       jQuery('#id-roomtop-content-wrap').css('grid-template-rows', '2rem 28rem 1fr');
     }

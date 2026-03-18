@@ -83,8 +83,9 @@
     var syncmodifiedts = jQuery('#id-syncmodifiedts').val();
     var lognum = parseInt(jQuery('#id-lognum').val(), 10);
     var logsec = parseInt(jQuery('#id-logsec').val(), 10);
+    var usebell = parseInt(jQuery('#id-usebell').val(), 10);
 
-    // DEBUG: API URL確認用。確認時はコメントを外すこと。
+    // API URL確認用。確認時はコメントを外すこと。
     // console.log('CHATLOG_API=', CHATLOG_API);
     // console.log('domminid=', domminid);
     // console.log('dommaxid=', dommaxid);
@@ -115,13 +116,16 @@
       var chatentry = data.chatentry || '';
       var updatelist = data.updatelog || [];
       var appendlist = data.appendlog || [];
+      var syncmodifiedts = data.syncmodifiedts || 0;
+      var isringbell = data.isringbell || 0;
 
       applychatentry(chatentry);
       applyupdate(updatelist);
       applyappend(appendlist, lognum);
+      ringBell(isringbell, usebell);
 
-      if (data.syncmodifiedts != 0) {
-        jQuery('#id-syncmodifiedts').val(String(data.syncmodifiedts));
+      if (syncmodifiedts != 0) {
+        jQuery('#id-syncmodifiedts').val(String(syncmodifiedts));
       }
 
       syncHiddenIdsFromDom();
@@ -129,22 +133,34 @@
   }
 
   // チャット更新タイマーを開始（既存タイマーは停止）
-function startChatTimer() {
-  var sec = parseInt(jQuery('#id-logsec').val(), 10);
+  function startChatTimer() {
+    var sec = parseInt(jQuery('#id-logsec').val(), 10);
 
-  if (chatTimerId !== null) {
-    clearInterval(chatTimerId);
-    chatTimerId = null;
+    if (chatTimerId !== null) {
+      clearInterval(chatTimerId);
+      chatTimerId = null;
+    }
+    if (sec === 0) return;
+
+    chatTimerId = setInterval(function() {
+      chatReload();
+    }, sec);
   }
 
-  if (sec === 0) {
-    return;
-  }
+  // ベルを鳴らす
+  function ringBell(isringbell, usebell) {
+    if (!usebell) return;
+    if (!isringbell) return;
+    if (typeof bellAudio === 'undefined') return;
+    if (!bellAudio) return;
 
-  chatTimerId = setInterval(function() {
-    chatReload();
-  }, sec);
-}
+    bellAudio.pause();
+    bellAudio.currentTime = 0;
+
+    bellAudio.play().catch(function(e) {
+      console.log('audio play blocked', e);
+    });
+  }
 
   jQuery(function() {
 

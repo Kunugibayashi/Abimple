@@ -129,7 +129,7 @@ outputPage:
         <ul class="form-row">
           <li class="form-col-title">メッセージ<div class="mandatory-mark"></div><div class="htmltag-mark"></div></li>
           <li class="form-col-item"><textarea name="message" maxlength="10000"><?php echo h($inputParams['message']); ?></textarea></li>
-          <li class="form-col-note">最大 10000 文字。<a href="../../manual/src/htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
+          <li class="form-col-note">最大 10000 文字。<a href="<?php echo h(MANUAL_SEC_LINK); ?>htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
         </ul>
         <div class="form-button-wrap">
           <button type="submit">更新</button>
