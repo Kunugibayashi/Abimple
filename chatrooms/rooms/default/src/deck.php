@@ -100,7 +100,7 @@ foreach ($deckArray as $key => $deckValue) {
 if (count($tailArray) === 0) {
   $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
     'entrykey' => $myChatentry['entrykey'],
-    'characterid' => $character['id'],
+    'characterid' => -1,
     'fullname' => CHAT_LOG_SYSTEM_NAME,
     'color' => $chatroom['color'],
     'bgcolor' => $chatroom['bgcolor'],
@@ -135,12 +135,12 @@ $showTextArray = explode('#', $showTailArray['deckValue']);
 // 発言
 $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
   'entrykey' => $myChatentry['entrykey'],
-  'characterid' => $character['id'],
+  'characterid' => -1,
   'fullname' => CHAT_LOG_SYSTEM_NAME,
   'color' => $chatroom['color'],
   'bgcolor' => $chatroom['bgcolor'],
   'message' => ('<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-               .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .$showTextArray[1] .'</span>'
+                .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .$showTextArray[1] .'</span>'
   ),
 ]);
 if (!$result) {

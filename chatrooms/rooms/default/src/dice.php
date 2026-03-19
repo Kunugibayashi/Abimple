@@ -84,12 +84,12 @@ for ($i = 0; $i < $diceNum; $i++) {
 // 発言
 $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
   'entrykey' => $myChatentry['entrykey'],
-  'characterid' => $character['id'],
+  'characterid' => -1,
   'fullname' => CHAT_LOG_SYSTEM_NAME,
   'color' => $chatroom['color'],
   'bgcolor' => $chatroom['bgcolor'],
   'message' => ('<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-               .'<span class="dice">（' .$diceNum .'d' .$diceMen .'）＞ ' .$sum .'[' .implode(',', $result) .'] ＞ ' .$sum .'</span>'
+                .'<span class="dice">（' .$diceNum .'d' .$diceMen .'）＞ ' .$sum .'[' .implode(',', $result) .'] ＞ ' .$sum .'</span>'
   ),
 ]);
 if (!$result) {

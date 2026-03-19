@@ -17,6 +17,8 @@ define('ADMIN_USERNAME', 'admin');
 
 /* サイト名。
  * 必ず変更してください。
+ *
+ * 一括DL時のファイル名として使用するため、特殊記号は出力時にzipファイル名から削除されます。
  */
 define('SITE_TITLE', 'Abimple');
 
@@ -39,10 +41,10 @@ define('SITE_TEMPLATE', 'template1');
 
 /* 私書を公開するか。
  * 編集任意。
- * 私書機能を使わない場合は手動でメニューから削除してください。
  *
+ * 2:私書を個人のみに公開する
  * 1:私書を全体に公開する
- * 0:私書を個人のみに公開する
+ * 0:私書を使用しない
  */
 define('SITE_LETTER_OPEN', 1);
 
@@ -228,6 +230,7 @@ define('NAMELIST_DETAIL_NAME', '詳細'); // 表示名
  * 編集しないでください。
  *******************************************************************************
  */
+define('SITE_LINK', rtrim(SITE_ROOT, '/') .'/');
 define('DOCUMENT_ROOT', $_SERVER['DOCUMENT_ROOT']);
 define('INDEX_ROOT', DOCUMENT_ROOT.SITE_ROOT);
 define('NAMELIST_VIEW_LINK', SITE_ROOT.'/characters/src/view.php');
@@ -239,6 +242,10 @@ define('SITE_CSS_FILES_PATH', [
 ]);
 define('ASSETS_LINK', (SITE_ROOT.'/assets/'));
 define('MANUAL_SEC_LINK', (SITE_ROOT.'/manual/src/'));
+define('INFO_SEC_LINK', (SITE_ROOT.'/infomation/src/'));
+define('LETTER_SEC_LINK', (SITE_ROOT.'/letters/src/'));
+define('USER_SRC_LINK', (SITE_ROOT.'/users/src/'));
+define('CHARACTER_SRC_LINK', (SITE_ROOT.'/characters/src/'));
 define('CHARACTER_TEMPLATE_FILE_PATH', (INDEX_ROOT.'/characters/src/templates/'));
 define('CHARACTER_HTML_DIR', '/characterhtml/');
 define('CHARACTER_HTML_PATH', (INDEX_ROOT.CHARACTER_HTML_DIR.'html/'));

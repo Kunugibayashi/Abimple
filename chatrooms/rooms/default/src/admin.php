@@ -38,7 +38,7 @@ $inputParams['modified'] = inputParam('modified', 20);
 
 // roomdir
 $roomdir = getPageRoomdir();
-$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
+$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src/';
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策
@@ -143,17 +143,17 @@ outputPage:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title>チャットルーム管理画面</title>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- レスポンシブ用 -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- script -->
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
 <div class="content-wrap">
@@ -189,19 +189,19 @@ outputPage:
   <div class="adminlog-wrap">
     <h4 class="adminlog-title">ログ取得</h4>
     <ul class="adminlog-row">
-      <li class="adminlog-col-title"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>/adminroomlog.php?up=<?php echo h(SITE_UPDATE); ?>" class="link-pseudo-button">ルームログ全出力</a></li>
+      <li class="adminlog-col-title"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>adminroomlog.php?up=<?php echo h(SITE_UPDATE); ?>" class="link-pseudo-button">ルームログ全出力</a></li>
       <li class="adminlog-col-note">DB に残っているログをすべてダウンロードします。対象は現ルームのみです。</li>
       <li class="adminlog-col-note">ログ出力に失敗した場合に使用することを想定しています。負荷が高いため短時間に連続で行わないでください。</li>
     </ul>
     <ul class="adminlog-row">
-      <li class="adminlog-col-title"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>/adminwhisperlog.php?up=<?php echo h(SITE_UPDATE); ?>" class="link-pseudo-button">ささやきログ全出力</a></li>
+      <li class="adminlog-col-title"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>adminwhisperlog.php?up=<?php echo h(SITE_UPDATE); ?>" class="link-pseudo-button">ささやきログ全出力</a></li>
       <li class="adminlog-col-note">DB に残っているすべてのユーザーのささやきをダウンロードします。対象は現ルームのみです。</li>
       <li class="adminlog-col-note">管理者はささやきが管理者から見えることを事前に通達するようお願いします。</li>
     </ul>
   </div>
 
   <div class="form-wrap">
-    <form name="characters-form" class="characters-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>/admin.php" method="POST">
+    <form name="characters-form" class="characters-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>admin.php" method="POST">
       <h4 class="characters-form-title">チャットルーム設定</h4>
       <input type="hidden" name="token" value="<?php echo h(getToken()); ?>">
       <ul class="form-row">
@@ -426,7 +426,7 @@ outputPage:
 <script> <!-- 各ボタン制御 -->
 jQuery(function(){
   jQuery('button.tochatroom-button').on('click', function(){
-    window.location.href = '<?php echo h($ROOMDIR_SRC_LINK); ?>/roomtop.php';
+    window.location.href = '<?php echo h($ROOMDIR_SRC_LINK); ?>roomtop.php';
   });
   // プレビュー機能
   jQuery('button.preview-button').on('click', function(){

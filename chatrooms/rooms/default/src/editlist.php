@@ -1,12 +1,9 @@
 <?php
-require_once('../../../../core/src/config.php');
-require_once('../../../../core/src/functions.php');
-require_once('../../../../core/src/session.php');
-require_once('../../../../core/src/database.php');
-require_once('../../../../core/src/administrator.php');
-
-require_once('./config.php');
-require_once('./functions.php');
+require_once(__DIR__ .'/../../../../core/src/config.php');
+require_once(__DIR__ .'/../../../../core/src/functions.php');
+require_once(__DIR__ .'/../../../../core/src/session.php');
+require_once(__DIR__ .'/../../../../core/src/database.php');
+require_once(__DIR__ .'/../../../../core/src/administrator.php');
 
 $success = '';
 $errors = array();
@@ -25,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   $dbhChatlogs = connectRw(CHAT_LOGS_DB);
 
   if (isAdmin()) {
-    // アドミンの場合は、秘匿を覗く全ての発言を取得
+    // アドミンの場合は全ての発言を取得
 
     $characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
     if (!usedArr($characters)) {
@@ -37,11 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     $character = $characters[0];
 
     // 最大10000行
-    $chatlogs = selectEqualChatlogsAdmin($dbhChatlogs, 10000, [
-      'characterid' => $character['id'],
-    ]);
+    $chatlogs = selectEqualChatlogsEdit($dbhChatlogs, 10000, $character['id'], 1);
   } else {
-    // ユーザーの場合は入室情報から取得
+    // ユーザーの場合は入室後の自分の発言のみ
 
     $characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
     if (!usedArr($characters)) {
@@ -67,11 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     $myChatentry = $myChatentries[0];
 
     // 最大10000行
-    $chatlogs = selectEqualChatlogsEntrykey($dbhChatlogs, 10000, $myChatentry['entrykey'], [
-      'characterid' => $character['id'],
-      'fullname' => $character['fullname'],
+    $chatlogs = selectEqualChatlogsEdit($dbhChatlogs, 10000, $character['id'], 0, [
+      'entrykey' => $myChatentry['entrykey'],
     ]);
-
   }
 
   goto outputPage;
@@ -93,17 +86,17 @@ outputPage:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title>発言編集</title>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- レスポンシブ用 -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- script -->
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
 <div class="content-wrap">
@@ -178,7 +171,7 @@ outputPage:
     </div>
   <?php } ?>
 
-  <form name="edit-form" class="hidden-form" action="./edit.php" method="POST">
+  <form name="edit-form" class="hidden-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>edit.php" method="POST">
     <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
     <input type="hidden" name="characterid" value="<?php echo h($character['id']); ?>">
     <input type="hidden" name="id" value="jQueryで入力">
@@ -200,7 +193,7 @@ jQuery(function(){
 
     var sendData = editForm.serialize();
     jQuery.ajax({
-      url: './edit.php',
+      url: '<?php echo h($ROOMDIR_SRC_LINK); ?>edit.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',

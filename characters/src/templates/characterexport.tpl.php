@@ -146,7 +146,7 @@
       </div>
 
       <div class="page-back-wrap">
-        <a href="./index.html">一覧に戻る</a>
+        <a href="index.html">一覧に戻る</a>
       </div>
 
 </div>

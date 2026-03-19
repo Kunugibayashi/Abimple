@@ -1443,13 +1443,35 @@ function selectEqualUpdateChatlogs($dbh, $limit, $dommaxid = 0,
   return $data;
 }
 
-function selectEqualChatlogsEntrykey($dbh, $limit, $entrykey, $params = array()) {
+function selectEqualChatlogsEdit($dbh, $limit, $characterid, $isAdmin, $params = array()) {
   $sql = '
     SELECT
       *
     FROM chatlogs
     WHERE
-      entrykey = :entrykey
+    (
+      (
+        whisperflg = 0
+  ';
+  if ($isAdmin != 1) {
+    $sql = $sql .'
+        AND
+          characterid = :characterid
+    ';
+  }
+  $sql = $sql .'
+        )
+      OR
+      (
+        whisperflg = 1
+        AND
+        (
+          characterid = :characterid
+          OR
+          wtocharacterid = :wtocharacterid
+        )
+      )
+    )
   ';
   $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
@@ -1459,7 +1481,8 @@ function selectEqualChatlogsEntrykey($dbh, $limit, $entrykey, $params = array())
 
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt = setEqualArryBindValue($stmt, $params);
-  $stmt->bindValue(':entrykey', $entrykey);
+  $stmt->bindValue(':characterid', $characterid);
+  $stmt->bindValue(':wtocharacterid', $characterid);
   $stmt->bindValue(':limit', $limit);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);

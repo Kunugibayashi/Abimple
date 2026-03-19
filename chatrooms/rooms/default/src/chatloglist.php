@@ -107,7 +107,6 @@ if (usedArr($appendlogs)) {
   }
 
   foreach ($appendlogs as $key => $chatline) {
-    // システム
     $stringHtml = renderChatLog($chatline, $chatroom);
     $jsonArray['appendlog'][] = [
       'id' => $chatline['id'],
@@ -157,21 +156,11 @@ if (usedArr($updatelogs)) {
   }
 
   foreach ($updatelogs as $key => $chatline) {
-    if ($chatline['fullname'] === CHAT_LOG_SYSTEM_NAME) {
-        // システム
-        $stringHtml = renderSystemLog($chatline);
-        $jsonArray['updatelog'][] = [
-          'id' => $chatline['id'],
-          'loghtml' => $stringHtml,
-        ];
-      } else {
-        // システム以外
-        $stringHtml = renderChatLog($chatline, $chatroom);
-        $jsonArray['updatelog'][] = [
-          'id' => $chatline['id'],
-          'loghtml' => $stringHtml,
-        ];
-    }
+    $stringHtml = renderChatLog($chatline, $chatroom);
+    $jsonArray['updatelog'][] = [
+      'id' => $chatline['id'],
+      'loghtml' => $stringHtml,
+    ];
   }
 }
 

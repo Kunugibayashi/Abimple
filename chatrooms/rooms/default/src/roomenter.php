@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // roomdir
   $roomdir = getPageRoomdir();
-  $ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
+  $ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src/';
 
   // DB接続
   $dbhChatentries = connectRo(CHAT_ENTRIES_DB);
@@ -78,10 +78,10 @@ outputPage:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title><?php echo h($chatroom['title']); ?></title>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- DB参照値用 -->
   <?php echo renderDbCssVariables($chatroom); ?>
   <!-- チャット画面用CSS -->
@@ -93,12 +93,12 @@ outputPage:
     }
   </style>
   <!-- レスポンシブ用 -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- DB登録のCSS記載 -->
   <?php if (usedStr($chatroom['roomcss'])) echo '<style>' . h($chatroom['roomcss']) . '</style>'; ?>
   <!-- script -->
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
   <script src="<?php echo h(CHAT_ROOM_SRC_LINK); ?>/js/chatlog-sync.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
@@ -133,7 +133,7 @@ outputPage:
             すでに入室しています。<br>
           </p>
         </div>
-        <form name="roomreenter-form" class="roomreenter-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>/roomchat.php" method="POST">
+        <form name="roomreenter-form" class="roomreenter-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>roomchat.php" method="POST">
           <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
           <div class="form-button-wrap submit-wrap">
             <button type="submit">再入室</button>
@@ -141,7 +141,7 @@ outputPage:
         </form>
       <?php } else if (usedArr($characters)) { /* 入室していない & キャラクター登録をしている場合のみに入室を表示 */ ?>
         <?php setChatToken(); /* フォーム表示時にトークンをセット */ ?>
-        <form name="roomenter-form" class="roomenter-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>/roomchat.php" method="POST">
+        <form name="roomenter-form" class="roomenter-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>roomchat.php" method="POST">
           <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
           <ul class="form-row fullname-wrap">
             <li class="form-col-title">キャラクター</li>
@@ -243,7 +243,7 @@ outputPage:
 <script> <!-- 各ボタン制御 -->
   jQuery(function(){
     jQuery('button.tochatroom-button').on('click', function(){
-      window.location.href = '<?php echo h($ROOMDIR_SRC_LINK); ?>/roomtop.php';
+      window.location.href = '<?php echo h($ROOMDIR_SRC_LINK); ?>roomtop.php';
     });
   });
 </script>
@@ -284,7 +284,7 @@ outputPage:
 </script>
 <script>
 // js 内使用変数
-var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_LINK); ?>/chatloglist.php";
+var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_LINK); ?>chatloglist.php";
 
 // ログ取得起動
 jQuery(function() {

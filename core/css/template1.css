@@ -808,8 +808,8 @@ li.news-col-item:nth-child(1) {
   text-align: right;
 }
 li.news-col-item:nth-child(2) {
-  width: 10rem;
-  min-width: 10rem;
+  width: 11rem;
+  min-width: 11rem;
 }
 
 div.news-contents-area0 li.news-col-item:nth-child(1) {

@@ -15,6 +15,10 @@ $inputParams['bgcolor'] = inputParam('bgcolor', 7) ? inputParam('bgcolor', 7) : 
 $inputParams['memo'] = inputParam('memo', 200);
 $inputParams['inoutmesflg'] = inputParam('inoutmesflg', 1);
 
+// roomdir
+$roomdir = getPageRoomdir();
+$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src/';
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // GETは処理しない。
   exit;
@@ -88,7 +92,7 @@ if (!usedArr($chatentries)) {
   if ($inputParams['inoutmesflg'] == 1) {
     insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
       'entrykey' => $entrykey,
-      'characterid' => $character['id'],
+      'characterid' => -1,
       'fullname' => CHAT_LOG_SYSTEM_NAME,
       'color' => $chatroom['color'],
       'bgcolor' => $chatroom['bgcolor'],
@@ -126,7 +130,7 @@ if (!usedArr($myChatentries)) {
   if ($inputParams['inoutmesflg'] == 1) {
     insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
       'entrykey' => $chatentry['entrykey'],
-      'characterid' => $character['id'],
+      'characterid' => -1,
       'fullname' => CHAT_LOG_SYSTEM_NAME,
       'color' => $chatroom['color'],
       'bgcolor' => $chatroom['bgcolor'],
@@ -143,10 +147,6 @@ if (!usedArr($myChatentries)) {
   }
 }
 $myChatentry = $myChatentries[0];
-
-// roomdir
-$roomdir = getPageRoomdir();
-$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src';
 
 // 入室情報の保存
 $save = [
@@ -172,10 +172,10 @@ outputPage:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title><?php echo h($chatroom['title']); ?></title>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- DB参照値用 -->
   <?php echo renderDbCssVariables($chatroom); ?>
   <!-- チャット画面用CSS -->
@@ -187,12 +187,12 @@ outputPage:
     }
   </style>
   <!-- レスポンシブ用 -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- DB登録のCSS記載 -->
   <?php if (usedStr($chatroom['roomcss'])) echo '<style>' . h($chatroom['roomcss']) . '</style>'; ?>
   <!-- script -->
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
   <script src="<?php echo h(CHAT_ROOM_SRC_LINK); ?>/js/chatlog-sync.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
@@ -202,11 +202,11 @@ outputPage:
     <nav class="roomtop-header-menu">
       <ul class="roomtop-header-item-group">
         <li class="roomtop-header-item">
-          <a href="./editlist.php" target="log">発言編集</a>
+          <a href="<?php echo h($ROOMDIR_SRC_LINK); ?>editlist.php" target="log">発言編集</a>
         </li>
         <li class="roomtop-header-item">
           <span class="link form-submit">退室メッセージを表示させずに退室</span>
-          <form name="exit-form" class="hidden-form" action="./roomexit.php" method="POST">
+          <form name="exit-form" class="hidden-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>roomexit.php" method="POST">
             <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
             <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
             <input type="hidden" name="inoutmesflg" value="0">
@@ -214,7 +214,7 @@ outputPage:
         </li>
         <li class="roomtop-header-item">
           <span class="link form-submit">退室</span>
-          <form name="exit-form" class="hidden-form" action="./roomexit.php" method="POST">
+          <form name="exit-form" class="hidden-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>roomexit.php" method="POST">
             <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
             <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
             <input type="hidden" name="inoutmesflg" value="1">
@@ -446,7 +446,7 @@ outputPage:
 </script>
 <script>
 // js 内使用変数
-var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_LINK); ?>/chatloglist.php";
+var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_LINK); ?>chatloglist.php";
 var BELL_FILE_LINK = "<?php echo h(ASSETS_LINK); ?>/sound/<?php echo h(CHAT_SOUND_FILE); ?>";
 
 const bellAudio = new Audio(BELL_FILE_LINK);
@@ -518,7 +518,7 @@ jQuery(function(){
     textMesElm.val('');
 
     jQuery.ajax({
-      url: './chat.php',
+      url: '<?php echo h($ROOMDIR_SRC_LINK); ?>chat.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',
@@ -571,7 +571,7 @@ jQuery(function(){
   jQuery('button.whisperid-set-button').on('click', function(){
     var sendData = jQuery('form#id-chat-form').serialize();
     jQuery.ajax({
-      url: './updatewhisperlist.php',
+      url: '<?php echo h($ROOMDIR_SRC_LINK); ?>updatewhisperlist.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',
@@ -606,7 +606,7 @@ jQuery(function(){
   jQuery('button.color-set-button').on('click', function(){
     var sendData = jQuery('form#id-chat-form').serialize();
     jQuery.ajax({
-      url: './setcolor.php',
+      url: '<?php echo h($ROOMDIR_SRC_LINK); ?>setcolor.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',
@@ -630,7 +630,7 @@ jQuery(function(){
   jQuery('button.dice-button').on('click', function(){
     var sendData = jQuery('form[name="dice-form"]').serialize();
     jQuery.ajax({
-      url: './dice.php',
+      url: '<?php echo h($ROOMDIR_SRC_LINK); ?>dice.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',
@@ -658,7 +658,7 @@ jQuery(function(){
 
     var sendData = omiForm.serialize();
     jQuery.ajax({
-      url: './omikuji.php',
+      url: '<?php echo h($ROOMDIR_SRC_LINK); ?>omikuji.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',
@@ -685,7 +685,7 @@ jQuery(function(){
 
     var sendData = omiForm.serialize();
     jQuery.ajax({
-      url: './deck.php',
+      url: '<?php echo h($ROOMDIR_SRC_LINK); ?>deck.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',
@@ -712,7 +712,7 @@ jQuery(function(){
 
     var sendData = omiForm.serialize();
     jQuery.ajax({
-      url: './deckreset.php',
+      url: '<?php echo h($ROOMDIR_SRC_LINK); ?>deckreset.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',

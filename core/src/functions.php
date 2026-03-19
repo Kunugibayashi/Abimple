@@ -179,6 +179,10 @@ function getPaging($data, $nowPage) {
 }
 
 function letterPublicOnly() {
+  if (SITE_LETTER_OPEN == 0) {
+    echo '私書は使用できません。';
+    exit;
+  }
   if (SITE_LETTER_OPEN != 1) {
     echo '公開私書は設定されていません。私書は個別のみ許可されています。';
     exit;

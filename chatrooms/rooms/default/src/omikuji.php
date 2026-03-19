@@ -101,7 +101,7 @@ $text = $omiArray[$me - 1];
 // 発言
 $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
   'entrykey' => $myChatentry['entrykey'],
-  'characterid' => $character['id'],
+  'characterid' => -1,
   'fullname' => CHAT_LOG_SYSTEM_NAME,
   'color' => $chatroom['color'],
   'bgcolor' => $chatroom['bgcolor'],
