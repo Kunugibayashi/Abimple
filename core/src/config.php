@@ -39,6 +39,14 @@ define('SITE_ROOT', '/Abimple');
  */
 define('SITE_TEMPLATE', 'template1');
 
+/* チャット機能のささやきを使用するか。
+ * 編集任意。
+ *
+ * 1:ささやきを使用する
+ * 0:ささやきを使用しない
+ */
+define('CHAT_WHISPER_MODE', 0);
+
 /* 私書を公開するか。
  * 編集任意。
  *

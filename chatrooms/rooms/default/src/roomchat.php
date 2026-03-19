@@ -239,16 +239,18 @@ outputPage:
             <li class="form-col-item">
               <?php echo h($character['fullname']); ?>
             </li>
-            <li class="form-col-title">ささやき宛先</li>
-            <li class="form-col-item">
-              <div class="form-row-item-group">
-                <div class="select-wrap">
-                  <select name="whisperid">
-                    <option value="">なし</option>
-                  </select>
+            <?php if (CHAT_WHISPER_MODE == 1) { /* ささやき使用の場合 */ ?>
+              <li class="form-col-title">ささやき宛先</li>
+              <li class="form-col-item">
+                <div class="form-row-item-group">
+                  <div class="select-wrap">
+                    <select name="whisperid">
+                      <option value="">なし</option>
+                    </select>
+                  </div>
                 </div>
-              </div>
-            </li>
+              </li>
+            <?php } ?>
           </ul>
           <ul class="form-row color-setting-wrap">
             <li class="form-col-title">文字色</li>
@@ -323,7 +325,9 @@ outputPage:
           <button type="button" class="chat-button">発言</button>
           <button type="button" class="restore-button">発言復元</button>
           <button type="button" class="color-set-button">設定色変更</button>
-          <button type="button" class="whisperid-set-button">ささやき宛先更新</button>
+          <?php if (CHAT_WHISPER_MODE == 1) { /* ささやき使用の場合 */ ?>
+            <button type="button" class="whisperid-set-button">ささやき宛先更新</button>
+          <?php } ?>
           <button type="button" class="reload-button">リロード</button>
           <button type="button" class="change-display-button">表示切替</button>
         </div>
@@ -569,6 +573,7 @@ jQuery(function(){
     jQuery('div.random-wrap').toggle();
   });
 
+<?php if (CHAT_WHISPER_MODE == 1) { /* ささやき使用の場合 */ ?>
   // ささやきリスト更新
   jQuery('button.whisperid-set-button').on('click', function(){
     var sendData = jQuery('form#id-chat-form').serialize();
@@ -603,6 +608,7 @@ jQuery(function(){
       chatBtElm.text('発言');
     }
   });
+<?php } ?>
 
   // 設定色変更
   jQuery('button.color-set-button').on('click', function(){
