@@ -268,6 +268,12 @@ define('CHAT_LOG_TEMPLATE1', 'logtemplate1');
 define('OMIKUJI1_ID', 'omi1');
 define('OMIKUJI2_ID', 'omi2');
 define('OMIKUJI3_ID', 'omi3');
+/* ログ種別（chatlogs.logtype） */
+define('LOGTYPE_NORMAL',  0); // 通常発言（ユーザー発言）
+define('LOGTYPE_SYSTEM',  1); // システム生成ログ（入退室・通知など）
+define('LOGTYPE_DICE',    2); // ダイス結果
+define('LOGTYPE_OMIKUJI', 3); // おみくじ結果
+define('LOGTYPE_DECK',    4); // 手札結果
 /* 以下の変数を追加した場合は database.php の DB作成 に処理を追加すること。
 */
 define('USERS_DB', (INDEX_ROOT.'/users/src/db/users.db'));

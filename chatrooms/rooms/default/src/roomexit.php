@@ -63,8 +63,9 @@ if (usedArr($myChatentries)) {
   // 退室していない場合はログを出す
   if ($inputParams['inoutmesflg'] == 1) {
     insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+      'logtype' => LOGTYPE_SYSTEM,
       'entrykey' => $myChatentry['entrykey'],
-      'characterid' => -1,
+      'characterid' => $character['id'],
       'fullname' => CHAT_LOG_SYSTEM_NAME,
       'color' => $chatroom['color'],
       'bgcolor' => $chatroom['bgcolor'],

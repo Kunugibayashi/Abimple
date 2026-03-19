@@ -83,8 +83,9 @@ for ($i = 0; $i < $diceNum; $i++) {
 
 // 発言
 $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+  'logtype' => LOGTYPE_DICE,
   'entrykey' => $myChatentry['entrykey'],
-  'characterid' => -1,
+  'characterid' => $character['id'],
   'fullname' => CHAT_LOG_SYSTEM_NAME,
   'color' => $chatroom['color'],
   'bgcolor' => $chatroom['bgcolor'],

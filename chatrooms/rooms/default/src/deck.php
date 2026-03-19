@@ -99,8 +99,9 @@ foreach ($deckArray as $key => $deckValue) {
 // 裏がゼロの場合はエラー
 if (count($tailArray) === 0) {
   $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+    'logtype' => LOGTYPE_DECK,
     'entrykey' => $myChatentry['entrykey'],
-    'characterid' => -1,
+    'characterid' => $character['id'],
     'fullname' => CHAT_LOG_SYSTEM_NAME,
     'color' => $chatroom['color'],
     'bgcolor' => $chatroom['bgcolor'],
@@ -134,8 +135,9 @@ $showTextArray = explode('#', $showTailArray['deckValue']);
 
 // 発言
 $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+  'logtype' => LOGTYPE_DECK,
   'entrykey' => $myChatentry['entrykey'],
-  'characterid' => -1,
+  'characterid' => $character['id'],
   'fullname' => CHAT_LOG_SYSTEM_NAME,
   'color' => $chatroom['color'],
   'bgcolor' => $chatroom['bgcolor'],

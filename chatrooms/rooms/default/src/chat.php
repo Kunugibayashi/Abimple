@@ -96,6 +96,7 @@ if ($inputParams['whisperid'] != "") {
 
 // 発言
 $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+  'logtype' => LOGTYPE_NORMAL,
   'entrykey' => $myChatentry['entrykey'],
   'characterid' => $character['id'],
   'fullname' => $character['fullname'],

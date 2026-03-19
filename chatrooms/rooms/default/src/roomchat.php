@@ -91,8 +91,9 @@ if (!usedArr($chatentries)) {
   // 入室ログ
   if ($inputParams['inoutmesflg'] == 1) {
     insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+      'logtype' => LOGTYPE_SYSTEM,
       'entrykey' => $entrykey,
-      'characterid' => -1,
+      'characterid' => $character['id'],
       'fullname' => CHAT_LOG_SYSTEM_NAME,
       'color' => $chatroom['color'],
       'bgcolor' => $chatroom['bgcolor'],
@@ -129,8 +130,9 @@ if (!usedArr($myChatentries)) {
   // 入室していない場合は入室ログを出す
   if ($inputParams['inoutmesflg'] == 1) {
     insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+      'logtype' => LOGTYPE_SYSTEM,
       'entrykey' => $chatentry['entrykey'],
-      'characterid' => -1,
+      'characterid' => $character['id'],
       'fullname' => CHAT_LOG_SYSTEM_NAME,
       'color' => $chatroom['color'],
       'bgcolor' => $chatroom['bgcolor'],

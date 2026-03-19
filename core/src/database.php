@@ -1244,6 +1244,8 @@ function createChatlogs($dbh) {
   $sql = "
     CREATE TABLE chatlogs (
       id             INTEGER        PRIMARY KEY AUTOINCREMENT,
+      logtype        INTEGER        NOT NULL DEFAULT 0,
+
       entrykey       VARCHAR(40)    NOT NULL,
       characterid    INTEGER        NOT NULL,
       fullname       VARCHAR(20)    NOT NULL,

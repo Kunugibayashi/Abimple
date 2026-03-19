@@ -34,7 +34,11 @@ function renderChatentries(array $chatentries): string {
 
 // システムログ or 発言ログ を判定して該当 html を返却
 function renderChatLog(array $chatline, array $chatroom): string {
-  if ($chatline['fullname'] === CHAT_LOG_SYSTEM_NAME) {
+  if ($chatline['logtype'] === LOGTYPE_SYSTEM
+    || $chatline['logtype'] === LOGTYPE_DICE
+    || $chatline['logtype'] === LOGTYPE_OMIKUJI
+    || $chatline['logtype'] === LOGTYPE_DECK
+  ) {
     // システム
     return renderSystemLog($chatline);
   } else {
