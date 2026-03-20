@@ -19,9 +19,6 @@ checkToken();
 /* セッション切断
  * 関数内で $_SESSION を呼ぶと上書きされなかったため、ここで明示的にIDをクリア
  */
-$_SESSION = array();
-$_SESSION['userid'] = '';
-$_SESSION['username'] = '';
 session_destroy();
 
 

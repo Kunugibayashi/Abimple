@@ -1,101 +1,155 @@
 <?php
+/* セッション保持変数 設計図 */
+const SESSION_SCHEMA_AUTH = [
+  'userid' => [
+    'type' => 'int|string',
+    'group' => 'auth',
+    'note' => 'ログインユーザーID',
+  ],
+  'username' => [
+    'type' => 'string',
+    'group' => 'auth',
+    'note' => 'ログインユーザー名',
+  ],
+];
+const SESSION_SCHEMA_NAV = [
+  'prevpage' => [
+    'type' => 'string',
+    'group' => 'nav',
+    'note' => '一覧に戻るページ',
+  ],
+];
+const SESSION_SCHEMA_SECRET = [
+  'secretkeyword' => [
+    'type' => 'string',
+    'group' => 'secret',
+    'note' => '秘匿キーワード',
+  ],
+];
+const SESSION_SCHEMA_SEARCH = [
+  'search' => [
+    'type' => 'array[pageKey][param]',
+    'group' => 'search',
+    'note' => 'ページ別検索条件',
+  ],
+];
+const SESSION_SCHEMA_TOKEN = [
+  'token' => [
+    'type' => 'array[pageKey]',
+    'group' => 'token',
+    'note' => 'ページ別CSRFトークン',
+  ],
+];
+const SESSION_SCHEMA_CHAT = [
+  'chatentry' => [
+    'type' => 'array{
+      roomdir:string,
+      entrykey:string,
+      characterid:int|string,
+      color:string,
+      bgcolor:string,
+      memo:string
+    }',
+    'group' => 'chat',
+    'note' => 'チャット入室情報',
+  ],
+  'chattoken' => [
+    'type' => 'string',
+    'group' => 'chat',
+    'note' => 'チャット共通トークン',
+  ],
+];
+
+/* 設計図全体 */
+const SESSION_SCHEMA = [
+  'auth' => SESSION_SCHEMA_AUTH,
+  'nav' => SESSION_SCHEMA_NAV,
+  'secret' => SESSION_SCHEMA_SECRET,
+  'search' => SESSION_SCHEMA_SEARCH,
+  'token' => SESSION_SCHEMA_TOKEN,
+  'chat' => SESSION_SCHEMA_CHAT,
+];
+
+/* 使用定数 */
+const PREV_ALLOWED_SCRIPTS = [
+  'mylist.php',
+  'list.php',
+  'publiclist.php',
+  'index-top.php',
+  'inboxmylist.php',
+  'outboxmylist.php',
+  'inouthistorylist.php',
+];
+
 session_start();
 setPrev(); // リクエストごとに取得
 
-/* 一覧に戻るページを保持する
- */
-function setPrev() {
-  $reqUri = $_SERVER['REQUEST_URI'];
-  if (!isset($reqUri)) {
-    $reqUri = $_SERVER['SCRIPT_NAME'];
-  }
-  $path = parse_url($reqUri, PHP_URL_PATH);
-  $query = parse_url($reqUri, PHP_URL_QUERY); // なければ NULL
-  $reqUri = preg_replace('/^.*\//', '', $reqUri);
-  $script = preg_replace('/\?.*$/', '', $reqUri);
-
-  // 以下の処理は前ページを詐称されても戻るページに影響しないようにする
-  if ($script === 'mylist.php'
-    || $script === 'list.php'
-    || $script === 'publiclist.php'
-    || $script === 'index-top.php'
-    || $script === 'inboxmylist.php'
-    || $script === 'outboxmylist.php'
-    || $script === 'inouthistorylist.php'
-  ) {
-    $prevPage = $path;
-    if (((boolean) $query)) {
-      $prevPage = $prevPage .'?' . $query;
-    }
-    $_SESSION['prevPage'] = $prevPage;
-  }
-  // その他は設定しない
-}
-function getPrev() {
-  if (isset($_SESSION['prevPage'])) {
-    return $_SESSION['prevPage'];
-  }
-  // ない場合は自分自身
-  return './';
-}
-function getTopPrev() {
-  if (isset($_SESSION['prevTopPage'])) {
-    return $_SESSION['prevTopPage'];
-  }
-  // ない場合は自分自身
-  return './';
-}
-function isPrevLog() {
-  $refurl = $_SERVER['HTTP_REFERER'];
-  if (!isset($refurl)) {
-    return 0;
-  }
-  $path = parse_url($refurl, PHP_URL_PATH);
-  $query = parse_url($refurl, PHP_URL_QUERY); // なければ NULL
-  $refurl = preg_replace('/^.*\//', '', $refurl);
-  $script = preg_replace('/\?.*$/', '', $refurl);
-  $_SESSION['prevLogFlg'] = $script;
-  if ($script === 'log.php') {
-    return 1;
-  }
-  return 0;
-}
-
-/* ユーザーID
- */
-function setUserid($userid) {
+/* ユーザーID */
+function setUserid($userid): void {
   $_SESSION['userid'] = $userid;
 }
-
 function getUserid() {
-  if (isset($_SESSION['userid'])) {
-    return $_SESSION['userid'];
-  }
-  return '';
+  return $_SESSION['userid'] ?? '';
+}
+function clearUserid(): void {
+  unset($_SESSION['userid']);
 }
 
-/* ユーザー名
- */
-function setUsername($username) {
+/* ユーザー名 */
+function setUsername($username): void {
   $_SESSION['username'] = $username;
 }
-
 function getUsername() {
-  if (isset($_SESSION['username'])) {
-    return $_SESSION['username'];
-  }
-  return '';
+  return $_SESSION['username'] ?? '';
+}
+function clearUsername(): void {
+  unset($_SESSION['username']);
 }
 
-/* 悪戯対策。管理人ではない場合、本人以外は処理をしない。
- */
-function identityUser($userid, $username) {
-  if (isAdmin()){
-    // 管理人の場合は全て許可する
-  } else if ($userid != getUserid() || $username != getUsername()) { /* セッションは文字列のため厳密な比較はしない */
+/* 一覧に戻る */
+function setPrev(): void {
+  $reqUri = $_SERVER['REQUEST_URI'] ?? $_SERVER['SCRIPT_NAME'] ?? '';
+  if ($reqUri === '') {
+    return;
+  }
+  $path = parse_url($reqUri, PHP_URL_PATH) ?? '';
+  $query = parse_url($reqUri, PHP_URL_QUERY) ?? '';
+  $script = basename($path);
+  if (!in_array($script, PREV_ALLOWED_SCRIPTS, true)) {
+    return;
+  }
+  $prevpage = $path;
+  if ($query !== '') {
+    $prevpage .= '?' . $query;
+  }
+  $_SESSION['prevpage'] = $prevpage;
+}
+function getPrev(): string {
+  return $_SESSION['prevpage'] ?? './';
+}
+
+/* 悪戯対策。管理人ではない場合、本人以外は処理をしない。 */
+function identityUser($userid, $username): void {
+  if (isAdmin()) {
+    return;
+  }
+  if ((string)$userid !== (string)getUserid()
+    || (string)$username !== (string)getUsername()
+  ) {
     echo '不正なリクエストです。';
     exit;
   }
+}
+
+/* 秘匿キーワード */
+function setSecretKeyword($param): void {
+  $_SESSION['secretkeyword'] = $param;
+}
+function getSecretKeyword() {
+  return $_SESSION['secretkeyword'] ?? '';
+}
+function clearSecretKeyword(): void {
+  unset($_SESSION['secretkeyword']);
 }
 
 /* 表示ページごとに一意のキーを発行。
@@ -109,73 +163,46 @@ function getPageKey() {
 /* 検索値
  * ページごとに保存。
  */
-function getSearchKey() {
-  $searchKey = getPageKey();
-  $searchKey = $searchKey .'_search';
-  return $searchKey;
+function setSearchParam($params): void {
+  $pageKey = getPageKey();
+  $_SESSION['search'][$pageKey] = $params;
 }
-
-function setSearchParam($params) {
-  $searchKey = getSearchKey();
-  // そのままセッションに保存するため、input内容が巨大にならないように注意すること
-  $_SESSION[$searchKey] = $params;
-}
-
 function searchParam($key, $num) {
-  $searchKey = getSearchKey();
-  if (isset($_SESSION[$searchKey]) && isset($_SESSION[$searchKey][$key])) {
-    $value = $_SESSION[$searchKey][$key];
-    return mb_substr($value, 0, $num);
+  $pageKey = getPageKey();
+  if (isset($_SESSION['search'][$pageKey][$key])) {
+    return mb_substr($_SESSION['search'][$pageKey][$key], 0, (int)$num);
   }
   return '';
 }
 
-/* トークン
- * ページごとに保存。
- */
+/* トークン生成 */
 function createToken() {
- $token = sha1(uniqid(mt_rand(), true));
- return $token;
+  $token = bin2hex(random_bytes(32));
+  return $token;
 }
 
-function getTokenKey() {
-  $key = getPageKey();
-  $key = $key .'_token';
-  return $key;
+/* ページごとに保存するトークン用 */
+function setToken(): void {
+  $pageKey = getPageKey();
+  $_SESSION['token'][$pageKey] = createToken();
 }
-
-function setToken() {
-  $tokenKey = getTokenKey();
-  $token = createToken();
-  $_SESSION[$tokenKey] = $token;
-}
-
 function getToken() {
-  $tokenKey = getTokenKey();
-  if (isset($_SESSION[$tokenKey])) {
-    return $_SESSION[$tokenKey];
-  }
-  return '';
+  $pageKey = getPageKey();
+  return $_SESSION['token'][$pageKey] ?? '';
 }
-
-function checkToken() {
-  $tokenKey = getTokenKey();
-  chekErrorToken($tokenKey);
+function checkToken(): void {
+  $pageKey = getPageKey();
+  $sessionToken = $_SESSION['token'][$pageKey] ?? '';
+  checkErrorToken($sessionToken);
 }
-
-function chekErrorToken($tokenKey) {
-  if (!usedStr($_SESSION[$tokenKey])) {
+function checkErrorToken($sessionToken): void {
+  if (!usedStr($sessionToken)) {
     echo 'トークンがありません。画面更新をしてください。';
     exit;
   }
-  if ($_SESSION[$tokenKey] !== $_POST['token']) {
+  $postToken = $_POST['token'] ?? '';
+  if (!usedStr($postToken) || $sessionToken !== $postToken) {
     echo 'POSTに失敗しました。画面更新をしてください。';
-    // SSESSIONを出力する場合は以下のコメントを外す。開発時のデバッグ用。
-    // --- ここから ---
-    // echo ' tokenKey=' .$tokenKey;
-    // echo ' SESSION=' .$_SESSION[$tokenKey];
-    // echo ' POST=' .$_POST['token'];
-    // --- ここまで ---
     exit;
   }
 }
@@ -183,58 +210,44 @@ function chekErrorToken($tokenKey) {
 /* チャットルームトークン
  * ページを跨ぐため、チャットで共通のトークンを使用。
  */
-function setChatToken() {
-  $tokenKey = 'chat_token';
-  $token = createToken();
-  $_SESSION[$tokenKey] = $token;
+function setChatEntry(array $params): void {
+  $_SESSION['chatentry'] = [
+    'roomdir' => (string)($params['roomdir'] ?? ''),
+    'entrykey' => (string)($params['entrykey'] ?? ''),
+    'characterid' => $params['characterid'] ?? '',
+    'color' => (string)($params['color'] ?? ''),
+    'bgcolor' => (string)($params['bgcolor'] ?? ''),
+    'memo' => (string)($params['memo'] ?? ''),
+  ];
+}
+function getChatEntry(): array {
+  return $_SESSION['chatentry'] ?? [];
+}
+function clearChatEntry(): void {
+  unset($_SESSION['chatentry']);
+}
+function isChatEntry(): bool {
+  return isset($_SESSION['chatentry']['roomdir']);
+}
+function getNowRoomEntry(): string {
+  return $_SESSION['chatentry']['roomdir'] ?? '';
+}
+/* チャット情報 */
+function setChatToken(): void {
+  $_SESSION['chattoken'] = createToken();
+}
+function getChatToken(): string {
+  return $_SESSION['chattoken'] ?? '';
+}
+function clearChatToken(): void {
+  unset($_SESSION['chattoken']);
+}
+function checkChatToken(): void {
+  $sessionToken = $_SESSION['chattoken'] ?? '';
+  checkErrorToken($sessionToken);
 }
 
-function getChatToken() {
-  $tokenKey = 'chat_token';
-  if (isset($_SESSION[$tokenKey])) {
-    return $_SESSION[$tokenKey];
-  }
-  return '';
-}
-
-function checkChatToken() {
-  $tokenKey = 'chat_token';
-  chekErrorToken($tokenKey);
-}
-
-/* チャット情報
- */
-function setChatEntry($params) {
-  $_SESSION['chat_entry'] = $params;
-}
-
-function getChatEntry() {
-  if (isset($_SESSION['chat_entry'])) {
-    return $_SESSION['chat_entry'];
-  }
-  return '';
-}
-
-function isChatEntry() {
-  if (!isset($_SESSION['chat_entry'])) {
-    return false;
-  }
-  if (!isset($_SESSION['chat_entry']['roomdir'])) {
-    return false;
-  }
-  return true;
-}
-
-function getNowRoomEntry() {
-  if (!isset($_SESSION['chat_entry'])) {
-    return '';
-  }
-  if (!isset($_SESSION['chat_entry']['roomdir'])) {
-    return '';
-  }
-  return $_SESSION['chat_entry']['roomdir'];
-}
-
+/* 現在の入室チェック */
 function isNowRoomEntry($roomdir) {
   $nowRoom = getNowRoomEntry();
   if ($nowRoom != $roomdir) {
@@ -243,15 +256,3 @@ function isNowRoomEntry($roomdir) {
   return true;
 }
 
-/* 秘匿キーワード
- */
-function setSecretKeyword($param) {
-  $_SESSION['secret_keyword'] = $param;
-}
-
-function getSecretKeyword() {
-  if (isset($_SESSION['secret_keyword'])) {
-    return $_SESSION['secret_keyword'];
-  }
-  return '';
-}

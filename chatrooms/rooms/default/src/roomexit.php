@@ -268,7 +268,7 @@ outputPage:
 <script>
   jQuery(document).on('click', '#id-chat-entries li.entries-item', function() {
     var characterId = jQuery(this).data('characterid');
-    var url = '<?php echo h(NAMELIST_VIEW_LINK); ?>' + '?id=' + characterId;
+    var url = '<?php echo h(NAMELIST_VIEW_LINK); ?>' + '?id=' + characterId + '&from=log';
     window.open(url);
   });
 </script>

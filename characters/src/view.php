@@ -6,9 +6,12 @@ require_once(__DIR__ . '/../../core/src/database.php');
 require_once(__DIR__ . '/../../core/src/administrator.php');
 
 $errors = array();
+$inputParams = array();
+
+$inputParams['from'] = inputParam('from', 10);
+$inputParams['characterid'] = inputParam('id', 20);
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  $inputParams['characterid'] = getParam('id');
   if (!usedStr($inputParams['characterid'])) {
     $errors[] = 'キャラクターIDが不正です。';
     goto outputPage;
@@ -217,7 +220,7 @@ outputPage:
       </div>
     <?php } ?>
 
-    <?php if (!isPrevLog()) { ?>
+    <?php if ($inputParams['from'] != 'log') { ?>
       <div class="page-back-wrap">
         <button type="button" class="tolist-button">一覧に戻る</button>
       </div>
