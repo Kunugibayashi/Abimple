@@ -39,24 +39,22 @@ const SESSION_SCHEMA_TOKEN = [
     'group' => 'token',
     'note' => 'ページ別CSRFトークン',
   ],
+  'chatentertokenkey' => [
+    'type' => 'string',
+    'group' => 'token',
+    'note' => 'チャット入室専用トークンの保存キー',
+  ],
 ];
 const SESSION_SCHEMA_CHAT = [
   'chatentry' => [
-    'type' => 'array{
-      roomdir:string,
-      entrykey:string,
-      characterid:int|string,
-      color:string,
-      bgcolor:string,
-      memo:string
-    }',
+    'type' => 'array',
     'group' => 'chat',
-    'note' => 'チャット入室情報',
+    'note' => 'chatentry[characterid] = entry data',
   ],
   'chattoken' => [
-    'type' => 'string',
+    'type' => 'array',
     'group' => 'chat',
-    'note' => 'チャット共通トークン',
+    'note' => 'chattoken[characterid] = token',
   ],
 ];
 
@@ -207,52 +205,147 @@ function checkErrorToken($sessionToken): void {
   }
 }
 
-/* チャットルームトークン
- * ページを跨ぐため、チャットで共通のトークンを使用。
- */
+/* チャットルーム入室の処理のみ特殊のため専用関数を設ける */
+function setChatEnterToken(): void {
+  $pageKeyRoomEnter = getPageKey();
+  $_SESSION['chatentertokenkey'] = $pageKeyRoomEnter;
+  $_SESSION['token'][$pageKeyRoomEnter] = createToken();
+}
+function getChatEnterToken(): string {
+  $pageKeyRoomEnter = (string)($_SESSION['chatentertokenkey'] ?? '');
+  if ($pageKeyRoomEnter === '') {
+    return '';
+  }
+  return $_SESSION['token'][$pageKeyRoomEnter] ?? '';
+}
+function checkChatEnterToken(): void {
+  $postToken = $_POST['token'] ?? '';
+  $sessionToken = getChatEnterToken();
+  if (!usedStr($sessionToken)) {
+    echo 'トークンがありません。画面更新をしてください。';
+    exit;
+  }
+  if (!usedStr($postToken) || $sessionToken !== $postToken) {
+    echo 'POSTに失敗しました。画面更新をしてください。';
+    exit;
+  }
+}
+function clearChatEnterToken(): void {
+  $pageKeyRoomEnter = (string)($_SESSION['chatentertokenkey'] ?? '');
+  if ($pageKeyRoomEnter !== '') {
+    unset($_SESSION['token'][$pageKeyRoomEnter]);
+  }
+  unset($_SESSION['chatentertokenkey']);
+}
+
+/* 入室情報の保存（characterid単位） */
 function setChatEntry(array $params): void {
-  $_SESSION['chatentry'] = [
+  $characterid = (string)($params['characterid'] ?? '');
+  if ($characterid === '') {
+    return;
+  }
+  $_SESSION['chatentry'][$characterid] = [
     'roomdir' => (string)($params['roomdir'] ?? ''),
     'entrykey' => (string)($params['entrykey'] ?? ''),
-    'characterid' => $params['characterid'] ?? '',
+    'characterid' => $characterid,
+    'charactername' => (string)($params['charactername'] ?? ''),
     'color' => (string)($params['color'] ?? ''),
     'bgcolor' => (string)($params['bgcolor'] ?? ''),
     'memo' => (string)($params['memo'] ?? ''),
+    'inoutmesflg' => (string)($params['inoutmesflg'] ?? '0'),
   ];
 }
-function getChatEntry(): array {
+/* 指定キャラの入室情報取得 */
+function getChatEntry($characterid): array {
+  $characterid = (string)$characterid;
+  return $_SESSION['chatentry'][$characterid] ?? [];
+}
+/* 全入室情報取得 */
+function getChatEntries(): array {
   return $_SESSION['chatentry'] ?? [];
 }
-function clearChatEntry(): void {
+/* 指定キャラの入室情報削除 */
+function clearChatEntry($characterid): void {
+  $characterid = (string)$characterid;
+  unset($_SESSION['chatentry'][$characterid]);
+}
+/* 全入室情報削除 */
+function clearChatEntries(): void {
   unset($_SESSION['chatentry']);
 }
-function isChatEntry(): bool {
-  return isset($_SESSION['chatentry']['roomdir']);
+/* 指定キャラが入室しているか */
+function isChatEntry($characterid): bool {
+  $characterid = (string)$characterid;
+  return isset($_SESSION['chatentry'][$characterid])
+    && (string)($_SESSION['chatentry'][$characterid]['roomdir'] ?? '') !== '';
 }
-function getNowRoomEntry(): string {
-  return $_SESSION['chatentry']['roomdir'] ?? '';
+/* 指定キャラの現在ルーム取得 */
+function getCharacterRoomEntry($characterid): string {
+  $characterid = (string)$characterid;
+  return $_SESSION['chatentry'][$characterid]['roomdir'] ?? '';
 }
-/* チャット情報 */
-function setChatToken(): void {
-  $_SESSION['chattoken'] = createToken();
+/* 指定キャラが特定ルームにいるか */
+function isNowRoomEntry($characterid, $roomdir): bool {
+  $characterid = (string)$characterid;
+  $roomdir = (string)$roomdir;
+
+  $nowRoom = $_SESSION['chatentry'][$characterid]['roomdir'] ?? '';
+  return $nowRoom === $roomdir;
 }
-function getChatToken(): string {
-  return $_SESSION['chattoken'] ?? '';
-}
-function clearChatToken(): void {
-  unset($_SESSION['chattoken']);
-}
-function checkChatToken(): void {
-  $sessionToken = $_SESSION['chattoken'] ?? '';
-  checkErrorToken($sessionToken);
+/* 指定ルームに入室しているキャラクター名一覧取得 */
+function getRoomChatCharacternames($roomdir): array {
+  $roomdir = (string)$roomdir;
+  $entries = $_SESSION['chatentry'] ?? [];
+  if (!is_array($entries) || $roomdir === '') {
+    return [];
+  }
+  $result = [];
+  foreach ($entries as $entry) {
+    if (!is_array($entry)) {
+      continue;
+    }
+    if ((string)($entry['roomdir'] ?? '') !== $roomdir) {
+      continue;
+    }
+    $name = (string)($entry['charactername'] ?? '');
+    if ($name !== '') {
+      $result[] = $name;
+    }
+  }
+  return $result;
 }
 
-/* 現在の入室チェック */
-function isNowRoomEntry($roomdir) {
-  $nowRoom = getNowRoomEntry();
-  if ($nowRoom != $roomdir) {
-    return false;
+/* チャットトークン保存（characterid単位） */
+function setChatToken($characterid): void {
+  $characterid = (string)$characterid;
+  $_SESSION['chattoken'][$characterid] = createToken();
+}
+/* 指定キャラのトークン取得 */
+function getChatToken($characterid): string {
+  $characterid = (string)$characterid;
+  return $_SESSION['chattoken'][$characterid] ?? '';
+}
+/* 指定キャラのトークン削除 */
+function clearChatToken($characterid): void {
+  $characterid = (string)$characterid;
+  unset($_SESSION['chattoken'][$characterid]);
+}
+/* 全トークン削除 */
+function clearChatTokens(): void {
+  unset($_SESSION['chattoken']);
+}
+/* 指定キャラのトークンチェック */
+function checkChatToken($characterid): void {
+  $characterid = (string)$characterid;
+  $sessionToken = $_SESSION['chattoken'][$characterid] ?? '';
+  $postToken = $_POST['token'] ?? '';
+  if (!usedStr($sessionToken)) {
+    echo 'トークンがありません。画面更新をしてください。';
+    exit;
   }
-  return true;
+  if (!usedStr($postToken) || $sessionToken !== $postToken) {
+    echo 'POSTに失敗しました。画面更新をしてください。';
+    exit;
+  }
 }
 

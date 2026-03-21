@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 /* 以降はPOST通信を想定。
  */
 // CSRF対策
-checkChatToken();
+checkChatToken($inputParams['characterid']);
 
 // DB接続
 $dbhCharacters = connectRo(CHARACTERS_DB);

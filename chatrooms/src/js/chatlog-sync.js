@@ -84,12 +84,14 @@
     var lognum = parseInt(jQuery('#id-lognum').val(), 10);
     var logsec = parseInt(jQuery('#id-logsec').val(), 10);
     var usebell = parseInt(jQuery('#id-usebell').val(), 10);
+    var characterid = parseInt(jQuery('#id-characterid').val(), 10);
 
     // API URL確認用。確認時はコメントを外すこと。
     // console.log('CHATLOG_API=', CHATLOG_API);
     // console.log('domminid=', domminid);
     // console.log('dommaxid=', dommaxid);
     // console.log('syncmodifiedts=', syncmodifiedts);
+    // console.log('characterid=', characterid);
 
     if (Number.isNaN(domminid)) domminid = 0;
     if (Number.isNaN(dommaxid)) dommaxid = 0;
@@ -105,13 +107,19 @@
       type: 'GET',
       dataType: 'json',
       data: {
+        characterid: characterid,
         domminid: domminid,
         dommaxid: dommaxid,
         syncmodifiedts: syncmodifiedts,
         lognum: lognum
       }
     }).done(function(data) {
-      if (!data || data.code !== 0) return;
+      console.log(data);
+      if (!data) return;
+      if (data.code !== 0) {
+        jQuery('#id-log-error').text(data.errorMessage)
+        return;
+      };
 
       var chatentry = data.chatentry || '';
       var updatelist = data.updatelog || [];

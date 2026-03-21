@@ -9,11 +9,11 @@ require_once(__DIR__ .'/../../../src/chatlogexport.php');
 
 $inputParams = array();
 
-$inputParams['characterid'] = inputParam('characterid', 20);
+$inputParams['characterid'] = inputParam('viewcharacterid', 20);
 $inputParams['color'] = inputParam('color', 7) ? inputParam('color', 7) : '000000';
 $inputParams['bgcolor'] = inputParam('bgcolor', 7) ? inputParam('bgcolor', 7) : 'ffffff';
 $inputParams['memo'] = inputParam('memo', 200);
-$inputParams['inoutmesflg'] = inputParam('inoutmesflg', 1);
+$inputParams['inoutmesflg'] = inputParam('inoutmesflg', 1) ?? 0;
 
 // roomdir
 $roomdir = getPageRoomdir();
@@ -26,11 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 /* 以降はPOST通信を想定。
  */
 // CSRF対策
-checkChatToken();
+// 画面表示時はキャラクターIDが決まっていないため、空でチェック
+checkChatEnterToken();
 
 // 既に入室している場合はセッションから取得
-if (isNowRoomEntry(getPageRoomdir())) {
-  $inputParams = getChatEntry();
+if (isNowRoomEntry($inputParams['characterid'], $roomdir)) {
+  $inputParams = getChatEntry($inputParams['characterid']);
 }
 
 // DB接続
@@ -78,10 +79,10 @@ $chatentries = selectEqualChatentries($dbhChatentries);
 // 最初の入室者かどうか
 if (!usedArr($chatentries)) {
   // 最初の入室者の場合はエントリーキーを入れる
-  $entrykey = sha1(uniqid(mt_rand(), true));
+  $entrykey = bin2hex(random_bytes(20));
   insertChatentries($dbhChatentries, getUserid(), getUsername(), [
     'entrykey' => $entrykey,
-    'characterid' => $character['id'],
+    'characterid' => $inputParams['characterid'],
     'fullname' => $character['fullname'],
     'color' => $inputParams['color'],
     'bgcolor' => $inputParams['bgcolor'],
@@ -93,7 +94,7 @@ if (!usedArr($chatentries)) {
     insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
       'logtype' => LOGTYPE_SYSTEM,
       'entrykey' => $entrykey,
-      'characterid' => $character['id'],
+      'characterid' => $inputParams['characterid'],
       'fullname' => CHAT_LOG_SYSTEM_NAME,
       'color' => $chatroom['color'],
       'bgcolor' => $chatroom['bgcolor'],
@@ -113,18 +114,18 @@ $chatentry = $chatentries[0];
 
 // 自分は入室しているかどうか
 $myChatentries = selectEqualChatentries($dbhChatentries, [
-  'characterid' => $character['id'],
+  'characterid' => $inputParams['characterid'],
 ]);
 if (!usedArr($myChatentries)) {
   insertChatentries($dbhChatentries, getUserid(), getUsername(), [
     'entrykey' => $chatentry['entrykey'],
-    'characterid' => $character['id'],
+    'characterid' => $inputParams['characterid'],
     'fullname' => $character['fullname'],
     'color' => $inputParams['color'],
     'bgcolor' => $inputParams['bgcolor'],
   ]);
   $myChatentries = selectEqualChatentries($dbhChatentries, [
-    'characterid' => $character['id'],
+    'characterid' => $inputParams['characterid'],
   ]);
 
   // 入室していない場合は入室ログを出す
@@ -132,7 +133,7 @@ if (!usedArr($myChatentries)) {
     insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
       'logtype' => LOGTYPE_SYSTEM,
       'entrykey' => $chatentry['entrykey'],
-      'characterid' => $character['id'],
+      'characterid' => $inputParams['characterid'],
       'fullname' => CHAT_LOG_SYSTEM_NAME,
       'color' => $chatroom['color'],
       'bgcolor' => $chatroom['bgcolor'],
@@ -154,12 +155,14 @@ $myChatentry = $myChatentries[0];
 $save = [
   'roomdir' => $roomdir,
   'entrykey' => $chatentry['entrykey'],
-  'characterid' => $character['id'],
+  'characterid' => $inputParams['characterid'],
+  'charactername' => $character['fullname'],
   'color' => $inputParams['color'],
   'bgcolor' => $inputParams['bgcolor'],
   'memo' => $inputParams['memo'],
 ];
 setChatEntry($save);
+setChatToken($inputParams['characterid']);
 
 
 /* goto文はコードが煩雑になるため使用するべきではないが、
@@ -204,21 +207,25 @@ outputPage:
     <nav class="roomtop-header-menu">
       <ul class="roomtop-header-item-group">
         <li class="roomtop-header-item">
-          <a href="<?php echo h($ROOMDIR_SRC_LINK); ?>editlist.php" target="log">発言編集</a>
+          <span class="link form-submit">発言編集</span>
+          <form name="edit-form" class="hidden-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>editlist.php" method="POST" target="_blank">
+            <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
+            <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
+          </form>
         </li>
         <li class="roomtop-header-item">
           <span class="link form-submit">退室メッセージを表示させずに退室</span>
           <form name="exit-form" class="hidden-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>roomexit.php" method="POST">
-            <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
-            <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
+            <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
+            <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
             <input type="hidden" name="inoutmesflg" value="0">
           </form>
         </li>
         <li class="roomtop-header-item">
           <span class="link form-submit">退室</span>
           <form name="exit-form" class="hidden-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>roomexit.php" method="POST">
-            <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
-            <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
+            <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
+            <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
             <input type="hidden" name="inoutmesflg" value="1">
           </form>
         </li>
@@ -231,9 +238,9 @@ outputPage:
       <div class="form-wrap">
         <input type="hidden" id="id-backup-mes" class="backup-mes" value="">
         <form name="chat-form" id="id-chat-form" class="chat-form" action="" target="log" method="POST">
-          <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
+          <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
+          <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
           <input type="hidden" name="entrykey" value="<?php echo h($myChatentry['entrykey']); ?>">
-          <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
           <ul class="form-row name-setting-wrap">
             <li class="form-col-title">名前</li>
             <li class="form-col-item">
@@ -342,8 +349,8 @@ outputPage:
         <h3 class="dice-title">ダイス</h3>
         <div class="form-wrap dice-form-wrap">
           <form name="dice-form" class="dice-form" action="" method="POST">
-            <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
-            <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
+            <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
+            <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
             <div class="dice-wrap">
               <input type="text" name="dice" value="" maxlength="6" placeholder="1d6 など">
               <div class="form-omi-note">最大 10d100 （100面ダイス10個）</div>
@@ -359,8 +366,8 @@ outputPage:
         <div class="random-border-wrap">
           <h3 class="omi-title">おみくじ</h3>
             <form name="omi-form" id="omi-form" action="" method="POST">
-              <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
-              <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
+              <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
+              <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
               <input type="hidden" name="omikujiid" value="">
             </form>
           <?php if ($chatroom['omi1flg']) { ?>
@@ -391,8 +398,8 @@ outputPage:
         <div class="random-border-wrap">
           <h3 class="deck-title">山札</h3>
           <form name="deck-form" id="deck-form" action="" method="POST">
-            <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
-            <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
+            <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
+            <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
           </form>
           <div class="form-button-wrap deck1-button-wrap">
             <button type="button" class="deck-button"><?php echo h($chatroom['deck1name']); ?></button>
@@ -432,6 +439,8 @@ outputPage:
     <input type="hidden" id="id-domminid" value="0">
     <input type="hidden" id="id-dommaxid" value="0">
     <input type="hidden" id="id-syncmodifiedts" value="0">
+    <input type="hidden" id="id-characterid" value="<?php echo h($inputParams['characterid']); ?>">
+    <div id="id-log-error" class="log-error"></div>
     <div id="id-log-wrap" class="log-wrap">
     </div>
   </div>

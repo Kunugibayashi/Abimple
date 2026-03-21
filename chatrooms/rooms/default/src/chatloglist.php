@@ -10,6 +10,7 @@ require_once(__DIR__ .'/../../../src/chatlogexport.php');
 $inputParams = array();
 $jsonArray = array();
 
+$inputParams['characterid'] = inputParam('characterid', 20);
 $inputParams['lognum'] = (int) (inputParam('lognum', 5) ? inputParam('lognum', 5) : '100');
 $inputParams['lognum'] = round($inputParams['lognum']);
 $inputParams['lognum'] = min([$inputParams['lognum'], 10000]);
@@ -40,6 +41,7 @@ $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
 $dbhChatentries = connectRo(CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRo(CHAT_LOGS_DB);
 $dbhChatsecrets = connectRo(CHAT_SECRETS_DB);
+$dbhCharacters = connectRo(CHARACTERS_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 if (!usedArr($chatrooms)) {
@@ -47,7 +49,6 @@ if (!usedArr($chatrooms)) {
   $chatrooms = selectChatroomsConfig($dbhChatrooms);
 }
 $chatroom = $chatrooms[0];
-
 
 // 秘匿ルームの場合
 if ($chatroom['issecret'] == 1) {
@@ -73,15 +74,26 @@ $jsonArray['chatentry'] = $stringHtml;
 
 // 追加用ログ
 // 入室時はささやきを含めてログを取得する
-if (isChatEntry()) {
+if (usedStr($inputParams['characterid']) && isChatEntry($inputParams['characterid'])) {
+  // 本人確認をする
+  $characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
+  if (!usedArr($characters)) {
+    // 不正アクセス
+    $jsonArray['code'] = 1;
+    $jsonArray['errorMessage'] = '名簿が存在しません。';
+    goto outputPage;
+  }
+  $character = $characters[0];
+  // 本人確認
+  identityUser($character['userid'], $character['username']);
+
   $isinroom = 1;
-  $sessionChatEntry = getChatEntry();
   $appendlogs = selectEqualAppendChatlogs(
     $dbhChatlogs,
     $inputParams['lognum'],
     $inputParams['dommaxid'],
     $isinroom,
-    $sessionChatEntry['characterid'],
+    $inputParams['characterid'],
   );
 } else {
   $isinroom = 0;
@@ -100,7 +112,7 @@ if (usedArr($appendlogs)) {
   $jsonArray['syncmodifiedts'] = $appendlogs[0]['created'];
 
   // 最新のログが自分の発言でない場合はベルを鳴らす
-  $myCharacterid = (int)($sessionChatEntry['characterid'] ?? 0);
+  $myCharacterid = (int)($inputParams['characterid'] ?? 0);
   $logCharacterid = (int)($appendlogs[0]['characterid'] ?? 0);
   if ($myCharacterid !== $logCharacterid) {
     $jsonArray['isringbell'] = 1;
@@ -122,9 +134,20 @@ if ((int)$inputParams['dommaxid'] === 0 || (int)$inputParams['domminid'] === 0) 
   goto outputPage;
 }
 // 入室時はささやきを含めてログを取得する
-if (isChatEntry()) {
+if (usedStr($inputParams['characterid']) && isChatEntry($inputParams['characterid'])) {
+  // 本人確認をする
+  $characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
+  if (!usedArr($characters)) {
+    // 不正アクセス
+    $jsonArray['code'] = 1;
+    $jsonArray['errorMessage'] = '名簿が存在しません。';
+    goto outputPage;
+  }
+  $character = $characters[0];
+  // 本人確認
+  identityUser($character['userid'], $character['username']);
+
   $isinroom = 1;
-  $sessionChatEntry = getChatEntry();
   $updatelogs = selectEqualUpdateChatlogs(
     $dbhChatlogs,
     $inputParams['lognum'],
@@ -132,7 +155,7 @@ if (isChatEntry()) {
     $inputParams['domminid'],
     $inputParams['syncmodifiedts'],
     $isinroom,
-    $sessionChatEntry['characterid'],
+    $inputParams['characterid'],
   );
 } else {
   $isinroom = 0;

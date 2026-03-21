@@ -15,8 +15,12 @@ $errors = array();
 $inputParams = array();
 
 // セッションが切れていても退出はできるようにフォームから値を取得
-$inputParams['characterid'] = inputParam('characterid', 20);
-$inputParams['inoutmesflg'] = inputParam('inoutmesflg', 1);
+$inputParams['characterid'] = inputParam('characterid', 20) ?? '';
+$inputParams['inoutmesflg'] = inputParam('inoutmesflg', 1) ?? 0;
+
+// roomdir
+$roomdir = getPageRoomdir();
+$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src/';
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // GETは処理しない。
@@ -25,11 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 /* 以降はPOST通信を想定。
  */
 // CSRF対策
-checkChatToken();
-
-// roomdir
-$roomdir = getPageRoomdir();
-$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src/';
+checkChatToken($inputParams['characterid']);
 
 // DB接続
 $dbhChatrooms  = connectRo(CHAT_ROOMS_DB);
@@ -150,6 +150,7 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($nowChatentr
 // 秘匿ルームの場合は保持キーワードをリセット
 if ($chatroom['issecret'] == 1) {
   setSecretKeyword('');
+  clearSecretKeyword();
 }
 
 $success = '退室しました。';
@@ -246,6 +247,7 @@ outputPage:
     <input type="hidden" id="id-domminid" value="0">
     <input type="hidden" id="id-dommaxid" value="0">
     <input type="hidden" id="id-syncmodifiedts" value="0">
+    <div id="id-log-error" class="log-error"></div>
     <div id="id-log-wrap" class="log-wrap">
     </div>
   </div>

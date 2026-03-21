@@ -13,6 +13,10 @@ $inputParams = array();
 $inputParams['color'] = inputParam('color', 7) ? inputParam('color', 7) : '#000000';
 $inputParams['bgcolor'] = inputParam('bgcolor', 7) ? inputParam('bgcolor', 7) : '#ffffff';
 
+// roomdir
+$roomdir = getPageRoomdir();
+$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src/';
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策はフォーム表示時にセット
 
@@ -48,15 +52,14 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // 自分のキャラクターを選択肢に表示するため
   $characters = selectCharactersMy($dbhCharacters, getUserid(), getUsername());
 
-  // roomdir
-  $roomdir = getPageRoomdir();
-  $ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src/';
-
   // DB接続
   $dbhChatentries = connectRo(CHAT_ENTRIES_DB);
 
   // 入室者一覧取得
   $chatentries = selectEqualChatentries($dbhChatentries);
+
+  // 既に入室しているキャラクターがいる場合は一覧を取得
+  $myEntryCharacternames = getRoomChatCharacternames($roomdir);
 
   goto outputPage;
 }
@@ -121,33 +124,25 @@ outputPage:
     <h3 class="roomenter-title">入室キャラクター選択</h3>
 
     <div class="form-wrap roomenter-form-wrap">
-      <?php if (!isNowRoomEntry(getPageRoomdir()) && isChatEntry()) { /* 他のルームに入室している場合はメッセージのみ */ ?>
-        <div class="note-wrap">
+      <div class="note-wrap roomenter-note-wrap">
+        <p class="note">
+          この画面は同ブラウザで複数開くと入室エラーとなります。ご注意ください。エラーとなった場合は画面を更新するか、前のページに戻ってください。<br>
+        </p>
+        <?php if (usedArr($myEntryCharacternames)) { /* 入室している場合は名前の一覧を出力する */ ?>
           <p class="note">
-            他のルーム（<?php echo h(getNowRoomEntry()); ?>）に入室しています。<br>
+            すでに『<?php echo h(implode('』『', $myEntryCharacternames)); ?>』で入室しています。<br>
+            入室ナレーションを表示させたくない場合は、同じキャラクターを選んで入室してください。<br>
           </p>
-        </div>
-      <?php } else if (isChatEntry()) { /* 入室している場合は入室ボタンのみ */ ?>
-        <div class="note-wrap">
-          <p class="note">
-            すでに入室しています。<br>
-          </p>
-        </div>
-        <form name="roomreenter-form" class="roomreenter-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>roomchat.php" method="POST">
-          <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
-          <div class="form-button-wrap submit-wrap">
-            <button type="submit">再入室</button>
-          </div>
-        </form>
-      <?php } else if (usedArr($characters)) { /* 入室していない & キャラクター登録をしている場合のみに入室を表示 */ ?>
-        <?php setChatToken(); /* フォーム表示時にトークンをセット */ ?>
+        <?php } ?>
+      </div>
+      <?php if (usedArr($characters)) { /* キャラクター登録をしている場合のみに入室を表示 */ ?>
         <form name="roomenter-form" class="roomenter-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>roomchat.php" method="POST">
-          <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
+          <input type="hidden" name="token" value="<?php setChatEnterToken(); echo h(getChatEnterToken()); ?>">
           <ul class="form-row fullname-wrap">
             <li class="form-col-title">キャラクター</li>
             <li class="form-col-item">
               <div class="select-wrap">
-                <select name="characterid">
+                <select name="viewcharacterid">
                   <?php foreach ($characters as $character) { ?>
                     <option value="<?php echo h($character['id']); ?>"><?php echo h($character['fullname']); ?></option>
                   <?php } ?>
@@ -235,6 +230,7 @@ outputPage:
     <input type="hidden" id="id-domminid" value="0">
     <input type="hidden" id="id-dommaxid" value="0">
     <input type="hidden" id="id-syncmodifiedts" value="0">
+    <div id="id-log-error" class="log-error"></div>
     <div id="id-log-wrap" class="log-wrap">
     </div>
   </div>
@@ -256,7 +252,7 @@ outputPage:
     <?php } ?>
 
     // キャラクター選択によって文字色を変更
-    jQuery('select[name="characterid"]').on('change', function(){
+    jQuery('select[name="viewcharacterid"]').on('change', function(){
       var characterid = jQuery(this).val();
 
       jQuery('input[name="color"]').val(characterColors[characterid].color);

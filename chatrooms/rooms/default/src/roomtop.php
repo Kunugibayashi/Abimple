@@ -10,6 +10,10 @@ require_once(__DIR__ .'/../../../src/chatlogexport.php');
 $errors = array();
 $inputParams = array();
 
+// roomdir
+$roomdir = getPageRoomdir();
+$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src/';
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策はフォーム表示時にセット
 
@@ -40,10 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
       exit;
     }
   }
-
-  // roomdir
-  $roomdir = getPageRoomdir();
-  $ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src/';
 
   // DB接続
   $dbhChatentries = connectRo(CHAT_ENTRIES_DB);
@@ -156,6 +156,7 @@ outputPage:
     <input type="hidden" id="id-domminid" value="0">
     <input type="hidden" id="id-dommaxid" value="0">
     <input type="hidden" id="id-syncmodifiedts" value="0">
+    <div id="id-log-error" class="log-error"></div>
     <div id="id-log-wrap" class="log-wrap">
     </div>
   </div>

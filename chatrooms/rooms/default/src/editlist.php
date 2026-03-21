@@ -9,8 +9,10 @@ $success = '';
 $errors = array();
 $inputParams = array();
 
+$inputParams['characterid'] = inputParam('characterid', 20);
+
 // 入室前提のためセッションから値を取得
-$sessionChatEntry = getChatEntry();
+$sessionChatEntry = getChatEntry($inputParams['characterid']);
 
 $inputParams['characterid'] = $sessionChatEntry['characterid'];
 
@@ -172,7 +174,7 @@ outputPage:
   <?php } ?>
 
   <form name="edit-form" class="hidden-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>edit.php" method="POST">
-    <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
+    <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
     <input type="hidden" name="characterid" value="<?php echo h($character['id']); ?>">
     <input type="hidden" name="id" value="jQueryで入力">
     <input type="hidden" name="message" value="jQueryで入力">

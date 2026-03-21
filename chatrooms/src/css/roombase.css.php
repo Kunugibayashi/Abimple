@@ -125,6 +125,11 @@ div.roomenter-form-wrap {
   justify-content: center;
   margin: 1rem 0;
 }
+div.roomenter-note-wrap {
+  width: 22rem;
+  margin: 0 2rem;
+  font-size: 0.8rem;
+}
 form.roomenter-form ul.form-row {
   display: flex;
 }
@@ -147,7 +152,8 @@ div.form-col-item-group {
   align-items: flex-start;
 }
 select[name="inoutmesflg"],
-select[name="characterid"] {
+select[name="characterid"],
+select[name="viewcharacterid"] {
   width: 20rem;
 }
 input[name="color"],
@@ -485,6 +491,9 @@ h3.chatroom-header-title:hover .chatroom-header-guide {
   font-size: 0.5rem;
   min-width: 12rem;
   opacity: 0.3;
+}
+.log-error {
+  margin: 0 1rem;
 }
 .log-wrap {
   margin: 1rem;
