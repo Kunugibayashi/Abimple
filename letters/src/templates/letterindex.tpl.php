@@ -54,7 +54,7 @@
             <td><?php echo h($value['status']); ?></td>
             <td><?php echo h($value['tofullname']); ?></td>
             <td><?php echo h($value['fromfullname']); ?></td>
-            <td><a href="<?php echo h($userName); ?>_index.html#<?php echo h($$value['id']); ?>"><?php echo h($value['title']); ?></a></td>
+            <td><a href="<?php echo h($outboxFileName); ?>#id-message<?php echo h($value['id']); ?>"><?php echo h($value['title']); ?></a></td>
           </tr>
         <?php } ?>
       </table>

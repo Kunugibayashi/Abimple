@@ -18,9 +18,13 @@ function addDirToZip(ZipArchive $zip, string $dirPath, string $basePath): void
       continue;
     }
 
-    // ダミー保持ファイルは zip に入れない
+    // ダミー保持ファイルは zip に出力しない
     $name = $file->getFilename();
     if (preg_match('/^_save_.*\.txt$/', $name)) {
+      continue;
+    }
+    // アクセス制御ファイルは zip に出力しない
+    if ($name === '.htaccess') {
       continue;
     }
 

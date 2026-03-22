@@ -57,6 +57,13 @@ outputPage:
     </div>
   <?php } ?>
 
+  <div class="note-wrap">
+    <p class="note">
+      私書機能は完全な秘匿ではなく、管理者が確認することが可能です。<br>
+      個人情報など重要な情報は書き込まないでください。<br>
+    </p>
+  </div>
+
   <?php if (!usedArr($inbox)) { /* 登録がない場合に表示 */ ?>
     <div class="note-wrap">
       <p class="note">

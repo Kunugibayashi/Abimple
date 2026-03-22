@@ -57,6 +57,13 @@ outputPage:
     </div>
   <?php } ?>
 
+  <div class="note-wrap">
+    <p class="note">
+      私書機能は完全な秘匿ではなく、管理者が確認することが可能です。<br>
+      個人情報など重要な情報は書き込まないでください。<br>
+    </p>
+  </div>
+
   <?php if (!usedArr($outbox)) { /* 登録がない場合に表示 */ ?>
     <div class="note-wrap">
       <p class="note">
@@ -67,6 +74,9 @@ outputPage:
 
   <?php if (usedArr($outbox)) { /* 登録がある場合に表示 */ ?>
     <div class="table-wrap my-outbox-table-wrap">
+      <div class="export-wrap">
+        <a href="<?php echo h(LETTER_SRC_LINK); ?>outboxexport.php" class="link-pseudo-button">一括DL</a>
+      </div>
       <table>
         <tr>
           <th class="cell-modified">更新日</th>

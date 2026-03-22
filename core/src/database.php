@@ -9,7 +9,12 @@ function myPrepare($dbh, $sql, $params = array()) {
 
   logDebug('arguments = ' .json_encode($params, JSON_UNESCAPED_UNICODE));
 
-  return $dbh->prepare($sql);
+  $stmt = $dbh->prepare($sql);
+  if ($stmt === false) {
+    logError('SQL prepare failed: ' . $dbh->lastErrorMsg());
+  }
+
+  return $stmt;
 }
 
 // 日付形式のチェック
@@ -1998,7 +2003,7 @@ function selectOutboxLettersMy($dbh, $userid, $username) {
   return $data;
 }
 
-function selectOutboxMessageId($dbh, $id) {
+function selectOutboxLettersId($dbh, $id) {
   $sql = '
     SELECT
       *

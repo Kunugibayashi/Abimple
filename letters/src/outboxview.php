@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // DB接続
   $dbhOutbox = connectRw(OUTBOX_LETTERS_DB);
 
-  $outbox = selectOutboxMessageId($dbhOutbox, $inputParams['id']);
+  $outbox = selectOutboxLettersId($dbhOutbox, $inputParams['id']);
   $letter = $outbox[0];
 
   // 本人確認
