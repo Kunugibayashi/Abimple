@@ -1,12 +1,13 @@
 <?php
+require_once(__DIR__ .'/logger.php');
+
+// SQL実行ラッパー（ログ出力あり）
 function myPrepare($dbh, $sql, $params = array()) {
-  // SQLを出力する場合は以下のコメントを外す。開発時のデバッグ用。
-  // --- ここから ---
-  // echo $sql;
-  // echo '<br>';
-  // print_r($params);
-  // echo '<br>';
-  // --- ここまで ---
+
+  $sql = preg_replace('/\s+/', ' ', $sql);
+  logDebug('sql = ' .$sql);
+
+  logDebug('arguments = ' .json_encode($params, JSON_UNESCAPED_UNICODE));
 
   return $dbh->prepare($sql);
 }

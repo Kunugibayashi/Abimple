@@ -4,6 +4,7 @@ require_once(__DIR__ .'/../../../../core/src/functions.php');
 require_once(__DIR__ .'/../../../../core/src/session.php');
 require_once(__DIR__ .'/../../../../core/src/database.php');
 require_once(__DIR__ .'/../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/logger.php');
 
 $success = '';
 $errors = array();
@@ -12,6 +13,9 @@ $inputParams = array();
 $inputParams['keyword'] = inputParam('keyword', 20);
 $inputParams['toroomchat'] = inputParam('toroomchat', 20);
 $inputParams['setkeyword'] = inputParam('setkeyword', 20);
+
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
+sessionLogChatEntryCharacter($inputParams['characterid']);
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策

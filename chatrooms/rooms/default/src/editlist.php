@@ -4,6 +4,7 @@ require_once(__DIR__ .'/../../../../core/src/functions.php');
 require_once(__DIR__ .'/../../../../core/src/session.php');
 require_once(__DIR__ .'/../../../../core/src/database.php');
 require_once(__DIR__ .'/../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/logger.php');
 
 $success = '';
 $errors = array();
@@ -11,12 +12,19 @@ $inputParams = array();
 
 $inputParams['characterid'] = inputParam('characterid', 20);
 
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
+sessionLogChatEntryCharacter($inputParams['characterid']);
+
+// roomdir
+$roomdir = getPageRoomdir();
+$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src/';
+
 // 入室前提のためセッションから値を取得
 $sessionChatEntry = getChatEntry($inputParams['characterid']);
 
 $inputParams['characterid'] = $sessionChatEntry['characterid'];
 
-if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // DB接続
   $dbhCharacters = connectRo(CHARACTERS_DB);
@@ -71,9 +79,9 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   goto outputPage;
 }
-/* 以降はPOST通信を想定。
+/* 以降はGET通信を想定。
  */
-// POSTは処理をしない。
+// GETは処理をしない。
 exit;
 
 /* goto文はコードが煩雑になるため使用するべきではないが、

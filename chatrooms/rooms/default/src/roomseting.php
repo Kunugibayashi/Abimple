@@ -4,6 +4,7 @@ require_once(__DIR__ .'/../../../../core/src/functions.php');
 require_once(__DIR__ .'/../../../../core/src/session.php');
 require_once(__DIR__ .'/../../../../core/src/database.php');
 require_once(__DIR__ .'/../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/logger.php');
 
 require_once(__DIR__ .'/../../../src/chatlogexport.php');
 
@@ -13,6 +14,8 @@ $inputParams = array();
 
 $inputParams['title'] = inputParam('title', 100);
 $inputParams['guide'] = inputParam('guide', 2000);
+
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
 
 // roomdir
 $roomdir = getPageRoomdir();

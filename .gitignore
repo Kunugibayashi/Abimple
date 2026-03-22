@@ -10,3 +10,4 @@ chatrooms/rooms/*
 chatloghtml/zip/*.zip
 characterhtml/html/css/*.css
 characterhtml/zip/*.zip
+systemlog/*.log

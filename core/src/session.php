@@ -1,4 +1,6 @@
 <?php
+require_once(__DIR__ .'/logger.php');
+
 /* セッション保持変数 設計図 */
 const SESSION_SCHEMA_AUTH = [
   'userid' => [
@@ -82,6 +84,47 @@ const PREV_ALLOWED_SCRIPTS = [
 session_start();
 setPrev(); // リクエストごとに取得
 
+/* セッション*/
+function maskArray($arr) {
+  foreach ($arr as $key => $val) {
+    if (is_array($val)) {
+      $arr[$key] = maskArray($val);
+    } else {
+      // デバッグのみのため token 関係は出力
+      // リリース時は必ず debug より上のレベルにすること
+      if (preg_match('/password|entrykey|secret/i', $key)) {
+        $arr[$key] = '****';
+      }
+    }
+  }
+  return $arr;
+}
+function sessionLog() {
+  $session = maskArray($_SESSION);
+  $sessionString = json_encode($session, JSON_UNESCAPED_UNICODE);
+  logDebug('<SESSION> _SESSION = ' .$sessionString);
+}
+function sessionLogToken($postToken ,$sessionToken) {
+  logDebug('<SESSION> postToken = ' .$postToken .'sessionToken = ' .$sessionToken);
+}
+function sessionLogChatEntry() {
+  $session = maskArray($_SESSION);
+  $chatentry = $session['chatentry'] ?? [];
+  logDebug('<SESSION> _SESSION[chatentry] = ' .json_encode($chatentry, JSON_UNESCAPED_UNICODE));
+}
+function sessionLogChatEntryCharacter($characterid) {
+  $session = maskArray($_SESSION);
+  if (!isset($session['chatentry'])) {
+    logDebug('<SESSION> _SESSION[chatentry] = NULL');
+    return;
+  }
+  if (!isset($session['chatentry'][$characterid])) {
+    logDebug('<SESSION> _SESSION[chatentry][' .$characterid .'] = NULL');
+    return;
+  }
+  logDebug('<SESSION> _SESSION[chatentry][' .$characterid .'] = ' .json_encode($session['chatentry'][$characterid], JSON_UNESCAPED_UNICODE));
+}
+
 /* ユーザーID */
 function setUserid($userid): void {
   $_SESSION['userid'] = $userid;
@@ -135,6 +178,7 @@ function identityUser($userid, $username): void {
     || (string)$username !== (string)getUsername()
   ) {
     echo '不正なリクエストです。';
+    logError('Invalid request detected. userid=' .$userid .'getUserid()=' .getUserid() .'username=' .$username .'getUsername()=' .getUsername());
     exit;
   }
 }
@@ -201,6 +245,7 @@ function checkErrorToken($sessionToken): void {
   $postToken = $_POST['token'] ?? '';
   if (!usedStr($postToken) || $sessionToken !== $postToken) {
     echo 'POSTに失敗しました。画面更新をしてください。';
+    sessionLogToken($postToken ,$sessionToken);
     exit;
   }
 }
@@ -227,6 +272,7 @@ function checkChatEnterToken(): void {
   }
   if (!usedStr($postToken) || $sessionToken !== $postToken) {
     echo 'POSTに失敗しました。画面更新をしてください。';
+    sessionLogToken($postToken ,$sessionToken);
     exit;
   }
 }
@@ -345,6 +391,7 @@ function checkChatToken($characterid): void {
   }
   if (!usedStr($postToken) || $sessionToken !== $postToken) {
     echo 'POSTに失敗しました。画面更新をしてください。';
+    sessionLogToken($postToken ,$sessionToken);
     exit;
   }
 }

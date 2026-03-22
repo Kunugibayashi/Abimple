@@ -7,6 +7,7 @@ require_once(__DIR__ .'/../../../../core/src/functions.php');
 require_once(__DIR__ .'/../../../../core/src/session.php');
 require_once(__DIR__ .'/../../../../core/src/database.php');
 require_once(__DIR__ .'/../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/logger.php');
 
 $jsonArray = array();
 $inputParams = array();
@@ -19,6 +20,9 @@ $inputParams['bgcolor'] = inputParam('bgcolor', 7);
 $inputParams['memo'] = inputParam('memo', 200);
 $inputParams['message'] = inputParam('message', 3000);
 $inputParams['whisperid'] = inputParam('whisperid', 20);
+
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
+sessionLogChatEntryCharacter($inputParams['characterid']);
 
 $jsonArray['code'] = 0;
 $jsonArray['errorMessage'] = '';

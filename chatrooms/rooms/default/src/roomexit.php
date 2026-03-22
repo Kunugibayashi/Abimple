@@ -4,6 +4,7 @@ require_once(__DIR__ .'/../../../../core/src/functions.php');
 require_once(__DIR__ .'/../../../../core/src/session.php');
 require_once(__DIR__ .'/../../../../core/src/database.php');
 require_once(__DIR__ .'/../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/logger.php');
 
 require_once(__DIR__ .'/../../../../core/src/lib/exportlib.php');
 require_once(__DIR__ .'/../../../../core/src/lib/templatelib.php');
@@ -17,6 +18,9 @@ $inputParams = array();
 // セッションが切れていても退出はできるようにフォームから値を取得
 $inputParams['characterid'] = inputParam('characterid', 20) ?? '';
 $inputParams['inoutmesflg'] = inputParam('inoutmesflg', 1) ?? 0;
+
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
+sessionLogChatEntryCharacter($inputParams['characterid']);
 
 // roomdir
 $roomdir = getPageRoomdir();

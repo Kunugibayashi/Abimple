@@ -45,7 +45,7 @@ define('SITE_TEMPLATE', 'template1');
  * 1:ささやきを使用する
  * 0:ささやきを使用しない
  */
-define('CHAT_WHISPER_MODE', 0);
+define('CHAT_WHISPER_MODE', 1);
 
 /* 私書を公開するか。
  * 編集任意。
