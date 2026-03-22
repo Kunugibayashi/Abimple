@@ -3,7 +3,7 @@
  * 主に基本デザインのため、このCSSを編集するのはおすすめしません。
  */
 
-button.menu-button {
+.menu-button {
   display: none;
 }
 
@@ -13,78 +13,75 @@ button.menu-button {
    * TOPページ
    * ***************************************************************************
    */
-  button.menu-button {
+  .menu-button {
     display: block;
   }
-  div.index-wrap {
+  .index-wrap {
     display: flex;
     flex-direction: column;
     padding: 0;
     margin: 0;
   }
-  header.index-header {
+  .index-header {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     padding: 0;
     margin: 0;
   }
-  div.index-menu {
+  .index-menu {
     display: none;
   }
-  footer.index-footer {
+  .index-footer {
     display: flex;
     flex-direction: column;
   }
-  div.index-frame-wrap {
+  .index-frame-wrap {
     margin: 0;
   }
-  iframe#index-top {
-    min-height: 80vh;
-  }
-  nav.menu {
+  .menu {
     display: flex;
     flex-direction: column;
     margin: 0.5rem 0;
   }
-  h2.menu-title {
+  .menu-title {
     display: block;
     width: auto;
     height: auto;
     padding: 0.5rem;
     font-size: 0.8rem;
   }
-  ul.menu-item-group {
+  .menu-item-group {
     display: block;
   }
-  li.menu-item {
+  .menu-item {
     display: block;
   }
-  h1.index-title {
+  .index-title {
     margin: 0;
     padding: 0;
     font-size: 2rem;
   }
-  div.index-copyright {
+  .index-copyright {
     margin: 0 auto 0;
     font-size: 0.5rem;
     opacity: 0.5;
     padding: 1rem;
   }
-  ul.news-row {
+  .news-row {
     display: flex;
     flex-direction: column;
   }
-  li.news-col-item:nth-child(2),
-  #id-characters-contents li.news-col-item:nth-child(3),
-  #id-letters-contents li.news-col-item:nth-child(3),
-  #id-letters-contents li.news-col-item:nth-child(4),
-  #id-myletters-contents li.news-col-item:nth-child(3),
-  #id-myletters-contents li.news-col-item:nth-child(4) {
+  .news-col-item:nth-child(2),
+  #id-characters-contents .news-col-item:nth-child(3),
+  #id-letters-contents .news-col-item:nth-child(3),
+  #id-letters-contents .news-col-item:nth-child(4),
+  #id-myletters-contents .news-col-item:nth-child(3),
+  #id-myletters-contents .news-col-item:nth-child(4) {
     width: 100%;
   }
 
-  ul.view-row {
+  .view-row {
     display: flex;
     flex-direction: column;
   }
@@ -95,43 +92,43 @@ button.menu-button {
    * ***************************************************************************
    */
   /* TOP */
-  div#id-roomtop-content-wrap {
+  #id-roomtop-content-wrap {
     display: grid;
     grid-template-rows: 2rem 1fr 1fr;
   }
-  div.chatconfig-wrap {
+  .chatconfig-wrap {
     margin: 1rem;
     display: flex;
     flex-direction: column;
   }
-  h3.chatconfig-title {
+  .chatconfig-title {
     font-size: 1rem;
   }
-  div.chatconfig-guide {
+  .chatconfig-guide {
     font-size: 0.8rem;
     height: auto;
   }
-  form.roomenter-form ul.form-row {
+  .roomenter-form .form-row {
     display: flex;
     flex-direction: column;
   }
   /* チャットルーム */
-  div#id-roomchat-content-wrap {
+  #id-roomchat-content-wrap {
     display: grid;
     grid-template-columns: auto;
     grid-template-rows: 3rem 1fr 1fr 1fr 1fr;
   }
-  header#id-roomtop-header {
+  #id-roomtop-header {
     grid-column: 1 / 2;
     grid-row: 1 / 2;
   }
-  div.chat-form-wrap {
+  .chat-form-wrap {
     grid-column: 1 / 2;
     grid-row: 2 / 3;
     overflow: visible;
     padding: 1rem;
   }
-  div.random-wrap {
+  .random-wrap {
     grid-column: 1 / 2;
     grid-row: 3 / 4;
     overflow: visible;
@@ -139,40 +136,40 @@ button.menu-button {
     display: flex;
     justify-content: flex-end;
   }
-  div.chatroom-frame-wrap {
+  .chatroom-frame-wrap {
     grid-column: 1 / 2;
     grid-row: 4 / 5;
     overflow: visible;
   }
-  form#chat-form ul.form-row {
+  #chat-form .form-row {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
-  form#chat-form li.form-col-title,
-  form#chat-form li.form-col-title:not(:first-child) {
+  #chat-form .form-col-title,
+  #chat-form .form-col-title:not(:first-child) {
     width: 7rem;
     min-width: 7rem;
     margin: 0.5rem 0;
     font-weight: bold;
   }
-  form#chat-form textarea[name="message"] ,
-  form#chat-form input[name="memo"] {
+  #chat-form textarea[name="message"] ,
+  #chat-form input[name="memo"] {
     width: 25rem;
   }
-  form#reload-form ul.form-row {
+  #reload-form .form-row {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
-  form#reload-form li.form-col-title,
-  form#reload-form li.form-col-title:not(:first-child) {
+  #reload-form .form-col-title,
+  #reload-form .form-col-title:not(:first-child) {
     width: 7rem;
     min-width: 7rem;
     margin: 0.5rem 0;
     font-weight: bold;
   }
-  div.chat-button-wrap {
+  .chat-button-wrap {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;

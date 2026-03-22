@@ -28,7 +28,7 @@ h1, h2, h3, h4, h5 {
   margin: 0;
 }
 
-a.link-pseudo-button,
+.link-pseudo-button,
 button {
   background-color: #ffffff;
   color: #000000;
@@ -45,7 +45,7 @@ button {
   white-space: nowrap;
   filter: none;
 }
-a.link-pseudo-button:hover,
+.link-pseudo-button:hover,
 button:hover {
   opacity: 0.8;
   filter: invert();
@@ -64,7 +64,7 @@ button[type="button"] {
   color: #000000;
   background-color: #ffffff;
 }
-a.link-pseudo-button {
+.link-pseudo-button {
   font-weight: normal;
 }
 
@@ -100,11 +100,11 @@ input[type="color"] {
 select {
   line-height: 1.6;
 }
-div.select-wrap {
+.select-wrap {
   display: inline-block;
   position: relative;
 }
-div.select-wrap::before{
+.select-wrap::before{
   content: '';
   border-style: solid;
   border-width: 0.8rem 0.6rem 0 0.6rem;
@@ -116,22 +116,22 @@ div.select-wrap::before{
   z-index: 1;
 }
 
-div.link,
-span.link,
+.link,
+.link,
 a {
   font-weight: bold;
   text-decoration: none;
   cursor: pointer;
 }
-div.link:hover,
-span.link:hover,
+.link:hover,
+.link:hover,
 a:hover {
   text-decoration: underline;
   cursor: pointer;
 }
 
 /* フォームマーク */
-div.mandatory-mark{
+.mandatory-mark{
   margin-left: 0.5rem;
   line-height: 1;
   padding: 2px 4px;
@@ -142,10 +142,10 @@ div.mandatory-mark{
   background-color: #8b0000;
   color: #e3e2dc;
 }
-div.mandatory-mark:after {
+.mandatory-mark:after {
   content:"必須";
 }
-div.optional-mark{
+.optional-mark{
   margin-left: 0.5rem;
   line-height: 1;
   padding: 2px 4px;
@@ -156,10 +156,10 @@ div.optional-mark{
   background-color: #61694d;
   color: #e3e2dc;
 }
-div.optional-mark:after {
+.optional-mark:after {
   content:"任意";
 }
-div.htmltag-mark{
+.htmltag-mark{
   margin-left: 0.5rem;
   line-height: 1;
   padding: 2px 4px;
@@ -174,11 +174,11 @@ div.htmltag-mark{
 
   position: relative; /* htmltag-tooltip-wrap のための設定 */
 }
-div.htmltag-mark:after {
+.htmltag-mark:after {
   content:"HTML可";
   cursor: help;
 }
-div.htmltag-tooltip-wrap {
+.htmltag-tooltip-wrap {
   background-color: #61694d;
   color: #e3e2dc;
   padding: 1rem;

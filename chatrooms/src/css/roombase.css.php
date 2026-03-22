@@ -20,17 +20,17 @@ body {
 a {
   color: var(--chat-color);
 }
-div.note-wrap {
+.note-wrap {
   margin: 0;
 }
-p.note {
+.note {
   margin: 1rem 0;
 }
-header.roomtop-header {
+.roomtop-header {
   color: var(--chat-bgcolor);
   background-color: var(--chat-color);
 }
-li.roomtop-header-item > a {
+.roomtop-header-item > a {
   color: var(--chat-bgcolor);
 }
 #id-roomtop-content-wrap {
@@ -47,39 +47,39 @@ ul, li {
   display: grid;
   grid-template-rows: 2rem 28rem 1fr;
 }
-header.roomtop-header {
+.roomtop-header {
   grid-row: 1 / 2;
 }
-div.chatconfig-wrap {
+.chatconfig-wrap {
   grid-row: 2 / 3;
   overflow: auto;
 }
-div.content-log-wrap {
+.content-log-wrap {
   grid-row: 3 / 4;
 }
 /* ヘッダー */
-header.roomtop-header {
+.roomtop-header {
   display: flex;
   justify-content: flex-end;
   font-size: 0.8rem;
 }
-ul.roomtop-header-item-group {
+.roomtop-header-item-group {
   display: flex;
   margin: 0.5rem;
 }
-li.roomtop-header-item {
+.roomtop-header-item {
   padding: 0 1rem;
   list-style-type: none;
 }
 /* 戻るボタン */
-div.page-back-wrap {
+.page-back-wrap {
   display: flex;
   justify-content: center;
   margin-top: 2rem;
 }
-div.page-back-wrap>button:active,
-div.page-back-wrap>button:hover,
-div.page-back-wrap>button {
+.page-back-wrap>button:active,
+.page-back-wrap>button:hover,
+.page-back-wrap>button {
   margin: 0 1rem;
   padding: 1rem;
   background-color: #3e463b;
@@ -96,7 +96,7 @@ div.page-back-wrap>button {
   filter: none;
 }
 /* 通信メッセージ */
-div.mes-wrap {
+.mes-wrap {
   display: flex;
   justify-content: center;
   margin: 2rem 0;
@@ -104,50 +104,50 @@ div.mes-wrap {
 /* ------------------------------------------------------------------------------------------------- */
 /* チャットTOP画面                                                                                   */
 /* ------------------------------------------------------------------------------------------------- */
-div.chatconfig-title-wrap {
+.chatconfig-title-wrap {
   background-image: var(--chat-bgimage);
   background-repeat: var(--chat-bg-repeat);
 }
-div.roomtop-form-wrap {
+.roomtop-form-wrap {
   overflow: auto;
   margin: 0;
   padding: 0;
 }
-div.form-button-wrap {
+.form-button-wrap {
   display: flex;
   justify-content: flex-end;
 }
 /* ------------------------------------------------------------------------------------------------- */
 /* チャット入室フォーム画面                                                                          */
 /* ------------------------------------------------------------------------------------------------- */
-div.roomenter-form-wrap {
+.roomenter-form-wrap {
   display: flex;
   justify-content: center;
   margin: 1rem 0;
 }
-div.roomenter-note-wrap {
+.roomenter-note-wrap {
   width: 22rem;
   margin: 0 2rem;
   font-size: 0.8rem;
 }
-form.roomenter-form ul.form-row {
+.roomenter-form .form-row {
   display: flex;
 }
-form.roomenter-form li.form-col-title {
+.roomenter-form .form-col-title {
   width: 8rem;
   padding: 0.2rem;
   margin-top: 0.6rem;
 }
-form.roomenter-form li.form-col-item {
+.roomenter-form .form-col-item {
   margin-top: 0.5rem;
 }
-form.roomenter-form div.form-button-wrap {
+.roomenter-form .form-button-wrap {
   margin-top: 2rem;
   margin-right: 2rem;
   display: flex;
   justify-content: flex-end;
 }
-div.form-col-item-group {
+.form-col-item-group {
   display: flex;
   align-items: flex-start;
 }
@@ -164,7 +164,7 @@ input[name="memo"] {
   width: 20rem;
 }
 /* チャットルームタイトル */
-h3.roomenter-title {
+.roomenter-title {
   border-bottom: solid 2px;
   font-size: 2rem;
   text-align: center;
@@ -172,17 +172,17 @@ h3.roomenter-title {
 /* ------------------------------------------------------------------------------------------------- */
 /* チャット画面（発言）                                                                              */
 /* ------------------------------------------------------------------------------------------------- */
-div.roomchat-content-wrap {
+.roomchat-content-wrap {
   display: grid;
   grid-template-columns: 1fr 16rem;
   grid-template-rows: 28rem 1fr;
 }
-div.chat-form-wrap {
+.chat-form-wrap {
   grid-column: 1 / 2;
   grid-row: 1 / 2;
   overflow: auto;
 }
-div.random-wrap {
+.random-wrap {
   grid-column: 2 / 3;
   grid-row: 1 / 2;
   overflow: auto;
@@ -207,105 +207,105 @@ div.random-wrap {
   height: 4rem;
 }
 /* エラーメッセージ */
-div.result-mes-wrap {
+.result-mes-wrap {
   display: flex;
   justify-content: center;
 }
 /* ボタン */
-div.chat-button-wrap {
+.chat-button-wrap {
   display: flex;
   justify-content: center;
 }
-div.chat-button-wrap>button {
+.chat-button-wrap>button {
   margin: 0.5rem;
 }
 /* チャットフォーム */
-div.chat-form-wrap {
+.chat-form-wrap {
   margin-bottom: 0;
   padding: 1rem;
   display: flex;
   flex-direction: column;
 }
-.reload-form ul.form-row,
-.chat-form ul.form-row {
+.reload-form .form-row,
+.chat-form .form-row {
   border-bottom: dotted 1px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
 }
-.reload-form li.form-col-title:not(:first-child),
-.chat-form li.form-col-title:not(:first-child) {
+.reload-form .form-col-title:not(:first-child),
+.chat-form .form-col-title:not(:first-child) {
   margin-left: 2rem;
 }
-.reload-form li.form-col-title,
-.chat-form li.form-col-title {
+.reload-form .form-col-title,
+.chat-form .form-col-title {
   width: 7rem;
   min-width: 7rem;
   margin: 0.5rem 0;
 }
-.reload-form li.form-col-item,
-.chat-form li.form-col-item {
+.reload-form .form-col-item,
+.chat-form .form-col-item {
   margin: 0.5rem 0;
   width: 10rem;
 }
-.reload-form li.form-col-item-name,
-.chat-form li.form-col-item-name {
+.reload-form .form-col-item-name,
+.chat-form .form-col-item-name {
   width: 25rem;
 }
-.reload-form div.form-row-item-group,
-.chat-form div.form-row-item-group {
+.reload-form .form-row-item-group,
+.chat-form .form-row-item-group {
   display: flex;
   align-content: center;
   width: 13rem;
 }
-.reload-form div.form-col-item-group,
-.chat-form div.form-col-item-group {
+.reload-form .form-col-item-group,
+.chat-form .form-col-item-group {
   display: flex;
   flex-direction: column;
 }
-.reload-form div.form-col-note,
-.chat-form div.form-col-note {
+.reload-form .form-col-note,
+.chat-form .form-col-note {
   font-size: 0.8rem;
   opacity: 0.6;
   width: 20rem;
 }
-.reload-form div.form-col-note-message,
-.chat-form div.form-col-note-message {
+.reload-form .form-col-note-message,
+.chat-form .form-col-note-message {
   width: 30rem;
 }
 /* ダイス おみくじ 山札 */
-div.random-border-wrap {
+.random-border-wrap {
   margin: 1rem 0 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-div.dice-form-wrap {
+.dice-form-wrap {
   width: 13rem;
 }
-h3.deck-title,
-h3.omi-title,
-h3.dice-title {
+.deck-title,
+.omi-title,
+.dice-title {
   font-size: 1.2rem;
   font-weight: bold;
   border-bottom: dotted 1px;
   width: 13rem;
   margin-bottom: 0.2rem;
 }
-button.deck-reset-button,
-button.deck-button,
-button.omi-button,
+.deck-reset-button,
+.deck-button,
+.omi-button,
 input[name="dice"] {
   width: 13rem;
 }
-div.form-omi-note {
+.form-omi-note {
   font-size: 0.75rem;
   opacity: 0.6;
 }
 /* ------------------------------------------------------------------------------------------------- */
 /* 自由設定項目変更                                                                                  */
 /* ------------------------------------------------------------------------------------------------- */
-h3.chatroom-setting-title {
+.chatroom-setting-title {
   border-bottom: solid 2px;
   font-size: 2rem;
   text-align: center;
@@ -335,18 +335,18 @@ h3.chatroom-setting-title {
   border-radius: 1rem;
   border: solid 1px;
 }
-.setting-form ul.form-row {
+.setting-form .form-row {
   margin: 1rem 0;
 }
-.setting-form li.form-col-title {
+.setting-form .form-col-title {
   font-weight: bold;
   margin-bottom: 2px;
 }
-.setting-form li.form-col-note {
+.setting-form .form-col-note {
   font-size: 0.8rem;
   opacity: 0.6;
 }
-.setting-form div.form-button-wrap {
+.setting-form .form-button-wrap {
   display: flex;
   justify-content: center;
 }
@@ -377,15 +377,15 @@ header.chatroom-header-wrap {
   margin: 0.5rem;
   border-bottom: solid 2px;
 }
-h3.chatroom-header-title {
+.chatroom-header-title {
   font-size: 1.5rem;
   word-break: break-all;
 }
-ul.chatroom-item-group {
+.chatroom-item-group {
   display: flex;
   min-width: 8rem;
 }
-li.chatroom-item-title {
+.chatroom-item-title {
   font-weight: bold;
   word-break: break-all;
 }
@@ -393,7 +393,7 @@ li.chatroom-item-title {
   font-size: 0.9rem;
 }
 /* エントリーキー */
-div.entrykey {
+.entrykey {
   display: none;
 }
 /* 参加者 */
@@ -402,28 +402,28 @@ div.entrykey {
   align-items: center;
   margin-left: 0.5rem;
 }
-h5.entries-title {
+.entries-title {
   font-weight: bold;
   font-size: 1rem;
   padding: 0;
   margin: 0;
 }
-ul.entries-item-group {
+.entries-item-group {
   display: flex;
   align-items: center;
 }
-li.entries-item,
-li.entries-no-item {
+.entries-item,
+.entries-no-item {
   margin-right: 0.5rem;
   border-radius: 0.2rem;
   padding: 0.2rem;
   font-size: 0.8rem;
 }
 /* 部屋案内ポップアップ */
-h3.chatroom-header-title {
+.chatroom-header-title {
   position: relative;
 }
-h3.chatroom-header-title:hover .chatroom-header-guide {
+.chatroom-header-title:hover .chatroom-header-guide {
   z-index: 10;
   display: block;
   position: absolute;
