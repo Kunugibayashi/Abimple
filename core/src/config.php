@@ -278,20 +278,32 @@ define('MANUAL_SEC_LINK', (SITE_ROOT.'/manual/src/'));
 define('INFO_SEC_LINK', (SITE_ROOT.'/infomation/src/'));
 define('LETTER_SEC_LINK', (SITE_ROOT.'/letters/src/'));
 define('USER_SRC_LINK', (SITE_ROOT.'/users/src/'));
+/* 名簿出力 */
 define('CHARACTER_SRC_LINK', (SITE_ROOT.'/characters/src/'));
 define('CHARACTER_TEMPLATE_FILE_PATH', (INDEX_ROOT.'/characters/src/templates/'));
 define('CHARACTER_HTML_DIR', '/characterhtml/');
 define('CHARACTER_HTML_PATH', (INDEX_ROOT.CHARACTER_HTML_DIR.'html/'));
 define('CHARACTER_ZIP_PATH', (INDEX_ROOT.CHARACTER_HTML_DIR.'zip/'));
+/* 私書出力 */
+define('LETTER_SRC_LINK', (SITE_ROOT.'/letters/src/'));
+define('LETTER_TEMPLATE_FILE_PATH', (INDEX_ROOT.'/letters/src/templates/'));
+define('LETTER_INBOX_HTML_DIR', '/letterinboxhtml/');
+define('LETTER_INBOX_HTML_PATH', (INDEX_ROOT.LETTER_INBOX_HTML_DIR.'html/'));
+define('LETTER_INBOX_ZIP_PATH', (INDEX_ROOT.LETTER_INBOX_HTML_DIR.'zip/'));
+define('LETTER_OUTBOX_HTML_DIR', '/letteroutboxhtml/');
+define('LETTER_OUTBOX_HTML_PATH', (INDEX_ROOT.LETTER_OUTBOX_HTML_DIR.'html/'));
+define('LETTER_OUTBOX_ZIP_PATH', (INDEX_ROOT.LETTER_OUTBOX_HTML_DIR.'zip/'));
+/* チャットログ出力 */
 define('CHAT_LOG_TEMPLATE_FILE_PATH', (INDEX_ROOT.'/chatrooms/src/templates/'));
 define('CHAT_LOG_HTML_DIR', '/chatloghtml/');
 define('CHAT_LOG_HTML_PATH', (INDEX_ROOT.CHAT_LOG_HTML_DIR.'html/'));
 define('CHAT_LOG_HTML_LINK', (SITE_ROOT.CHAT_LOG_HTML_DIR.'html/'));
 define('CHAT_LOG_SRC_LINK', (SITE_ROOT.CHAT_LOG_HTML_DIR.'src/'));
 define('CHAT_LOG_ZIP_PATH', (INDEX_ROOT.CHAT_LOG_HTML_DIR.'zip/'));
+/* チャットルーム */
 define('CHAT_ROOM_CSS_FILE_PATH', (INDEX_ROOT.'/chatrooms/src/css/'));
 define('CHAT_ROOM_SRC_LINK', (SITE_ROOT.'/chatrooms/src/'));
-/* チャットルーム用 */
+/* チャットルーム設定 */
 define('CHAT_TOP_DEFAULT', 'toptemplatedef');
 define('CHAT_TOP_TEMPLATE1', 'toptemplate1');
 define('CHAT_TOP_TEMPLATE2', 'toptemplate2');

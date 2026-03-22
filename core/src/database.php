@@ -1840,7 +1840,11 @@ function selectInboxLettersId($dbh, $id) {
 function selectInboxLettersMy($dbh, $userid, $username) {
   $sql = '
     SELECT
-      *
+      id,
+      title,
+      tofullname,
+      fromfullname,
+      modified
     FROM inboxletters AS box1
     WHERE
       touserid = :userid

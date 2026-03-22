@@ -11,3 +11,9 @@ chatloghtml/zip/*.zip
 characterhtml/html/css/*.css
 characterhtml/zip/*.zip
 systemlog/*.log
+letterinboxhtml/html/css/*.css
+letterinboxhtml/html/*.html
+letterinboxhtml/zip/*.zip
+letteroutboxhtml/html/css/*.css
+letteroutboxhtml/html/*.html
+letteroutboxhtml/zip/*.zip

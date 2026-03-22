@@ -16,6 +16,7 @@ $indexFile = CHAT_LOG_HTML_PATH.'index.html';
 $createLocalIndex = function() use ($indexFile) {
   // DBスコープが上書きされてしまうため無名関数使用
   ob_start();
+  // TODO
   include('./localindex.php');
   $buffer = ob_get_contents();
   ob_end_clean();

@@ -1,9 +1,9 @@
 <?php
-require_once('../../core/src/config.php');
-require_once('../../core/src/functions.php');
-require_once('../../core/src/session.php');
-require_once('../../core/src/database.php');
-require_once('../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/config.php');
+require_once(__DIR__ . '/../../core/src/functions.php');
+require_once(__DIR__ . '/../../core/src/session.php');
+require_once(__DIR__ . '/../../core/src/database.php');
+require_once(__DIR__ . '/../../core/src/administrator.php');
 
 loginOnly();
 
@@ -67,6 +67,9 @@ outputPage:
 
   <?php if (usedArr($inbox)) { /* 登録がある場合に表示 */ ?>
     <div class="table-wrap my-inbox-table-wrap">
+      <div class="export-wrap">
+        <a href="<?php echo h(LETTER_SRC_LINK); ?>inboxexport.php" class="link-pseudo-button">一括DL</a>
+      </div>
       <table>
         <tr>
           <th class="cell-modified">更新日</th>
