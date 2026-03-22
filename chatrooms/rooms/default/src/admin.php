@@ -46,11 +46,11 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   setToken();
 
   // DB接続
-  $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
+  $dbhChatrooms = connectRo(__DIR__ .'/' .CHAT_ROOMS_DB);
 
   $chatrooms = selectChatroomsConfig($dbhChatrooms);
   if (!usedArr($chatrooms)) {
-    firstAccessChatroom(CHAT_ROOMS_DB);
+    firstAccessChatroom(__DIR__ .'/' .CHAT_ROOMS_DB);
     $chatrooms = selectChatroomsConfig($dbhChatrooms);
   }
   $inputParams = $chatrooms[0];
@@ -117,7 +117,7 @@ if (usedStr($inputParams['deck1text'])) {
 }
 
 // DB接続
-$dbhChatrooms = connectRw(CHAT_ROOMS_DB);
+$dbhChatrooms = connectRw(__DIR__ .'/' .CHAT_ROOMS_DB);
 
 // チャットルーム更新
 $updateRoom = $inputParams;

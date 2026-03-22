@@ -33,7 +33,7 @@ checkChatToken($inputParams['characterid']);
 
 // DB接続
 $dbhCharacters = connectRo(CHARACTERS_DB);
-$dbhChatentries = connectRw(CHAT_ENTRIES_DB);
+$dbhChatentries = connectRw(__DIR__ .'/' .CHAT_ENTRIES_DB);
 
 $characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
 if (!usedArr($characters)) {

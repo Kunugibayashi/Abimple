@@ -38,15 +38,15 @@ $jsonArray['appendlog'] = [];
 $jsonArray['updatelog'] = [];
 
 // DB接続
-$dbhChatrooms = connectRo(CHAT_ROOMS_DB);
-$dbhChatentries = connectRo(CHAT_ENTRIES_DB);
-$dbhChatlogs = connectRo(CHAT_LOGS_DB);
+$dbhChatrooms = connectRo(__DIR__ .'/' .CHAT_ROOMS_DB);
+$dbhChatentries = connectRo(__DIR__ .'/' .CHAT_ENTRIES_DB);
+$dbhChatlogs = connectRo(__DIR__ .'/' .CHAT_LOGS_DB);
 $dbhChatsecrets = connectRo(CHAT_SECRETS_DB);
 $dbhCharacters = connectRo(CHARACTERS_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 if (!usedArr($chatrooms)) {
-  firstAccessChatroom(CHAT_ROOMS_DB);
+  firstAccessChatroom(__DIR__ .'/' .CHAT_ROOMS_DB);
   $chatrooms = selectChatroomsConfig($dbhChatrooms);
 }
 $chatroom = $chatrooms[0];

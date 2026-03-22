@@ -30,10 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 checkChatToken($inputParams['characterid']);
 
 // DB接続
-$dbhChatrooms = connectRw(CHAT_ROOMS_DB);
 $dbhCharacters = connectRo(CHARACTERS_DB);
-$dbhChatentries = connectRw(CHAT_ENTRIES_DB);
-$dbhChatlogs = connectRw(CHAT_LOGS_DB);
+$dbhChatrooms = connectRw(__DIR__ .'/' .CHAT_ROOMS_DB);
+$dbhChatentries = connectRw(__DIR__ .'/' .CHAT_ENTRIES_DB);
+$dbhChatlogs = connectRw(__DIR__ .'/' .CHAT_LOGS_DB);
 
 
 $characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
@@ -62,7 +62,7 @@ $myChatentry = $myChatentries[0];
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 if (!usedArr($chatrooms)) {
-  firstAccessChatroom(CHAT_ROOMS_DB);
+  firstAccessChatroom(__DIR__ .'/' .CHAT_ROOMS_DB);
   $chatrooms = selectChatroomsConfig($dbhChatrooms);
 }
 $chatroom = $chatrooms[0];

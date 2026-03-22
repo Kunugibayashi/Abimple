@@ -24,9 +24,9 @@ $roomdir = getPageRoomdir();
 $ROOMDIR_TMP_PATH = INDEX_ROOT .'/chatrooms/tmp';
 
 // DB接続
-$dbhChatrooms  = connectRo(CHAT_ROOMS_DB);
-$dbhChatentries = connectRw(CHAT_ENTRIES_DB);
-$dbhChatlogs = connectRw(CHAT_LOGS_DB);
+$dbhChatrooms  = connectRo(__DIR__ .'/' .CHAT_ROOMS_DB);
+$dbhChatentries = connectRw(__DIR__ .'/' .CHAT_ENTRIES_DB);
+$dbhChatlogs = connectRw(__DIR__ .'/' .CHAT_LOGS_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0]; // 必ずある想定

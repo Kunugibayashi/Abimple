@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   setToken();
 
   // DB接続
-  $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
+  $dbhChatrooms = connectRo(__DIR__ .'/' .CHAT_ROOMS_DB);
 
   $chatrooms = selectChatroomsConfig($dbhChatrooms);
   $chatroom = $chatrooms[0];
@@ -42,8 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 checkToken();
 
 // DB接続
-$dbhChatrooms = connectRw(CHAT_ROOMS_DB);
-$dbhChatentries = connectRo(CHAT_ENTRIES_DB);
+$dbhChatrooms = connectRw(__DIR__ .'/' .CHAT_ROOMS_DB);
+$dbhChatentries = connectRo(__DIR__ .'/' .CHAT_ENTRIES_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0];

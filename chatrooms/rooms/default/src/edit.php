@@ -31,7 +31,7 @@ checkChatToken($inputParams['characterid']);
 
 // DB接続
 $dbhCharacters = connectRo(CHARACTERS_DB);
-$dbhChatlogs = connectRw(CHAT_LOGS_DB);
+$dbhChatlogs = connectRw(__DIR__ .'/' .CHAT_LOGS_DB);
 
 if (!isAdmin()) {
   // 管理者でない場合は本人確認をする

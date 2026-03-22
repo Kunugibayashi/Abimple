@@ -24,13 +24,13 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策はフォーム表示時にセット
 
   // DB接続
-  $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
+  $dbhChatrooms = connectRo(__DIR__ .'/' .CHAT_ROOMS_DB);
   $dbhCharacters = connectRo(CHARACTERS_DB);
   $dbhChatsecrets = connectRo(CHAT_SECRETS_DB);
 
   $chatrooms = selectChatroomsConfig($dbhChatrooms);
   if (!usedArr($chatrooms)) {
-    firstAccessChatroom(CHAT_ROOMS_DB);
+    firstAccessChatroom(__DIR__ .'/' .CHAT_ROOMS_DB);
     $chatrooms = selectChatroomsConfig($dbhChatrooms);
   }
   $chatroom = $chatrooms[0] ?? [];
@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   $characters = selectCharactersMy($dbhCharacters, getUserid(), getUsername());
 
   // DB接続
-  $dbhChatentries = connectRo(CHAT_ENTRIES_DB);
+  $dbhChatentries = connectRo(__DIR__ .'/' .CHAT_ENTRIES_DB);
 
   // 入室者一覧取得
   $chatentries = selectEqualChatentries($dbhChatentries);

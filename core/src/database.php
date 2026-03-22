@@ -192,6 +192,12 @@ function checkDB($dbname) {
   if (file_exists($dbname)) {
     return;
   }
+
+  $dbname = (string)($dbname ?? '');
+  if ($dbname === '') {
+    return;
+  }
+
   $dbh = connect($dbname);
   // DB作成
   if (USERS_DB === $dbname) {
@@ -204,11 +210,11 @@ function checkDB($dbname) {
     creatRooms($dbh);
   } else if (ROOM_INOUT_HISTORIES_DB === $dbname) {
     createRoominouthistories($dbh);
-  } else if (CHAT_ROOMS_DB === $dbname) {
+  } else if (strpos($dbname, CHAT_ROOMS_DB) !== false) {
     createChatrooms($dbh);
-  } else if (CHAT_ENTRIES_DB === $dbname) {
+  } else if (strpos($dbname, CHAT_ENTRIES_DB) !== false) {
     createChatentries($dbh);
-  } else if (CHAT_LOGS_DB === $dbname) {
+  } else if (strpos($dbname, CHAT_LOGS_DB) !== false) {
     createChatlogs($dbh);
   } else if (CHAT_LOG_FILES_DB === $dbname) {
     createChatlogfiles($dbh);

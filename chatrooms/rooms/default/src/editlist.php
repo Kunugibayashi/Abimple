@@ -28,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
   // DB接続
   $dbhCharacters = connectRo(CHARACTERS_DB);
-  $dbhChatentries = connectRw(CHAT_ENTRIES_DB);
-  $dbhChatlogs = connectRw(CHAT_LOGS_DB);
+  $dbhChatentries = connectRw(__DIR__ .'/' .CHAT_ENTRIES_DB);
+  $dbhChatlogs = connectRw(__DIR__ .'/' .CHAT_LOGS_DB);
 
   if (isAdmin()) {
     // アドミンの場合は全ての発言を取得

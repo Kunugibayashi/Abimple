@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   setToken();
 
   // DB接続
-  $dbhChatentries = connectRw(CHAT_ENTRIES_DB);
+  $dbhChatentries = connectRw(__DIR__ .'/' .CHAT_ENTRIES_DB);
 
   $chatentries = selectEqualChatentries($dbhChatentries);
   $entryCount = count($chatentries);
@@ -35,8 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 checkToken();
 
 // DB接続
-$dbhChatentries = connectRw(CHAT_ENTRIES_DB);
 $dbhChatsecrets = connectRw(CHAT_SECRETS_DB);
+$dbhChatentries = connectRw(__DIR__ .'/' .CHAT_ENTRIES_DB);
 
 $chatentries = selectEqualChatentries($dbhChatentries);
 $entryCount = count($chatentries);
