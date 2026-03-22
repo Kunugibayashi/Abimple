@@ -15,7 +15,6 @@ $success = '';
 $errors = array();
 $inputParams = array();
 
-// セッションが切れていても退出はできるようにフォームから値を取得
 $inputParams['characterid'] = inputParam('characterid', 20) ?? '';
 $inputParams['inoutmesflg'] = inputParam('inoutmesflg', 1) ?? 0;
 
@@ -30,7 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // GETは処理しない。
   exit;
 }
-/* 以降はPOST通信を想定。
+/**
+ * 以降はPOST通信を想定。
  */
 // CSRF対策
 checkChatToken($inputParams['characterid']);
@@ -156,6 +156,10 @@ if ($chatroom['issecret'] == 1) {
   setSecretKeyword('');
   clearSecretKeyword();
 }
+
+// セッションの入室状態をリセット
+clearChatToken($inputParams['characterid']);
+clearChatEntry($inputParams['characterid']);
 
 $success = '退室しました。';
 

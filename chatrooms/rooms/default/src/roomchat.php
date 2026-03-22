@@ -27,11 +27,32 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // GETは処理しない。
   exit;
 }
-/* 以降はPOST通信を想定。
+/**
+ * 以降はPOST通信を想定。
  */
 // CSRF対策
 // 画面表示時はキャラクターIDが決まっていないため、空でチェック
 checkChatEnterToken();
+
+// 管理者のみ複数キャラクター入室可能の場合はチェック
+if (CHAT_MULTI_ENTRY_MODE === 1 && !isAdmin()) {
+  // セッションから値を取得
+  $sessionChatentry = getChatEntries();
+  if (usedArr($sessionChatentry) && count($sessionChatentry) > 1) {
+    // 多重入室
+    echo '既に他キャラクターで入室しています。';
+    echo '入室者一覧に名前が表示されていないまま、このメッセージが表示される場合は一度ログアウトし、ログインしなおしてください。';
+    exit;
+  }
+  if (usedArr($sessionChatentry) && count($sessionChatentry) == 1
+    && !isset($sessionChatentry[$inputParams['characterid']])
+  ) {
+    // 多重入室
+    echo '既に他キャラクターで入室しています。';
+    echo '入室者一覧に名前が表示されていないまま、このメッセージが表示される場合は一度ログアウトし、ログインしなおしてください。';
+    exit;
+  }
+}
 
 // 既に入室している場合はセッションから取得
 if (isNowRoomEntry($inputParams['characterid'], $roomdir)) {
@@ -169,7 +190,8 @@ setChatEntry($save);
 setChatToken($inputParams['characterid']);
 
 
-/* goto文はコードが煩雑になるため使用するべきではないが、
+/**
+ * goto文はコードが煩雑になるため使用するべきではないが、
  * ソースコードが複雑になるため、画面表示phpのページ出力開始ラベルのみ使用する。
  */
 outputPage:

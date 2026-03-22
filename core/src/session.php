@@ -387,6 +387,7 @@ function checkChatToken($characterid): void {
   $postToken = $_POST['token'] ?? '';
   if (!usedStr($sessionToken)) {
     echo 'トークンがありません。画面更新をしてください。';
+    echo 'ログアウト画面で表示されている場合、すでに退室済みの可能性があります。';
     exit;
   }
   if (!usedStr($postToken) || $sessionToken !== $postToken) {
@@ -396,3 +397,34 @@ function checkChatToken($characterid): void {
   }
 }
 
+// セッション完全削除
+function invalidateSession(): void {
+  // セッション開始済みか
+  if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+  }
+
+  // セッション変数削除
+  $_SESSION = [];
+
+  // セッションCookie削除
+  if (ini_get('session.use_cookies')) {
+    $params = session_get_cookie_params();
+    setcookie(
+      session_name(),
+      '',
+      time() - 42000,
+      $params['path'],
+      $params['domain'],
+      $params['secure'],
+      $params['httponly']
+    );
+  }
+
+  // セッション破棄
+  session_destroy();
+
+  // 新セッション開始＋ID再生成
+  session_start();
+  session_regenerate_id(true);
+}

@@ -1,5 +1,6 @@
 <?php
-/* エラー出力設定。
+/**
+ * エラー出力設定。
  * 編集任意。
  *
  * 1:エラーを出力する
@@ -7,7 +8,8 @@
  */
 ini_set('display_errors', 1);
 
-/* 管理者ユーザー名。
+/**
+ * 管理者ユーザー名。
  * 必ず変更してください。
  * 英数字のみ。
  *
@@ -15,14 +17,16 @@ ini_set('display_errors', 1);
  */
 define('ADMIN_USERNAME', 'admin');
 
-/* サイト名。
+/**
+ * サイト名。
  * 必ず変更してください。
  *
  * 一括DL時のファイル名として使用するため、特殊記号は出力時にzipファイル名から削除されます。
  */
 define('SITE_TITLE', 'Abimple');
 
-/* index.phpまでのPATH。
+/**
+ * index.phpまでのPATH。
  * 必ず変更してください。
  *
  * 例）https://abitopia.com/Abimple/index.php であれば '/Abimple'
@@ -30,7 +34,8 @@ define('SITE_TITLE', 'Abimple');
  */
 define('SITE_ROOT', '/Abimple');
 
-/* テンプレート名。
+/**
+ * テンプレート名。
  * 編集任意。
  *
  * core/css/ 配下のテンプレート名を入力してください。拡張子はいりません。
@@ -39,7 +44,8 @@ define('SITE_ROOT', '/Abimple');
  */
 define('SITE_TEMPLATE', 'template1');
 
-/* チャット機能のささやきを使用するか。
+/**
+ * チャット機能のささやきを使用するか。
  * 編集任意。
  *
  * 1:ささやきを使用する
@@ -47,7 +53,8 @@ define('SITE_TEMPLATE', 'template1');
  */
 define('CHAT_WHISPER_MODE', 1);
 
-/* 私書を公開するか。
+/**
+ * 私書を公開するか。
  * 編集任意。
  *
  * 2:私書を個人のみに公開する
@@ -56,7 +63,17 @@ define('CHAT_WHISPER_MODE', 1);
  */
 define('SITE_LETTER_OPEN', 1);
 
-/* サイト更新日。
+/**
+ * 私書を公開するか。
+ * 編集任意。
+ *
+ * 1:管理者のみ
+ * 0:全員可
+ */
+define('CHAT_MULTI_ENTRY_MODE', 1);
+
+/**
+ * サイト更新日。
  * 編集任意。
  *
  * CSSなどを更新した際に変更すると、ブラウザをキャッシュクリアしなくとも
@@ -69,7 +86,8 @@ define('SITE_LETTER_OPEN', 1);
 //define('SITE_UPDATE', '202505150001');
 define('SITE_UPDATE', time());
 
-/* ベル音。
+/**
+ * ベル音。
  * 編集任意。
  * ベル音を変更したい場合は assets/sound 内にファイルを置いて、このファイル名を変更してください。
  * ファイル名は拡張子まで含めて記載してください。
@@ -80,12 +98,14 @@ define('SITE_UPDATE', time());
  */
 define('CHAT_SOUND_FILE', 'pipipi.mp3');
 
-/* システムメッセージ発言者。
+/**
+ * システムメッセージ発言者。
  * 編集任意。
  */
 define('CHAT_LOG_SYSTEM_NAME', 'システム');
 
-/* ファイル出力時の使用メモリ。
+/**
+ * ファイル出力時の使用メモリ。
  * 編集任意。
  *
  * 値が大きいほどエラーが起きにくくなります。
@@ -93,24 +113,28 @@ define('CHAT_LOG_SYSTEM_NAME', 'システム');
  */
 define('PHP_MEMORY_LIMIT', '3072M');
 
-/* 1ページに表示する項目数。
+/**
+ * 1ページに表示する項目数。
  * 編集任意。
  *
  * 巨大な数値をいれると読み込みが重くなります。
  */
 define('PAGING_LIMIT', 25);
 
-/* ページング時、前後何ページまでリンクを表示するか。
+/**
+ * ページング時、前後何ページまでリンクを表示するか。
  * 編集任意。
  */
 define('PAGING_PVNT_COUNT', 6);
 
-/* 検索キーワードを何文字まで許容するか。
+/**
+ * 検索キーワードを何文字まで許容するか。
  * 編集任意。
  */
 define('SEARCHKEY_LIMIT', 20);
 
-/* 名簿の表示カラム設定。
+/**
+ * 名簿の表示カラム設定。
  * 編集任意。
  * 管理ユーザーはすべてのカラムが常に表示されます。
  */
@@ -231,7 +255,8 @@ define('NAMELIST_DETAIL', 1); // ONOFF（1:表示する/0:表示しない）
 define('NAMELIST_DETAIL_NAME', '詳細'); // 表示名
 
 
-/* システム設定
+/**
+ * システム設定
  *******************************************************************************
  * Warning!!
  * 以下はシステムで使用する項目です。
@@ -282,8 +307,9 @@ define('LOGTYPE_SYSTEM',  1); // システム生成ログ（入退室・通知�
 define('LOGTYPE_DICE',    2); // ダイス結果
 define('LOGTYPE_OMIKUJI', 3); // おみくじ結果
 define('LOGTYPE_DECK',    4); // 手札結果
-/* 以下の変数を追加した場合は database.php の DB作成 に処理を追加すること。
-*/
+/**
+ * 以下の変数を追加した場合は database.php の DB作成 に処理を追加すること。
+ */
 define('USERS_DB', (INDEX_ROOT.'/users/src/db/users.db'));
 define('INFOMATIONS_DB', (INDEX_ROOT.'/infomation/src/db/informations.db'));
 define('CHARACTERS_DB', (INDEX_ROOT.'/characters/src/db/characters.db'));

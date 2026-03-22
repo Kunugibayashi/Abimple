@@ -11,18 +11,20 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   goto outputPage;
 }
-/* 以降はPOST通信を想定。
+/**
+ * 以降はPOST通信を想定。
  */
 // CSRF対策
 checkToken();
 
-/* セッション切断
- * 関数内で $_SESSION を呼ぶと上書きされなかったため、ここで明示的にIDをクリア
+/**
+ * セッション切断
  */
-session_destroy();
+invalidateSession();
 
 
-/* goto文はコードが煩雑になるため使用するべきではないが、
+/**
+ * goto文はコードが煩雑になるため使用するべきではないが、
  * ソースコードが複雑になるため、画面表示phpのページ出力開始ラベルのみ使用する。
  */
 outputPage:
