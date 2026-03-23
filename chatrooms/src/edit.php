@@ -51,6 +51,9 @@ if (preg_match('/[^A-Za-z0-9]/', $inputParams['roomdir'])) {
 if (!usedStr($inputParams['roomtitle'])) {
   $errors[] = 'ルーム名を入力してください。';
 }
+if (usedStr($inputParams['roomtitle']) && isUnsafeChars($inputParams['roomtitle'])) {
+  $errors[] = 'ルームタイトルに利用不可な制御文字、あるいは記号が含まれています。';
+}
 if (!usedStr($inputParams['displayno'])) {
   $errors[] = '表示順序を入力してください。';
 }

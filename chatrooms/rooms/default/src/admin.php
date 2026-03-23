@@ -66,6 +66,9 @@ checkToken();
 if (!usedStr($inputParams['title'])) {
   $errors[] = 'ルームタイトルを入力してください。';
 }
+if (usedStr($inputParams['title']) && isUnsafeChars($inputParams['title'])) {
+  $errors[] = 'ルームタイトルに利用不可な制御文字、あるいは記号が含まれています。';
+}
 if (!usedStr($inputParams['guide'])) {
   $errors[] = 'ルーム説明を入力してください。';
 }

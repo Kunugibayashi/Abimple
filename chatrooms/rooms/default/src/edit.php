@@ -60,6 +60,17 @@ if (!usedStr($inputParams['message'])) {
   goto outputPage;
 }
 
+// HTML構文チェック
+$doc = new DOMDocument();
+libxml_use_internal_errors(true);
+$result = $doc->loadXML('<div>' . html_entity_decode($inputParams['message']) .'</div>');
+libxml_clear_errors();
+if (!$result) {
+  $jsonArray['code'] = 1;
+  $jsonArray['errorMessage'] = '発言内のHTMLタグが正しくありません。';
+  goto outputPage;
+}
+
 // 発言更新
 updateChatlogs($dbhChatlogs, $inputParams['id'], [
   'message' => $inputParams['message'],
