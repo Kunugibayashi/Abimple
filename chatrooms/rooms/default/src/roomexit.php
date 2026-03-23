@@ -145,8 +145,8 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($nowChatentr
     $entries
   );
 
-  // 不可対策として指定数以上のログを削除
-  deleteChatlogsLimit5000($dbhChatlogs);
+  // 負荷対策として指定数以上のログを削除
+  deleteChatlogsLimit10000($dbhChatlogs);
   // 余分な参加者ログを削除
   deleteChatentriesExit($dbhChatentries);
 }

@@ -109,6 +109,12 @@ updateChatroomsConfig($dbhChatrooms, [
   'deck1text' => $deckText,
 ]);
 
+$messageString = (
+  '<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
+    .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .$character['fullname'] .' が山札をリセットしました。'
+  .'</span>'
+);
+
 // 発言
 $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
   'logtype' => LOGTYPE_DECK,
@@ -117,9 +123,7 @@ $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
   'fullname' => CHAT_LOG_SYSTEM_NAME,
   'color' => $chatroom['color'],
   'bgcolor' => $chatroom['bgcolor'],
-  'message' => ('<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-                .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .'山札をリセットしました。' .'</span>'
-  ),
+  'message' => $messageString,
 ]);
 if (!$result) {
   $jsonArray['code'] = 1;

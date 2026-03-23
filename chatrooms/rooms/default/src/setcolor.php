@@ -13,8 +13,8 @@ $jsonArray = array();
 $inputParams = array();
 
 $inputParams['characterid'] = inputParam('characterid', 20);
-$inputParams['color'] = inputParam('color', 7);
-$inputParams['bgcolor'] = inputParam('bgcolor', 7);
+$inputParams['color'] = inputParam('color', 7) ?: '#000000';
+$inputParams['bgcolor'] = inputParam('bgcolor', 7) ?: '#ffffff';
 
 logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
 sessionLogChatEntryCharacter($inputParams['characterid']);

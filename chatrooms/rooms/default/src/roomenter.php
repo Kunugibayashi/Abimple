@@ -11,8 +11,8 @@ require_once(__DIR__ .'/../../../src/chatlogexport.php');
 $errors = array();
 $inputParams = array();
 
-$inputParams['color'] = inputParam('color', 7) ? inputParam('color', 7) : '#000000';
-$inputParams['bgcolor'] = inputParam('bgcolor', 7) ? inputParam('bgcolor', 7) : '#ffffff';
+$inputParams['color'] = inputParam('color', 7) ?: '#000000';
+$inputParams['bgcolor'] = inputParam('bgcolor', 7) ?: '#ffffff';
 
 logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
 

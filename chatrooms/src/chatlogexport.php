@@ -52,7 +52,13 @@ function renderSystemLog(array $chatline): string {
   ob_start();
 ?>
 <div class="chat-narr-wrap">
-  <span class="chat-narr-fullname"><?php echo h($chatline['fullname']); ?></span>
+  <span class="chat-narr-fullname">
+    <?php if ($chatline['whisperflg'] != 0) {  /* ささやき */  ?>
+      （システム→<?php echo h($chatline['wtofullname']); ?>）
+    <?php } else {  ?>
+      <?php echo h($chatline['fullname']); ?>
+    <?php } ?>
+  </span>
   <span class="chat-narr-arrow">≫</span>
   <span class="chat-narr-message"><?php echo ht($chatline['message']); ?></span>
   <span class="chat-narr-created"><?php echo h($chatline['created']); ?></span>

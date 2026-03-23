@@ -1035,6 +1035,7 @@ function createChatrooms($dbh) {
       omi3name      VARCHAR(10)    NOT NULL DEFAULT '',
       omi3text      TEXT           NOT NULL DEFAULT '',
       deck1flg      INTEGER        NOT NULL DEFAULT 0,
+      deck1type     INTEGER        NOT NULL DEFAULT 0,
       deck1name     VARCHAR(10)    NOT NULL DEFAULT '',
       deck1text     TEXT           NOT NULL DEFAULT '',
       roomcss       TEXT           NOT NULL DEFAULT '',
@@ -1562,7 +1563,7 @@ function updateChatlogs($dbh, $id, $params = array()) {
   return $results;
 }
 
-function deleteChatlogsLimit5000($dbh) {
+function deleteChatlogsLimit10000($dbh) {
   $sql = "
     DELETE FROM chatlogs
     WHERE
@@ -1571,7 +1572,7 @@ function deleteChatlogsLimit5000($dbh) {
         SELECT id
         FROM chatlogs
         ORDER BY id DESC
-        LIMIT 5000
+        LIMIT 10000
       )
   ";
 

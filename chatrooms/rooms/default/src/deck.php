@@ -134,25 +134,72 @@ updateChatroomsConfig($dbhChatrooms, [
   'deck1text' => $deckText,
 ]);
 
-// 発言取り出し
+// 表にする発言を取り出す
 $showTextArray = explode('#', $showTailArray['deckValue']);
 
-// 発言
-$result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
-  'logtype' => LOGTYPE_DECK,
-  'entrykey' => $myChatentry['entrykey'],
-  'characterid' => $character['id'],
-  'fullname' => CHAT_LOG_SYSTEM_NAME,
-  'color' => $chatroom['color'],
-  'bgcolor' => $chatroom['bgcolor'],
-  'message' => ('<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-                .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .$showTextArray[1] .'</span>'
-  ),
-]);
-if (!$result) {
-  $jsonArray['code'] = 1;
-  $jsonArray['errorMessage'] = '山札に失敗しました。もう一度お試しください。';
-  goto outputPage;
+// メッセージ作成
+$messageString = (
+  '<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
+    .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .$showTextArray[1]
+  .'</span>'
+);
+$announceString = (
+  '<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
+    .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .$character['fullname'] .' がカードを引きました。'
+  .'</span>'
+);
+
+$deck1type = $chatroom['deck1type'] ?? 0;
+if ($deck1type) {
+  // アナウンスを通常の発言に追加
+  $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+    'logtype' => LOGTYPE_DECK,
+    'entrykey' => $myChatentry['entrykey'],
+    'characterid' => $character['id'],
+    'fullname' => CHAT_LOG_SYSTEM_NAME,
+    'color' => $chatroom['color'],
+    'bgcolor' => $chatroom['bgcolor'],
+    'message' => $announceString,
+  ]);
+  if (!$result) {
+    $jsonArray['code'] = 1;
+    $jsonArray['errorMessage'] = '山札に失敗しました。もう一度お試しください。';
+    goto outputPage;
+  }
+  // ささやきで内容を追加
+  $result2 = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+    'logtype' => LOGTYPE_DECK,
+    'entrykey' => $myChatentry['entrykey'],
+    'characterid' => $character['id'],
+    'fullname' => CHAT_LOG_SYSTEM_NAME,
+    'color' => $chatroom['color'],
+    'bgcolor' => $chatroom['bgcolor'],
+    'message' => $messageString,
+    'whisperflg' => 1,
+    'wtocharacterid' => $character['id'],
+    'wtofullname' => $character['fullname'],
+  ]);
+  if (!$result2) {
+    $jsonArray['code'] = 1;
+    $jsonArray['errorMessage'] = '山札に失敗しました。もう一度お試しください。';
+    goto outputPage;
+  }
+} else {
+  // 通常の発言
+  $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+    'logtype' => LOGTYPE_DECK,
+    'entrykey' => $myChatentry['entrykey'],
+    'characterid' => $character['id'],
+    'fullname' => CHAT_LOG_SYSTEM_NAME,
+    'color' => $chatroom['color'],
+    'bgcolor' => $chatroom['bgcolor'],
+    'message' => $messageString,
+  ]);
+  if (!$result) {
+    $jsonArray['code'] = 1;
+    $jsonArray['errorMessage'] = '山札に失敗しました。もう一度お試しください。';
+    goto outputPage;
+  }
 }
 
 $jsonArray['code'] = 0;

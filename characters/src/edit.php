@@ -13,8 +13,8 @@ $inputParams = array();
 
 $inputParams['id'] = inputParam('id', 20);
 $inputParams['fullname'] = inputParam('fullname', 20);
-$inputParams['color'] = inputParam('color', 7);
-$inputParams['bgcolor'] = inputParam('bgcolor', 7);
+$inputParams['color'] = inputParam('color', 7) ?: '#000000';
+$inputParams['bgcolor'] = inputParam('bgcolor', 7) ?: '#ffffff';
 $inputParams['gender'] = inputParam('gender', 10);
 $inputParams['species'] = inputParam('species', 10);
 $inputParams['team'] = inputParam('team', 10);

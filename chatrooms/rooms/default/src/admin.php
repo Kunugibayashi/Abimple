@@ -18,8 +18,8 @@ $inputParams['toptemplate'] = inputParam('toptemplate', 20);
 $inputParams['logtemplate'] = inputParam('logtemplate', 20);
 $inputParams['isfree'] = inputParam('isfree', 1);
 $inputParams['issecret'] = inputParam('issecret', 1);
-$inputParams['color'] = inputParam('color', 7);
-$inputParams['bgcolor'] = inputParam('bgcolor', 7);
+$inputParams['color'] = inputParam('color', 7) ?: '#000000';
+$inputParams['bgcolor'] = inputParam('bgcolor', 7) ?: '#ffffff';
 $inputParams['bgimage'] = inputParam('bgimage', 1000);
 $inputParams['omi1flg'] = inputParam('omi1flg', 1);
 $inputParams['omi1name'] = inputParam('omi1name', 10);
@@ -31,11 +31,14 @@ $inputParams['omi3flg'] = inputParam('omi3flg', 1);
 $inputParams['omi3name'] = inputParam('omi3name', 10);
 $inputParams['omi3text'] = inputParam('omi3text', 10000);
 $inputParams['deck1flg'] = inputParam('deck1flg', 1);
+$inputParams['deck1type'] = inputParam('deck1type', 1);
 $inputParams['deck1name'] = inputParam('deck1name', 10);
 $inputParams['deck1text'] = inputParam('deck1text', 10000);
 $inputParams['roomcss'] = inputParam('roomcss', 10000);
 $inputParams['created'] = inputParam('created', 20);
 $inputParams['modified'] = inputParam('modified', 20);
+
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
 
 // roomdir
 $roomdir = getPageRoomdir();
@@ -386,6 +389,18 @@ outputPage:
             </select>
           </div>
         </li>
+      </ul>
+      <ul class="form-row">
+        <li class="form-col-title">山札をどのように表示するか<div class="mandatory-mark"></div></li>
+        <li class="form-col-item">
+          <div class="select-wrap">
+            <select name="deck1type">
+              <option <?php echo selectedOption($inputParams['deck1type'], '0'); ?> value="0">全体表示</option>
+              <option <?php echo selectedOption($inputParams['deck1type'], '1'); ?> value="1">ドローのみアナウンス</option>
+            </select>
+          </div>
+        </li>
+        <li class="form-col-note">「ドローのみアナウンス」の場合、山札を引いたことのみチャットに表示され、内容はささやきでユーザーに表示されます。</li>
       </ul>
       <ul class="form-row">
         <li class="form-col-title">山札の名前<div class="optional-mark"></div></li>

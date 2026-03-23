@@ -11,8 +11,8 @@ require_once(__DIR__ .'/../../../src/chatlogexport.php');
 $inputParams = array();
 
 $inputParams['characterid'] = inputParam('viewcharacterid', 20);
-$inputParams['color'] = inputParam('color', 7) ? inputParam('color', 7) : '000000';
-$inputParams['bgcolor'] = inputParam('bgcolor', 7) ? inputParam('bgcolor', 7) : 'ffffff';
+$inputParams['color'] = inputParam('color', 7) ?: '#000000';
+$inputParams['bgcolor'] = inputParam('bgcolor', 7) ?: '#ffffff';
 $inputParams['memo'] = inputParam('memo', 200);
 $inputParams['inoutmesflg'] = inputParam('inoutmesflg', 1) ?? 0;
 
@@ -430,6 +430,9 @@ outputPage:
           <div class="form-button-wrap deck1-button-wrap">
             <button type="button" class="deck-button"><?php echo h($chatroom['deck1name']); ?></button>
           </div>
+          <?php if ($chatroom['deck1type']) { /* ドローのみアナウンスの場合 */ ?>
+            <div class="form-deck-note">山札の内容はささやきで表示されます。</div>
+          <?php } ?>
           <div class="form-button-wrap deck1-button-wrap">
             <button type="button" class="deck-reset-button">山札リセット</button>
           </div>
