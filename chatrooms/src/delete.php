@@ -4,6 +4,7 @@ require_once(__DIR__ . '/../../core/src/functions.php');
 require_once(__DIR__ . '/../../core/src/session.php');
 require_once(__DIR__ . '/../../core/src/database.php');
 require_once(__DIR__ . '/../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/logger.php');
 
 adminOnly();
 
@@ -13,6 +14,8 @@ $inputParams = array();
 
 $inputParams['id'] = inputParam('id', 20);
 $inputParams['roomdir'] = inputParam('roomdir', 20);
+
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策
@@ -34,7 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 // CSRF対策
 checkToken();
 
-$errors = deleteRoomdir($inputParams['roomdir']);
+// roomdir
+$roomdir = $inputParams['roomdir'];
+$deleteDir = CHAT_ROOM_ROOMS_PATH . $roomdir;
+
+$errors = deleteRoomdir($deleteDir);
 if (usedArr($errors)) {
   goto outputPage;
 }

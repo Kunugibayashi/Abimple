@@ -301,6 +301,8 @@ define('CHAT_LOG_HTML_LINK', (SITE_ROOT.CHAT_LOG_HTML_DIR.'html/'));
 define('CHAT_LOG_SRC_LINK', (SITE_ROOT.CHAT_LOG_HTML_DIR.'src/'));
 define('CHAT_LOG_ZIP_PATH', (INDEX_ROOT.CHAT_LOG_HTML_DIR.'zip/'));
 /* チャットルーム */
+define('CHAT_ROOM_ROOMS_PATH', (INDEX_ROOT.'/chatrooms/rooms/'));
+define('CHAT_ROOM_ROOMS_LINK', (SITE_ROOT.'/chatrooms/rooms/'));
 define('CHAT_ROOM_CSS_FILE_PATH', (INDEX_ROOT.'/chatrooms/src/css/'));
 define('CHAT_ROOM_SRC_LINK', (SITE_ROOT.'/chatrooms/src/'));
 /* チャットルーム設定 */

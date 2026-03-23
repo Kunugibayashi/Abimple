@@ -1,4 +1,6 @@
 <?php
+require_once(__DIR__ .'/logger.php');
+
 function setJsonHeader() {
   header("Content-Type: application/json; charset=UTF-8");
 }
@@ -205,21 +207,21 @@ function outputPaging($data, $nowPage){
   echo '<ul class="paging-group">';
 
   if ($nowPage > 1 && $nowPage != 1){
-    echo '<li>';
+    echo '<li class="paging-to-first">';
     echo '<a href="?page=1">最初へ</a>';
     echo '</li>';
   } else {
-    echo '<li>';
+    echo '<li class="paging-no-link">';
     echo '最初へ';
     echo '</li>';
   }
 
   if ($nowPage > 1) {
-    echo '<li>';
+    echo '<li class="paging-to-pre">';
     echo '<a href="?page=' . $prevPage . '">前へ</a>';
     echo '</li>';
   } else {
-    echo '<li>';
+    echo '<li class="paging-no-link">';
     echo '前へ';
     echo '</li>';
   }
@@ -229,13 +231,13 @@ function outputPaging($data, $nowPage){
     echo '1';
     echo '</li>';
   } else {
-    echo '<li>';
+    echo '<li class="paging-to-page">';
     echo '<a href="?page=1">1</a>';
     echo '</li>';
   }
 
   if (1 < ($nowPage - PAGING_PVNT_COUNT) && 2 != ($nowPage - PAGING_PVNT_COUNT)) {
-    echo '<li>';
+    echo '<li class="paging-no-link">';
     echo '...';
     echo '</li>';
   }
@@ -246,14 +248,14 @@ function outputPaging($data, $nowPage){
       echo $num;
       echo '</li>';
     } else {
-      echo '<li>';
+      echo '<li class="paging-to-page">';
       echo '<a href="?page='. $num .'">' . $num . '</a>';
       echo '</li>';
     }
   }
 
   if (($totalPage - 1) > $endPage) {
-    echo '<li>';
+    echo '<li class="paging-no-link">';
     echo '...';
     echo '</li>';
   }
@@ -265,31 +267,31 @@ function outputPaging($data, $nowPage){
     echo $totalPage;
     echo '</li>';
   } else if ($nowPage < $totalPage) {
-    echo '<li>';
+    echo '<li class="paging-to">';
     echo '<a href="?page='. $totalPage .'">' . $totalPage . '</a>';
     echo '</li>';
   }  else {
-    echo '<li>';
+    echo '<li class="paging-no-link">';
     echo $totalPage;
     echo '</li>';
   }
 
   if ($nowPage < $totalPage){
-    echo '<li>';
+    echo '<li class="paging-to-next">';
     echo '<a href="?page='.$nextPage.'">次へ</a>';
     echo '</li>';
   } else {
-    echo '<li>';
+    echo '<li class="paging-no-link">';
     echo '次へ';
     echo '</li>';
   }
 
   if ($nowPage < $totalPage){
-    echo '<li>';
+    echo '<li class="paging-to-last">';
     echo '<a href="?page=' . $totalPage . '">最後へ</a>';
     echo '</li>';
   } else {
-    echo '<li>';
+    echo '<li class="paging-no-link">';
     echo '最後へ';
     echo '</li>';
   }
@@ -326,96 +328,120 @@ function splitPages($data, $nowPage) {
   return array_slice($data, $min, PAGING_LIMIT);
 }
 
-// 作成と削除のPathはあわせること
-function createRoomdir($roomdir) {
-
-  if (!usedStr($roomdir)){
-    // DB削除失敗による二回目以降である可能性があるためエラーにはしない
-    return [];
-  }
-
-  $defaultPathSrc = './../rooms/default/src';
-
-  $copyPath = './../rooms/' .$roomdir;
-  $copyPathLogs = './../rooms/' .$roomdir .'/logs';
-  $copyPathSrc = './../rooms/' .$roomdir .'/src';
-  $copyPathDb = './../rooms/' .$roomdir .'/src/db';
-
-  if (!file_exists($defaultPathSrc)) {
-    $errors[] = 'default ルームが存在しません。';
-    return $errors;
-  }
-
-  mkdir($copyPath, 0705);
-  mkdir($copyPathLogs, 0705);
-  mkdir($copyPathSrc, 0705);
-  mkdir($copyPathDb, 0705);
-
-  $phpFilePath = glob($defaultPathSrc .'/*.php');
-  foreach ($phpFilePath as $key => $phpPath) {
-    $file = str_replace("$defaultPathSrc/", '', $phpPath);
-    copy("$defaultPathSrc/$file", "$copyPathSrc/$file");
-  }
-
-  if (!file_exists($copyPathDb)) {
-    $errors[] = 'ルームのコピーに失敗しました。';
-    return $errors;
-  }
-
-  return [];
-}
-
-// 作成と削除のPathはあわせること
-function deleteRoomdir($roomdir) {
-
-  if (!usedStr($roomdir)){
-    // DB削除失敗による二回目以降である可能性があるためエラーにはしない
-    return [];
-  }
-
-  $copyPath = './../rooms/' .$roomdir;
-  $copyPathLogs = './../rooms/' .$roomdir .'/logs';
-  $copyPathSrc = './../rooms/' .$roomdir .'/src';
-  $copyPathDb = './../rooms/' .$roomdir .'/src/db';
-
-  $files = glob($copyPathDb .'/*.*');
-  foreach ($files as $key => $file) {
-    unlink($file);
-  }
-
-  $files = glob($copyPathSrc .'/*.*');
-  foreach ($files as $key => $file) {
-    unlink($file);
-  }
-
-  $files = glob($copyPathLogs .'/*.*');
-  foreach ($files as $key => $file) {
-    unlink($file);
-  }
-
-  if (file_exists($copyPathDb)) {
-    rmdir($copyPathDb);
-  }
-  if (file_exists($copyPathSrc)) {
-    rmdir($copyPathSrc);
-  }
-  if (file_exists($copyPathLogs)) {
-    rmdir($copyPathLogs);
-  }
-  if (file_exists($copyPath)) {
-    rmdir($copyPath);
-  }
-
-  if (file_exists($copyPath)) {
-    $errors[] = 'ルームの削除に失敗しました。「Permission denied」が表示されている場合は、ディレクトリを直接削除後に再度お試しください。';
-    return $errors;
-  }
-
-  return [];
-}
-
 function nowYmdhi(): string {
   return date('YmdHi');
+}
+
+/* ------------------------------------------------------------------------------------------------- */
+/* チャットルーム管理用                                                                              */
+/* ------------------------------------------------------------------------------------------------- */
+// 作成と削除のPathはあわせること
+function copyRoomTemplate(string $src, string $dst): array
+{
+  $errors = [];
+
+  $src = rtrim($src, DIRECTORY_SEPARATOR);
+  $dst = rtrim($dst, DIRECTORY_SEPARATOR);
+
+  if (!is_dir($src)) {
+    $errors[] = 'コピー元が存在しません: ' . $src;
+    return $errors;
+  }
+  if (!is_dir($dst) && !mkdir($dst, 0755, true)) {
+    $errors[] = 'コピー先ルートの作成に失敗しました: ' . $dst;
+    return $errors;
+  }
+
+  try {
+    $directoryIterator = new RecursiveDirectoryIterator(
+      $src,
+      FilesystemIterator::SKIP_DOTS
+    );
+    $iterator = new RecursiveIteratorIterator(
+      $directoryIterator,
+      RecursiveIteratorIterator::SELF_FIRST
+    );
+
+    foreach ($iterator as $item) {
+      $srcPath = $item->getPathname();
+
+      if (strpos($srcPath, $src) !== 0) {
+        $errors[] = 'パス生成失敗: ' . $srcPath;
+        continue;
+      }
+
+      $relativePath = ltrim(substr($srcPath, strlen($src)), DIRECTORY_SEPARATOR);
+      $dstPath = $dst . DIRECTORY_SEPARATOR . $relativePath;
+      if ($item->isDir()) {
+        if (!is_dir($dstPath) && !mkdir($dstPath, 0755, true)) {
+          $errors[] = 'ディレクトリ作成失敗: ' . $dstPath;
+        }
+        continue;
+      }
+
+      if (strtolower($item->getExtension()) !== 'php') {
+        continue;
+      }
+
+      $dstDir = dirname($dstPath);
+      if (!is_dir($dstDir) && !mkdir($dstDir, 0755, true)) {
+        $errors[] = 'コピー先ディレクトリ作成失敗: ' . $dstDir;
+        continue;
+      }
+      if (!copy($srcPath, $dstPath)) {
+        $errors[] = 'コピー失敗: ' . $srcPath . ' -> ' . $dstPath;
+      }
+    }
+  } catch (Throwable $e) {
+    $errors[] = 'エラーが発生しました。error.log を参照してください。';
+    logError('copyRoomTemplate: ' . $e->getMessage());
+  }
+
+  return $errors;
+}
+
+// 作成と削除のPathはあわせること
+function deleteRoomdir($roomPath): array
+{
+  $errors = [];
+
+  if (!file_exists($roomPath)) {
+    return [];
+  }
+
+  try {
+    $iterator = new RecursiveIteratorIterator(
+      new RecursiveDirectoryIterator($roomPath, FilesystemIterator::SKIP_DOTS),
+      RecursiveIteratorIterator::CHILD_FIRST
+    );
+
+    foreach ($iterator as $item) {
+      $path = $item->getPathname();
+
+      if ($item->isDir()) {
+        if (!rmdir($path)) {
+          $errors[] = 'ディレクトリ削除失敗: ' . $path;
+        }
+      } else {
+        if (!unlink($path)) {
+          $errors[] = 'ファイル削除失敗: ' . $path;
+        }
+      }
+    }
+
+    if (file_exists($roomPath) && !rmdir($roomPath)) {
+      $errors[] = 'ルームディレクトリ削除失敗: ' . $roomPath;
+    }
+  } catch (Throwable $e) {
+    $errors[] = 'エラーが発生しました。error.log を参照してください。';
+    logError('copyRoomTemplate: ' . $e->getMessage());
+  }
+
+  if (file_exists($roomPath)) {
+    $errors[] = 'ルームの削除に失敗しました。「Permission denied」が表示されている場合は、ディレクトリを直接削除後に再度お試しください。';
+  }
+
+  return $errors;
 }
 
 /* ------------------------------------------------------------------------------------------------- */

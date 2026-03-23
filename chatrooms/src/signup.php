@@ -4,6 +4,7 @@ require_once(__DIR__ . '/../../core/src/functions.php');
 require_once(__DIR__ . '/../../core/src/session.php');
 require_once(__DIR__ . '/../../core/src/database.php');
 require_once(__DIR__ . '/../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/logger.php');
 
 adminOnly();
 
@@ -15,6 +16,8 @@ $inputParams['roomdir'] = inputParam('roomdir', 20);
 $inputParams['roomtitle'] = inputParam('roomtitle', 100);
 $inputParams['published'] = inputParam('published', 1);
 $inputParams['displayno'] = inputParam('displayno', 10000);
+
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策
@@ -40,6 +43,9 @@ if (preg_match('/[^A-Za-z0-9]/', $inputParams['roomdir'])) {
 if (!usedStr($inputParams['roomtitle'])) {
   $errors[] = 'ルーム名を入力してください。';
 }
+if (usedStr($inputParams['roomtitle']) && isUnsafeChars($inputParams['roomtitle'])) {
+  $errors[] = 'ルームタイトルに利用不可な制御文字、あるいは記号が含まれています。';
+}
 if (!usedStr($inputParams['displayno'])) {
   $errors[] = '表示順序を入力してください。';
 }
@@ -62,8 +68,13 @@ if (usedArr($roomList)) {
   goto outputPage;
 }
 
+// roomdir
+$roomdir = $inputParams['roomdir'];
+$source = CHAT_ROOM_ROOMS_PATH . 'default';
+$destination = CHAT_ROOM_ROOMS_PATH . $roomdir;
+
 // ディレクトリ作成
-$errors = createRoomdir($inputParams['roomdir']);
+$errors = copyRoomTemplate($source, $destination);
 if (usedArr($errors)) {
   goto outputPage;
 }

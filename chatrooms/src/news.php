@@ -4,6 +4,7 @@ require_once(__DIR__ . '/../../core/src/functions.php');
 require_once(__DIR__ . '/../../core/src/session.php');
 require_once(__DIR__ . '/../../core/src/database.php');
 require_once(__DIR__ . '/../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/logger.php');
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
@@ -19,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   foreach ($roomList as $key => $value) {
     $chatroom = array();
 
-    $dbPath = INDEX_ROOT.'/chatrooms/rooms/'.$value['roomdir'].'/src/'.CHAT_ENTRIES_DB;
+    $dbPath = CHAT_ROOM_ROOMS_PATH .$value['roomdir'] .'/src/' .CHAT_ENTRIES_DB;
 
     if (file_exists($dbPath)) {
       $dbhChatentries = connectRo($dbPath);
@@ -33,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
     $chatroom['roomtitle'] = $value['roomtitle'];
     $chatroom['chatentries'] = $chatentries;
-    $chatroom['roomtop'] = SITE_ROOT.'/chatrooms/rooms/'.$value['roomdir'].'/src/roomtop.php';
+    $chatroom['roomtop'] = CHAT_ROOM_ROOMS_LINK .$value['roomdir'] .'/src/roomtop.php';
 
     $chatrooms[] = $chatroom;
   }
