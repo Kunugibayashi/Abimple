@@ -298,6 +298,9 @@ input[name="memo"] {
 input[name="dice"] {
   width: 13rem;
 }
+.drawonly-button {
+  border: 1px solid #3e463b;
+}
 .form-omi-note {
   font-size: 0.75rem;
   opacity: 0.6;

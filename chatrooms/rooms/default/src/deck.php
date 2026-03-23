@@ -102,6 +102,11 @@ foreach ($deckArray as $key => $deckValue) {
 
 // 裏がゼロの場合はエラー
 if (count($tailArray) === 0) {
+  $errorString = (
+    '<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
+      .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .'山札が空です。リセットしてください。'
+    .'</span>'
+  );
   $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
     'logtype' => LOGTYPE_DECK,
     'entrykey' => $myChatentry['entrykey'],
@@ -109,9 +114,7 @@ if (count($tailArray) === 0) {
     'fullname' => CHAT_LOG_SYSTEM_NAME,
     'color' => $chatroom['color'],
     'bgcolor' => $chatroom['bgcolor'],
-    'message' => ('<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-                  .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .'山札が空です。リセットしてください。' .'</span>'
-    ),
+    'message' => $errorString,
   ]);
   goto outputPage;
 }
@@ -150,7 +153,7 @@ $announceString = (
 );
 
 $deck1type = $chatroom['deck1type'] ?? 0;
-if ($deck1type) {
+if ($deck1type == 1) {
   // アナウンスを通常の発言に追加
   $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
     'logtype' => LOGTYPE_DECK,

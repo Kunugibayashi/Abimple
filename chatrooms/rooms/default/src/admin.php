@@ -22,12 +22,15 @@ $inputParams['color'] = inputParam('color', 7) ?: '#000000';
 $inputParams['bgcolor'] = inputParam('bgcolor', 7) ?: '#ffffff';
 $inputParams['bgimage'] = inputParam('bgimage', 1000);
 $inputParams['omi1flg'] = inputParam('omi1flg', 1);
+$inputParams['omi1type'] = inputParam('omi1type', 1);
 $inputParams['omi1name'] = inputParam('omi1name', 10);
 $inputParams['omi1text'] = inputParam('omi1text', 10000);
 $inputParams['omi2flg'] = inputParam('omi2flg', 1);
+$inputParams['omi2type'] = inputParam('omi2type', 1);
 $inputParams['omi2name'] = inputParam('omi2name', 10);
 $inputParams['omi2text'] = inputParam('omi2text', 10000);
 $inputParams['omi3flg'] = inputParam('omi3flg', 1);
+$inputParams['omi3type'] = inputParam('omi3type', 1);
 $inputParams['omi3name'] = inputParam('omi3name', 10);
 $inputParams['omi3text'] = inputParam('omi3text', 10000);
 $inputParams['deck1flg'] = inputParam('deck1flg', 1);
@@ -315,6 +318,18 @@ outputPage:
         <li class="form-col-note">最大 10 文字。ボタン名に使用されます。</li>
       </ul>
       <ul class="form-row">
+        <li class="form-col-title">おみくじ1をどのように表示するか<div class="mandatory-mark"></div></li>
+        <li class="form-col-item">
+          <div class="select-wrap">
+            <select name="omi1type">
+              <option <?php echo selectedOption($inputParams['omi1type'], '0'); ?> value="0">全体表示</option>
+              <option <?php echo selectedOption($inputParams['omi1type'], '1'); ?> value="1">ドローのみアナウンス</option>
+            </select>
+          </div>
+        </li>
+        <li class="form-col-note">「ドローのみアナウンス」の場合、おみくじを引いたことのみチャットに表示され、内容はささやきでユーザーに表示されます。</li>
+      </ul>
+      <ul class="form-row">
         <li class="form-col-title">おみくじ1<div class="optional-mark"></div></li>
         <li class="form-col-item">
           <textarea name="omi1text" maxlength="10000"><?php echo h($inputParams['omi1text']); ?></textarea>
@@ -342,6 +357,18 @@ outputPage:
         <li class="form-col-note">最大 10 文字。ボタン名に使用されます。</li>
       </ul>
       <ul class="form-row">
+        <li class="form-col-title">おみくじ2をどのように表示するか<div class="mandatory-mark"></div></li>
+        <li class="form-col-item">
+          <div class="select-wrap">
+            <select name="omi2type">
+              <option <?php echo selectedOption($inputParams['omi2type'], '0'); ?> value="0">全体表示</option>
+              <option <?php echo selectedOption($inputParams['omi2type'], '1'); ?> value="1">ドローのみアナウンス</option>
+            </select>
+          </div>
+        </li>
+        <li class="form-col-note">「ドローのみアナウンス」の場合、おみくじを引いたことのみチャットに表示され、内容はささやきでユーザーに表示されます。</li>
+      </ul>
+      <ul class="form-row">
         <li class="form-col-title">おみくじ2<div class="optional-mark"></div></li>
         <li class="form-col-item">
           <textarea name="omi2text" maxlength="10000"><?php echo h($inputParams['omi2text']); ?></textarea>
@@ -362,6 +389,18 @@ outputPage:
             </select>
           </div>
         </li>
+      </ul>
+      <ul class="form-row">
+        <li class="form-col-title">おみくじ3をどのように表示するか<div class="mandatory-mark"></div></li>
+        <li class="form-col-item">
+          <div class="select-wrap">
+            <select name="omi3type">
+              <option <?php echo selectedOption($inputParams['omi3type'], '0'); ?> value="0">全体表示</option>
+              <option <?php echo selectedOption($inputParams['omi3type'], '1'); ?> value="1">ドローのみアナウンス</option>
+            </select>
+          </div>
+        </li>
+        <li class="form-col-note">「ドローのみアナウンス」の場合、おみくじを引いたことのみチャットに表示され、内容はささやきでユーザーに表示されます。</li>
       </ul>
       <ul class="form-row">
         <li class="form-col-title">おみくじ3の名前<div class="optional-mark"></div></li>

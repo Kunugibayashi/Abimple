@@ -399,23 +399,26 @@ outputPage:
           <?php if ($chatroom['omi1flg']) { ?>
             <div class="form-wrap omi1-form-wrap">
               <div class="form-button-wrap omi1-button-wrap">
-                <button type="button" class="omi-button" value="<?php echo h(OMIKUJI1_ID);?>"><?php echo h($chatroom['omi1name']); ?></button>
+                <button type="button" class="omi-button <?php if ($chatroom['omi1type']) echo h('drawonly-button');?>" value="<?php echo h(OMIKUJI1_ID);?>"><?php echo h($chatroom['omi1name']); ?></button>
               </div>
             </div>
           <?php } ?>
           <?php if ($chatroom['omi2flg']) { ?>
             <div class="form-wrap omi2-form-wrap">
               <div class="form-button-wrap omi2-button-wrap">
-                <button type="button" class="omi-button" value="<?php echo h(OMIKUJI2_ID);?>"><?php echo h($chatroom['omi2name']); ?></button>
+                <button type="button" class="omi-button <?php if ($chatroom['omi2type']) echo h('drawonly-button');?>" value="<?php echo h(OMIKUJI2_ID);?>"><?php echo h($chatroom['omi2name']); ?></button>
               </div>
             </div>
           <?php } ?>
           <?php if ($chatroom['omi3flg']) { ?>
             <div class="form-wrap omi3-form-wrap">
               <div class="form-button-wrap omi3-button-wrap">
-                <button type="button" class="omi-button" value="<?php echo h(OMIKUJI3_ID);?>"><?php echo h($chatroom['omi3name']); ?></button>
+                <button type="button" class="omi-button <?php if ($chatroom['omi3type']) echo h('drawonly-button');?>" value="<?php echo h(OMIKUJI3_ID);?>"><?php echo h($chatroom['omi3name']); ?></button>
               </div>
             </div>
+          <?php } ?>
+          <?php if ($chatroom['omi1type'] || $chatroom['omi2type'] || $chatroom['omi3type']) { /* ドローのみアナウンスの場合 */ ?>
+            <div class="form-deck-note">枠ありボタンはささやきで表示されます</div>
           <?php } ?>
         </div>
       <?php } ?>
@@ -428,14 +431,14 @@ outputPage:
             <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
           </form>
           <div class="form-button-wrap deck1-button-wrap">
-            <button type="button" class="deck-button"><?php echo h($chatroom['deck1name']); ?></button>
+            <button type="button" class="deck-button <?php if ($chatroom['deck1type']) echo h('drawonly-button');?>"><?php echo h($chatroom['deck1name']); ?></button>
           </div>
-          <?php if ($chatroom['deck1type']) { /* ドローのみアナウンスの場合 */ ?>
-            <div class="form-deck-note">山札の内容はささやきで表示されます。</div>
-          <?php } ?>
           <div class="form-button-wrap deck1-button-wrap">
             <button type="button" class="deck-reset-button">山札リセット</button>
           </div>
+          <?php if ($chatroom['deck1type']) { /* ドローのみアナウンスの場合 */ ?>
+            <div class="form-deck-note">枠ありボタンはささやきで表示されます</div>
+          <?php } ?>
         </div>
       <?php } ?>
 

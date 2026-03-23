@@ -85,6 +85,13 @@ for ($i = 0; $i < $diceNum; $i++) {
   $sum = $sum + $me;
 }
 
+// メッセージ作成
+$messageString = (
+  '<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
+    .'<span class="dice">（' .$diceNum .'d' .$diceMen .'）＞ ' .$sum .'[' .implode(',', $result) .'] ＞ ' .$sum
+  .'</span>'
+);
+
 // 発言
 $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
   'logtype' => LOGTYPE_DICE,
@@ -93,9 +100,7 @@ $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
   'fullname' => CHAT_LOG_SYSTEM_NAME,
   'color' => $chatroom['color'],
   'bgcolor' => $chatroom['bgcolor'],
-  'message' => ('<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-                .'<span class="dice">（' .$diceNum .'d' .$diceMen .'）＞ ' .$sum .'[' .implode(',', $result) .'] ＞ ' .$sum .'</span>'
-  ),
+  'message' => $messageString,
 ]);
 if (!$result) {
   $jsonArray['code'] = 1;
