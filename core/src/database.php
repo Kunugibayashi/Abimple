@@ -1423,15 +1423,13 @@ function selectEqualUpdateChatlogs($dbh, $limit, $dommaxid = 0,
   $sql = $sql .'
     AND
       (
-        :domminid < id
-        AND
-        id > :dommaxid
+        :domminid <= id AND id <= :dommaxid
       )
   ';
-  if ($syncmodifiedts != 0) {
+  if (usedStr($syncmodifiedts) && $syncmodifiedts != 0) {
     $sql = $sql .'
       AND
-        modified >= :syncmodifiedts
+        modified > :syncmodifiedts
     ';
   }
   $sql = $sql . '

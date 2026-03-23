@@ -27,6 +27,10 @@ if (!usedStr($tmpsync)  || strtotime($tmpsync) === false) {
   $inputParams['syncmodifiedts'] = 0;
 }
 
+// デバッグ用ログ。頻繁に出力されるため必要時のみ。
+// logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
+// sessionLogChatEntryCharacter($inputParams['characterid']);
+
 // 戻り値初期値
 $jsonArray['code'] = 0;
 $jsonArray['errorMessage'] = '';
