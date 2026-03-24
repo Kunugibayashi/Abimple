@@ -85,7 +85,7 @@ if ($inputParams['toroomchat']) {
 
   setSecretKeyword($inputParams['keyword']);
 
-  header('Location: <?php echo h($ROOMDIR_SRC_LINK); ?>roomtop.php');
+  header('Location: ' .$ROOMDIR_SRC_LINK .'roomtop.php');
   exit;
 }
 
