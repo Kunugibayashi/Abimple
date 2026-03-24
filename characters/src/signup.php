@@ -358,7 +358,7 @@ outputPage:
 jQuery(function(){
   // 移動ボタン
   jQuery('button.tonamelist-button').on('click', function(){
-    window.location.href = "./list.php";
+    window.location.href = "<?php echo h(CHARACTER_SRC_LINK); ?>list.php";
   });
 });
 </script>

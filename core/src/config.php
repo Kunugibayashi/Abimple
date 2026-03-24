@@ -277,6 +277,7 @@ define('ASSETS_LINK', (SITE_ROOT.'/assets/'));
 define('MANUAL_SEC_LINK', (SITE_ROOT.'/manual/src/'));
 define('INFO_SEC_LINK', (SITE_ROOT.'/infomation/src/'));
 define('LETTER_SEC_LINK', (SITE_ROOT.'/letters/src/'));
+define('USER_SRC_PATH', (INDEX_ROOT.'/users/src/'));
 define('USER_SRC_LINK', (SITE_ROOT.'/users/src/'));
 /* 名簿出力 */
 define('CHARACTER_SRC_LINK', (SITE_ROOT.'/characters/src/'));
@@ -298,12 +299,14 @@ define('CHAT_LOG_TEMPLATE_FILE_PATH', (INDEX_ROOT.'/chatrooms/src/templates/'));
 define('CHAT_LOG_HTML_DIR', '/chatloghtml/');
 define('CHAT_LOG_HTML_PATH', (INDEX_ROOT.CHAT_LOG_HTML_DIR.'html/'));
 define('CHAT_LOG_HTML_LINK', (SITE_ROOT.CHAT_LOG_HTML_DIR.'html/'));
+define('CHAT_LOG_SRC_PATH', (INDEX_ROOT.CHAT_LOG_HTML_DIR.'src/'));
 define('CHAT_LOG_SRC_LINK', (SITE_ROOT.CHAT_LOG_HTML_DIR.'src/'));
 define('CHAT_LOG_ZIP_PATH', (INDEX_ROOT.CHAT_LOG_HTML_DIR.'zip/'));
 /* チャットルーム */
 define('CHAT_ROOM_ROOMS_PATH', (INDEX_ROOT.'/chatrooms/rooms/'));
 define('CHAT_ROOM_ROOMS_LINK', (SITE_ROOT.'/chatrooms/rooms/'));
 define('CHAT_ROOM_CSS_FILE_PATH', (INDEX_ROOT.'/chatrooms/src/css/'));
+define('CHAT_ROOM_SRC_PATH', (INDEX_ROOT.'/chatrooms/src/'));
 define('CHAT_ROOM_SRC_LINK', (SITE_ROOT.'/chatrooms/src/'));
 /* チャットルーム設定 */
 define('CHAT_TOP_DEFAULT', 'toptemplatedef');

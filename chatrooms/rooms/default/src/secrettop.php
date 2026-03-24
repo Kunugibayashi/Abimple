@@ -17,6 +17,10 @@ $inputParams['setkeyword'] = inputParam('setkeyword', 20);
 logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
 sessionLogChatEntryCharacter($inputParams['characterid']);
 
+// roomdir
+$roomdir = getPageRoomdir();
+$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src/';
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策
   setToken();
@@ -81,7 +85,7 @@ if ($inputParams['toroomchat']) {
 
   setSecretKeyword($inputParams['keyword']);
 
-  header('Location: ./roomtop.php');
+  header('Location: <?php echo h($ROOMDIR_SRC_LINK); ?>roomtop.php');
   exit;
 }
 

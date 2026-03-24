@@ -162,7 +162,7 @@ outputPage:
 <script> <!-- 各ボタン制御 -->
 jQuery(function(){
   jQuery('button.tologin-button').on('click', function(){
-    window.location.href = './login.php';
+    window.location.href = '<?php echo h(USER_SRC_PATH); ?>login.php';
   });
 });
 </script>

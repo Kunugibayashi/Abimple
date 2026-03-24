@@ -110,7 +110,7 @@ require_once(__DIR__ .'/core/src/administrator.php');
 
   <div class="index-frame-wrap">
     <iframe id="index-top" name="indexTop" title="ページトップ"
-      src="./index-top.php">
+      src="<?php echo h(SITE_LINK); ?>index-top.php">
     </iframe>
   </div>
 

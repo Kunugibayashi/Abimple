@@ -84,7 +84,7 @@ outputPage:
               <button type="button" class="edit-button" value="<?php echo h($value['id']); ?>">編集</button>
               <button type="button" class="warning delete-button" value="<?php echo h($value['id']); ?>">削除</button>
             </td>
-            <td><a class="character-view-link" href="./view.php?id=<?php echo h($value['id']); ?>"><?php echo h($value['fullname']); ?><a></td>
+            <td><a class="character-view-link" href="<?php echo h(NAMELIST_VIEW_LINK); ?>?id=<?php echo h($value['id']); ?>"><?php echo h($value['fullname']); ?><a></td>
             <td><span style="color: <?php echo h($value['color']); ?>; "><?php echo h($value['color']); ?></span></td>
             <td><span style="color: <?php echo h($value['bgcolor']); ?>; "><?php echo h($value['bgcolor']); ?></span></td>
             <?php if (NAMELIST_COMMENT) { ?>

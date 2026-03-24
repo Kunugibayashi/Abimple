@@ -46,8 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     $dbKeyword = $chatsecrets[0]['keyword'];
     $sessionKeyword = getSecretKeyword();
     if (!usedStr($dbKeyword) || !usedStr($sessionKeyword) || $dbKeyword != $sessionKeyword) {
-      // TODO ./の書き方は壊れやすいため修正すること
-      header('Location: ./secrettop.php');
+      header('Location: <?php echo h($ROOMDIR_SRC_LINK); ?>secrettop.php');
       exit;
     }
   }

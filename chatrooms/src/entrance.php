@@ -39,10 +39,26 @@ outputPage:
   <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
   <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
   <script>
-  // 自動画面更新（60秒）
-    const timer = 60 * 1000
-    window.addEventListener('load', function(){
-      setInterval('location.reload()', timer);
+    // 自動画面更新（60秒）
+    const timer = 60 * 1000;
+    let intervalId = null;
+    window.addEventListener('load', () => {
+      const start = () => {
+        if (!intervalId) {
+          intervalId = setInterval(() => location.reload(), timer);
+        }
+      };
+      const stop = () => {
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+      };
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) stop();
+        else start();
+      });
+      start();
     });
   </script>
 </head>
@@ -62,7 +78,7 @@ outputPage:
     <?php
       // ルーム一覧出力
       ob_start();
-      include('./news.php');
+      include(CHAT_ROOM_SRC_PATH .'news.php');
       $buffer = ob_get_contents();
       ob_end_clean();
       echo $buffer;

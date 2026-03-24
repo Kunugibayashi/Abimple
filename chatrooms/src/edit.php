@@ -82,8 +82,8 @@ if (usedArr($roomlistList)) {
 $roomlistList = selectRoomsId($dbhRoomlist, $inputParams['id']);
 $roomlist = $roomlistList[0];
 
-$fromPath = './../rooms/'.$roomlist['roomdir'];
-$toPath = './../rooms/'.$inputParams['roomdir'];
+$fromPath = CHAT_ROOM_ROOMS_PATH .$roomlist['roomdir'];
+$toPath = CHAT_ROOM_ROOMS_PATH .$inputParams['roomdir'];
 
 if (!rename($fromPath, $toPath)) {
   $errors[] = 'ルーム名の変更に失敗しました。もう一度お試しください。';
