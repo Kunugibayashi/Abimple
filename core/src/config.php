@@ -64,7 +64,7 @@ define('CHAT_WHISPER_MODE', 1);
 define('SITE_LETTER_OPEN', 1);
 
 /**
- * 私書を公開するか。
+ * 複数キャラクター入室可能にするか。
  * 編集任意。
  *
  * 1:管理者のみ
