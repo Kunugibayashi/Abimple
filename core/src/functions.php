@@ -379,7 +379,9 @@ function copyRoomTemplate(string $src, string $dst): array
         continue;
       }
 
-      if (strtolower($item->getExtension()) !== 'php') {
+      if (strtolower($item->getExtension()) !== 'php'
+        && $item->getFilename() !== '.htaccess'
+      ) {
         continue;
       }
 

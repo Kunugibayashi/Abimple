@@ -12,10 +12,10 @@ $success = '';
 $errors = array();
 $inputParams = array();
 
-$inputParams['roomdir'] = inputParam('roomdir', 20);
-$inputParams['roomtitle'] = inputParam('roomtitle', 100);
-$inputParams['published'] = inputParam('published', 1);
-$inputParams['displayno'] = inputParam('displayno', 10000);
+$inputParams['roomdir'] = inputParam('roomdir', 20) ?: '';
+$inputParams['roomtitle'] = inputParam('roomtitle', 100) ?: '';
+$inputParams['published'] = inputParam('published', 1) ?: 0;
+$inputParams['displayno'] = inputParam('displayno', 10000) ?: 0;
 
 logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
 

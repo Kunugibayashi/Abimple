@@ -161,7 +161,7 @@ define('NAMELIST_TEAM_LIST', [<br>
 <div class="file-wrap">core/src/config.php</div>
 <div class="code-wrap"><code><pre>
 /* 所属 （プルダウン） */
-define('NAMELIST_TEAM', 1); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_TEAM', 1); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_TEAM_NAME', '所属'); // 表示名
 define('NAMELIST_TEAM_LIST', [ // 保存ワード「'表示名' => '値',」形式。最大 10 文字。
   '--------' => '',

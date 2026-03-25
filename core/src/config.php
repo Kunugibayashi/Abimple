@@ -89,7 +89,7 @@ define('SITE_UPDATE', time());
 /**
  * ベル音。
  * 編集任意。
- * ベル音を変更したい場合は assets/sound 内にファイルを置いて、このファイル名を変更してください。
+ * ベル音を変更したい場合は /assets/sound 内にファイルを置いて、このファイル名を変更してください。
  * ファイル名は拡張子まで含めて記載してください。
  *
  * 例）
@@ -146,8 +146,10 @@ define('NAMELIST_NAME', '名前'); // 表示名
 define('NAMELIST_COLOR', '文字色'); // 表示名
 /* 背景色 （必須項目） */
 define('NAMELIST_BGCOLOR', '背景色'); // 表示名
+/* 画像アップロード機能 */
+define('NAMELIST_UPLOAD_IMAGE', 1); // ONOFF（2:使用する。一括DL時画像をDLしない。／1:使用する。一括DL時画像もDLする。／0:使用しない）
 /* 性別 （ラジオボタン） */
-define('NAMELIST_GENDER', 1); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_GENDER', 1); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_GENDER_NAME', '性別'); // 表示名
 define('NAMELIST_GENDER_LIST', [ // 保存ワード「'表示名' => '値',」形式。最大 10 文字。
     '男' => '男',
@@ -155,7 +157,7 @@ define('NAMELIST_GENDER_LIST', [ // 保存ワード「'表示名' => '値',」�
     'その他' => 'その他',
 ]);
 /* 種別 （プルダウン） */
-define('NAMELIST_SPECIES', 1); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_SPECIES', 1); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_SPECIES_NAME', '種別'); // 表示名
 define('NAMELIST_SPECIES_LIST', [ // 保存ワード「'表示名' => '値',」形式。最大 10 文字。
   '--------' => '',
@@ -164,7 +166,7 @@ define('NAMELIST_SPECIES_LIST', [ // 保存ワード「'表示名' => '値',」�
   '種別選択C' => '種別選択C',
 ]);
 /* 所属 （プルダウン） */
-define('NAMELIST_TEAM', 1); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_TEAM', 1); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_TEAM_NAME', '所属'); // 表示名
 define('NAMELIST_TEAM_LIST', [ // 保存ワード「'表示名' => '値',」形式。最大 10 文字。
   '--------' => '',
@@ -173,7 +175,7 @@ define('NAMELIST_TEAM_LIST', [ // 保存ワード「'表示名' => '値',」形�
   '所属選択C' => '所属選択C',
 ]);
 /* 仕事 （テキストボックス） */
-define('NAMELIST_JOB', 1); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_JOB', 1); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_JOB_NAME', '仕事'); // 表示名
 /* 自由設定1 （ラジオボタン） */
 define('NAMELIST_FREE1', 1);
@@ -184,7 +186,7 @@ define('NAMELIST_FREE1_LIST', [ // 保存ワード「'表示名' => '値',」形
   '自由設定1選択C' => '自由設定1選択C',
 ]);
 /* 自由設定2 （ラジオボタン） */
-define('NAMELIST_FREE2', 0); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_FREE2', 0); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_FREE2_NAME', '自由設定2'); // 表示名
 define('NAMELIST_FREE2_LIST', [ // 保存ワード「'表示名' => '値',」形式。最大 20 文字。
   '自由設定2選択A' => '自由設定2選択A',
@@ -192,7 +194,7 @@ define('NAMELIST_FREE2_LIST', [ // 保存ワード「'表示名' => '値',」形
   '自由設定2選択C' => '自由設定2選択C',
 ]);
 /* 自由設定3 （ラジオボタン） */
-define('NAMELIST_FREE3', 0); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_FREE3', 0); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_FREE3_NAME', '自由設定3'); // 表示名
 define('NAMELIST_FREE3_LIST', [ // 保存ワード「'表示名' => '値',」形式。最大 20 文字。
   '自由設定3選択A' => '自由設定3選択A',
@@ -200,7 +202,7 @@ define('NAMELIST_FREE3_LIST', [ // 保存ワード「'表示名' => '値',」形
   '自由設定3選択C' => '自由設定3選択C',
 ]);
 /* 自由設定4 （プルダウン） */
-define('NAMELIST_FREE4', 1); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_FREE4', 1); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_FREE4_NAME', '自由設定4'); // 表示名
 define('NAMELIST_FREE4_LIST', [ // 保存ワード「'表示名' => '値',」形式。最大 20 文字。
   '--------' => '',
@@ -209,7 +211,7 @@ define('NAMELIST_FREE4_LIST', [ // 保存ワード「'表示名' => '値',」形
   '自由設定4選択C' => '自由設定4選択C',
 ]);
 /* 自由設定5 （プルダウン） */
-define('NAMELIST_FREE5', 0); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_FREE5', 0); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_FREE5_NAME', '自由設定5'); // 表示名
 define('NAMELIST_FREE5_LIST', [ // 保存ワード「'表示名' => '値',」形式。最大 20 文字。
   '--------' => '',
@@ -218,7 +220,7 @@ define('NAMELIST_FREE5_LIST', [ // 保存ワード「'表示名' => '値',」形
   '自由設定5選択C' => '自由設定5選択C',
 ]);
 /* 自由設定6 （プルダウン） */
-define('NAMELIST_FREE6', 0); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_FREE6', 0); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_FREE6_NAME', '自由設定6'); // 表示名
 define('NAMELIST_FREE6_LIST', [ // 保存ワード「'表示名' => '値',」形式。最大 20 文字。
   '--------' => '',
@@ -227,31 +229,31 @@ define('NAMELIST_FREE6_LIST', [ // 保存ワード「'表示名' => '値',」形
   '自由設定6選択C' => '自由設定6選択C',
 ]);
 /* 自由設定7 （テキストボックス） */
-define('NAMELIST_FREE7', 1); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_FREE7', 1); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_FREE7_NAME', '自由設定7'); // 表示名
 /* 自由設定8 （テキストボックス） */
-define('NAMELIST_FREE8', 0); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_FREE8', 0); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_FREE8_NAME', '自由設定8'); // 表示名
 /* 自由設定9 （テキストボックス） */
-define('NAMELIST_FREE9', 0); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_FREE9', 0); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_FREE9_NAME', '自由設定9'); // 表示名
 /* 自由設定10 （テキストエリア） */
-define('NAMELIST_FREE10', 1); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_FREE10', 1); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_FREE10_NAME', '自由設定10'); // 表示名
 /* 自由設定11 （テキストエリア） */
-define('NAMELIST_FREE11', 0); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_FREE11', 0); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_FREE11_NAME', '自由設定11'); // 表示名
 /* 自由設定12 （テキストエリア） */
-define('NAMELIST_FREE12', 0); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_FREE12', 0); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_FREE12_NAME', '自由設定12'); // 表示名
 /* コメント （テキストボックス） */
-define('NAMELIST_COMMENT', 1); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_COMMENT', 1); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_COMMENT_NAME', 'コメント'); // 表示名
 /* URL （テキストボックス） */
-define('NAMELIST_URL', 1); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_URL', 1); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_URL_NAME', 'URL'); // 表示名
 /*詳細 （テキストエリア）  */
-define('NAMELIST_DETAIL', 1); // ONOFF（1:表示する/0:表示しない）
+define('NAMELIST_DETAIL', 1); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_DETAIL_NAME', '詳細'); // 表示名
 
 
