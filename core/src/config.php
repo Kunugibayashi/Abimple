@@ -146,8 +146,9 @@ define('NAMELIST_NAME', '名前'); // 表示名
 define('NAMELIST_COLOR', '文字色'); // 表示名
 /* 背景色 （必須項目） */
 define('NAMELIST_BGCOLOR', '背景色'); // 表示名
-/* 画像アップロード機能 */
-define('NAMELIST_UPLOAD_IMAGE', 1); // ONOFF（2:使用する。一括DL時画像をDLしない。／1:使用する。一括DL時画像もDLする。／0:使用しない）
+/* 名簿画像アップロード機能 */
+define('NAMELIST_UPLOAD_IMAGE', 1); // ONOFF（1:使用する／0:使用しない）
+define('NAMELIST_IMAGE_FILESIZE', 2097152); // アップロード画像の最大バイト数。デフォルトは 2097152（2MB）
 /* 性別 （ラジオボタン） */
 define('NAMELIST_GENDER', 1); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_GENDER_NAME', '性別'); // 表示名
@@ -282,11 +283,14 @@ define('LETTER_SEC_LINK', (SITE_ROOT.'/letters/src/'));
 define('USER_SRC_PATH', (INDEX_ROOT.'/users/src/'));
 define('USER_SRC_LINK', (SITE_ROOT.'/users/src/'));
 /* 名簿出力 */
+define('CHARACTER_SRC_PATH', (INDEX_ROOT.'/characters/src/'));
 define('CHARACTER_SRC_LINK', (SITE_ROOT.'/characters/src/'));
 define('CHARACTER_TEMPLATE_FILE_PATH', (INDEX_ROOT.'/characters/src/templates/'));
 define('CHARACTER_HTML_DIR', '/characterhtml/');
 define('CHARACTER_HTML_PATH', (INDEX_ROOT.CHARACTER_HTML_DIR.'html/'));
 define('CHARACTER_ZIP_PATH', (INDEX_ROOT.CHARACTER_HTML_DIR.'zip/'));
+define('CHARACTER_IMAGE_PATH', (INDEX_ROOT.CHARACTER_HTML_DIR.'html/img/'));
+define('CHARACTER_IMAGE_LINK', (SITE_ROOT.CHARACTER_HTML_DIR.'html/img/'));
 /* 私書出力 */
 define('LETTER_SRC_LINK', (SITE_ROOT.'/letters/src/'));
 define('LETTER_TEMPLATE_FILE_PATH', (INDEX_ROOT.'/letters/src/templates/'));

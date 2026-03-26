@@ -4,6 +4,9 @@ require_once(__DIR__ . '/../../core/src/functions.php');
 require_once(__DIR__ . '/../../core/src/session.php');
 require_once(__DIR__ . '/../../core/src/database.php');
 require_once(__DIR__ . '/../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/logger.php');
+
+require_once(__DIR__ . '/../../core/src/lib/imagelib.php');
 
 loginOnly();
 
@@ -15,6 +18,8 @@ $inputParams['id'] = inputParam('id', 20);
 $inputParams['fullname'] = inputParam('fullname', 20);
 $inputParams['color'] = inputParam('color', 7) ?: '#000000';
 $inputParams['bgcolor'] = inputParam('bgcolor', 7) ?: '#ffffff';
+$inputParams['imgfile'] = inputParam('imgfile', 10000) ?: '';
+$inputParams['imgdelchk'] = inputParam('imgdelchk', 1) ?: 0;
 $inputParams['gender'] = inputParam('gender', 10);
 $inputParams['species'] = inputParam('species', 10);
 $inputParams['team'] = inputParam('team', 10);
@@ -34,6 +39,8 @@ $inputParams['free12'] = inputParam('free12', 10000);
 $inputParams['comment'] = inputParam('comment', 100);
 $inputParams['url'] = inputParam('url', 1000);
 $inputParams['detail'] = inputParam('detail', 10000);
+
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策
@@ -91,8 +98,45 @@ $character = $characters[0];
 // 本人確認
 identityUser($character['userid'], $character['username']);
 
+// 画僧編集
+if (NAMELIST_UPLOAD_IMAGE || isAdmin()) {
+  // 削除
+  if ( (usedStr($inputParams['imgdelchk']) && $inputParams['imgdelchk'] == 1)
+    || (usedStr($character['imgfile']) && isset($_FILES['uploadfile']))
+  ) {
+    // チェックがある場合
+    // または、画像アップロード済みでファイル指定がされた場合
+    $delresult = deleteImageFile(CHARACTER_IMAGE_PATH, $character['imgfile']);
+    if (!usedArr($delresult) && $delresult['code'] != 0) {
+      $errors[] = '画像の削除に失敗しました。';
+      $errors[] = $delresult['errorMessage'];
+      goto outputPage;
+    }
+
+    $inputParams['imgfile'] = '';
+  }
+
+  // 更新
+  if (isset($_FILES['uploadfile'])) {
+    // 画像ファイル名作成
+    $bytes = random_bytes(16);
+    $imgFilename = bin2hex($bytes); // 32文字
+
+    $imgresult = uploadImageFile(
+      $_FILES['uploadfile'], CHARACTER_IMAGE_PATH, $imgFilename, NAMELIST_IMAGE_FILESIZE
+    );
+    if (!usedArr($imgresult) && $imgresult['code'] != 0) {
+      $errors[] = '画像のアップロードに失敗しました。';
+      $errors[] = $imgresult['errorMessage'];
+      goto outputPage;
+    }
+    $inputParams['imgfile'] = $imgresult['fileName'];
+  }
+}
+
 // キャラクター更新
 $updateCharacter = $inputParams;
+unset($updateCharacter['imgdelchk']); // 画面とのやりとりのみの値を抜く
 updateCharacters($dbhCharacters, $character['id'], $updateCharacter);
 $success = '更新が完了しました。';
 
@@ -159,7 +203,7 @@ outputPage:
 
   <?php if (!usedStr($success) && usedArr($inputParams) && usedStr($inputParams['id'])) { /* 処理が成功でない & データがある場合は表示 */ ?>
     <div class="form-wrap">
-      <form name="characters-form" class="characters-form" action="<?php echo h(CHARACTER_SRC_LINK); ?>edit.php" method="POST">
+      <form name="characters-form" class="characters-form" action="<?php echo h(CHARACTER_SRC_LINK); ?>edit.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="token" value="<?php echo h(getToken()); ?>">
         <input type="hidden" name="id" value="<?php echo h($inputParams['id']); ?>">
         <ul class="form-row">
@@ -191,6 +235,25 @@ outputPage:
           </li>
           <li class="form-col-note">文字色コードを入力。右側アイコンで色選択できます。</li>
         </ul>
+        <?php if (NAMELIST_UPLOAD_IMAGE || isAdmin()) { ?>
+          <ul class="form-row">
+            <li class="form-col-title">名簿画像<div class="optional-mark"></div></li>
+            <?php if (usedStr($character['imgfile'])) { ?>
+              <?php
+                $dt = new DateTime($character['modified']);
+                $ver = $dt->format('YmdHis');
+                $profileimagelink = CHARACTER_SRC_LINK .'profileimage.php?f=' .$character['imgfile'] .'&v=' .$ver;
+              ?>
+              <li class="form-col-item">
+                <div class="profile-image-edit-wrap"><img class="profile-image-edit" src="<?php echo h($profileimagelink); ?>"></div>
+                <label><input type="checkbox" id="id-imgdelchk" name="imgdelchk" value="1" />画像ファイルを削除する</label>
+              </li>
+            <?php } ?>
+            <li class="form-col-item">
+              <input type="file" name="uploadfile" id="id-uploadfile" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+            </li>
+            <li class="form-col-note">画像サイズは最大 <?php echo h(NAMELIST_IMAGE_FILESIZE / 1024 / 1024); ?> MBです。削除せずにファイルを選択した場合は上書きされます。</li>
+        <?php } ?>
         <?php if (NAMELIST_GENDER || isAdmin()) { ?>
           <ul class="form-row">
             <li class="form-col-title"><?php echo h(NAMELIST_GENDER_NAME); ?><div class="optional-mark"></div></li>

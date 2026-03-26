@@ -62,6 +62,10 @@ function buildNameListColumns(): array
       'label' => defined('NAMELIST_BGCOLOR') ? NAMELIST_BGCOLOR : '背景色',
     ],
 
+    'imgfile' => [
+      'enabled' => (defined('NAMELIST_UPLOAD_IMAGE') ? (bool)NAMELIST_UPLOAD_IMAGE : false),
+    ],
+
     'gender' => [
       'enabled' => (defined('NAMELIST_GENDER') ? (bool)NAMELIST_GENDER : false),
       'label' => defined('NAMELIST_GENDER_NAME') ? NAMELIST_GENDER_NAME : '',

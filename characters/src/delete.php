@@ -4,6 +4,9 @@ require_once(__DIR__ . '/../../core/src/functions.php');
 require_once(__DIR__ . '/../../core/src/session.php');
 require_once(__DIR__ . '/../../core/src/database.php');
 require_once(__DIR__ . '/../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/logger.php');
+
+require_once(__DIR__ . '/../../core/src/lib/imagelib.php');
 
 loginOnly();
 
@@ -68,6 +71,16 @@ identityUser($character['userid'], $character['username']);
 // 最新の情報で更新
 $userid = $character['userid'];
 $username = $character['username'];
+
+if (NAMELIST_UPLOAD_IMAGE || isAdmin()) {
+  // 削除
+  $delresult = deleteImageFile(CHARACTER_IMAGE_PATH, $character['imgfile']);
+  if (!usedArr($delresult) && $delresult['code'] != 0) {
+    $errors[] = '画像の削除に失敗しました。もう一度お試しください。';
+    $errors[] = $delresult['errorMessage'];
+    goto outputPage;
+  }
+}
 
 // キャラクター登録削除
 $result = deleteEqualCharacters($dbhCharacters, $userid, $username, [
@@ -142,7 +155,7 @@ outputPage:
         <span class="point"><?php echo h($character['id']); ?>：<?php echo h($character['fullname']); ?></span> を削除します。<br>
       </p>
       <p class="note">
-        私書、チャットルーム、ログ保管庫のログは削除されません。<br>
+        データ削除とともにアップロードした名簿画像が削除されます。私書、チャットルーム、ログ保管庫のログは削除されません。<br>
       </p>
       <p class="note">
         よろしいですか？<br>

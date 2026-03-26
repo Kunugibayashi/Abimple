@@ -4,6 +4,7 @@ require_once(__DIR__ . '/../../core/src/functions.php');
 require_once(__DIR__ . '/../../core/src/session.php');
 require_once(__DIR__ . '/../../core/src/database.php');
 require_once(__DIR__ . '/../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/logger.php');
 
 $errors = array();
 $inputParams = array();
@@ -85,6 +86,18 @@ outputPage:
   <?php } ?>
 
   <?php if (usedArr($characters) && usedArr($character) && usedStr($character['id'])) { /* データがある場合は表示 */ ?>
+    <?php if ((NAMELIST_UPLOAD_IMAGE || isAdmin()) && usedStr($character['imgfile'])) { ?>
+      <?php
+        $dt = new DateTime($character['modified']);
+        $ver = $dt->format('YmdHis');
+        $profileimagelink = CHARACTER_SRC_LINK .'profileimage.php?f=' .$character['imgfile'] .'&v=' .$ver;
+      ?>
+      <div class="view-wrap view-profileimage-wrap">
+        <a href="<?php echo h($profileimagelink); ?>" target="_blank">
+          <img class="profile-image" src="<?php echo h($profileimagelink); ?>">
+        </a>
+      </div>
+    <?php } ?>
     <div class="view-wrap view-character-wrap">
       <div class="view-contents">
         <ul class="view-row">

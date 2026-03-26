@@ -575,6 +575,7 @@ function createCharacters($dbh) {
       fullname  VARCHAR(20)  NOT NULL DEFAULT '',
       color     VARCHAR(7)   NOT NULL DEFAULT '#000000',
       bgcolor   VARCHAR(7)   NOT NULL DEFAULT '#ffffff',
+      imgfile TEXT         NOT NULL DEFAULT '',
       gender    VARCHAR(10)  NOT NULL DEFAULT '',
       species   VARCHAR(10)  NOT NULL DEFAULT '',
       team      VARCHAR(10)  NOT NULL DEFAULT '',

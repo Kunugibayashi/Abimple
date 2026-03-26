@@ -648,6 +648,32 @@ td {
 .view-message-item {
   padding: 1rem;
 }
+.view-profileimage-wrap {
+  display: flex;
+  width: 100%;
+  background: linear-gradient(170deg,
+    #746c74 40%,
+    #746c74 49.9%,
+    #f0eceb 50%,
+    #f0eceb 100%
+  );
+}
+.profile-image {
+  max-height: 300px;
+  border: solid #746c74 2px;
+  width: auto;
+  margin: 1rem;
+}
+.profile-image-edit-wrap {
+  display: inline-block;
+  border: solid #746c74 2px;
+  height: 104px;
+  width: 104px;
+}
+.profile-image-edit {
+  max-height: 100px;
+  width: auto;
+}
 
 /* お知らせ */
 .infomation-view-wrap .view-row,
