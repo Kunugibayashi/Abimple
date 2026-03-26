@@ -200,12 +200,12 @@ outputPage:
     <h4 class="adminlog-title">ログ取得</h4>
     <ul class="adminlog-row">
       <li class="adminlog-col-title"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>adminroomlog.php?up=<?php echo h(SITE_UPDATE); ?>" class="link-pseudo-button">ルームログ全出力</a></li>
-      <li class="adminlog-col-note">DB に残っているログをすべてダウンロードします。対象は現ルームのみです。</li>
+      <li class="adminlog-col-note">DB に残っているログをすべてダウンロードします。対象は現ルームのみです。DBは最大 10000 行保存されています。</li>
       <li class="adminlog-col-note">ログ出力に失敗した場合に使用することを想定しています。負荷が高いため短時間に連続で行わないでください。</li>
     </ul>
     <ul class="adminlog-row">
       <li class="adminlog-col-title"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>adminwhisperlog.php?up=<?php echo h(SITE_UPDATE); ?>" class="link-pseudo-button">ささやきログ全出力</a></li>
-      <li class="adminlog-col-note">DB に残っているすべてのユーザーのささやきをダウンロードします。対象は現ルームのみです。</li>
+      <li class="adminlog-col-note">DB に残っているすべてのユーザーのささやきをダウンロードします。対象は現ルームのみです。DBは最大 10000 行保存されています。</li>
       <li class="adminlog-col-note">管理者はささやきが管理者から見えることを事前に通達するようお願いします。</li>
     </ul>
   </div>

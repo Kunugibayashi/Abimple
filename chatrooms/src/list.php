@@ -8,10 +8,6 @@ require_once(__DIR__ . '/../../core/src/logger.php');
 
 adminOnly();
 
-// roomdir
-$roomdir = getPageRoomdir();
-$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src/';
-
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // DB接続
@@ -104,8 +100,8 @@ outputPage:
             <td><?php echo h($value['roomtitle']); ?></td>
             <td><?php if ($value['published']) { echo '表示する'; } else { echo '表示しない'; } ?></td>
             <td><?php echo h($value['displayno']); ?></td>
-            <td><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>roomtop.php">トップへ</a></td>
-            <td><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>admin.php">管理画面へ</a></td>
+            <td><a href="<?php echo h(CHAT_ROOM_ROOMS_LINK); ?><?php echo h($value['roomdir']); ?>/src/roomtop.php">トップへ</a></td>
+            <td><a href="<?php echo h(CHAT_ROOM_ROOMS_LINK); ?><?php echo h($value['roomdir']); ?>/src/admin.php">管理画面へ</a></td>
           </tr>
         <?php } ?>
       </table>
