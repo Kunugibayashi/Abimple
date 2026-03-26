@@ -233,6 +233,10 @@ outputPage:
     <nav class="roomtop-header-menu">
       <ul class="roomtop-header-item-group">
         <li class="roomtop-header-item">
+          <?php /* アクセス先で本人確認しているため GET で良い */ ?>
+          <a href="<?php echo h($ROOMDIR_SRC_LINK); ?>chatinroomlogdl.php?id=<?php echo h($inputParams['characterid']); ?>">現行ログDL</a>
+        </li>
+        <li class="roomtop-header-item">
           <span class="link form-submit">発言編集</span>
           <form name="edit-form" class="hidden-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>editlist.php" method="POST" target="_blank">
             <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">

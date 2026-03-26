@@ -1506,7 +1506,9 @@ function selectEqualChatlogsEdit($dbh, $limit, $characterid, $isAdmin, $params =
   return $data;
 }
 
-function selectEqualChatlogsChunk($dbh, $limit, $entrykey = '', $beforeid = 0, $params = array()) {
+function selectEqualChatlogsChunk(
+  $dbh, $limit, $entrykey = '', $beforeid = 0, $params = array()
+): SQLite3Result {
   $sql = '
     SELECT
       *
@@ -1540,6 +1542,41 @@ function selectEqualChatlogsChunk($dbh, $limit, $entrykey = '', $beforeid = 0, $
   if ($beforeid != 0) {
     $stmt->bindValue(':beforeid', $beforeid, SQLITE3_INTEGER);
   }
+  $stmt->bindValue(':limit', $limit, SQLITE3_INTEGER);
+  $results = $stmt->execute();
+  // ログ出力負荷軽減のため fetchArraytoArray は噛ませない
+  return $results;
+}
+
+function selectEqualInroomChatlogsChunk(
+  $dbh, $limit, $characterid = null, $params = array()
+): SQLite3Result {
+  $sql = '
+    SELECT
+      *
+    FROM chatlogs
+    WHERE
+    (
+      whisperflg = 0
+      OR
+      (
+        whisperflg = 1
+        AND
+        (
+          characterid = :characterid
+          OR
+          wtocharacterid = :wtocharacterid
+        )
+      )
+    )
+    ORDER BY id DESC
+    LIMIT :limit
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $stmt->bindValue(':characterid', $characterid, SQLITE3_INTEGER);
+  $stmt->bindValue(':wtocharacterid', $characterid, SQLITE3_INTEGER);
   $stmt->bindValue(':limit', $limit, SQLITE3_INTEGER);
   $results = $stmt->execute();
   // ログ出力負荷軽減のため fetchArraytoArray は噛ませない

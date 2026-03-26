@@ -5,13 +5,17 @@ require_once(__DIR__ . '/../../core/src/session.php');
 require_once(__DIR__ . '/../../core/src/database.php');
 require_once(__DIR__ . '/../../core/src/administrator.php');
 
-/*
+require_once(__DIR__ . '/../../core/src/lib/templatelib.php');
+
+/**
  *******************************************************************************
  * 関数定義
  *******************************************************************************
  */
 
-// 参加者整形
+/**
+ * 参加者整形
+ */
 function renderChatentries(array $chatentries): string {
   ob_start();
 ?>
@@ -32,7 +36,9 @@ function renderChatentries(array $chatentries): string {
   return $html;
 }
 
-// システムログ or 発言ログ を判定して該当 html を返却
+/**
+ * システムログ or 発言ログ を判定して該当 html を返却
+ */
 function renderChatLog(array $chatline, array $chatroom): string {
   if ($chatline['logtype'] === LOGTYPE_SYSTEM
     || $chatline['logtype'] === LOGTYPE_DICE
@@ -47,7 +53,9 @@ function renderChatLog(array $chatline, array $chatroom): string {
   }
 }
 
-// システムログ成形
+/**
+ * システムログ成形
+ */
 function renderSystemLog(array $chatline): string {
   ob_start();
 ?>
@@ -71,7 +79,9 @@ function renderSystemLog(array $chatline): string {
   return $html;
 }
 
-// 発言ログ成形
+/**
+ * 発言ログ成形
+ */
 function renderCharacterLog(array $chatline, array $chatroom): string {
   ob_start();
 ?>
@@ -101,7 +111,9 @@ function renderCharacterLog(array $chatline, array $chatroom): string {
   return $html;
 }
 
-// DB参照値
+/**
+ * DB参照値
+ */
 function renderDbCssVariables(array $chatroom): string {
   ob_start();
 ?>
@@ -118,7 +130,9 @@ function renderDbCssVariables(array $chatroom): string {
   return $html;
 }
 
-// CSSリンク
+/**
+ * CSSリンク
+ */
 function renderCssLinkUrl(array $chatroom): string {
   ob_start();
 ?>
@@ -142,7 +156,9 @@ function renderCssLinkUrl(array $chatroom): string {
   return $html;
 }
 
-// CSS文字列出力
+/**
+ * CSS文字列出力
+ */
 function renderTemplateCssString(array $chatroom): string {
   define('CSS_STRING_MODE', true); // グローバル定数を使用するが、CSS出力時のみのため許容
 
@@ -190,9 +206,52 @@ function renderTemplateCssString(array $chatroom): string {
   return $css;
 }
 
-// ログファイル出力
-// filepath が指定されている場合は、そのファイルを出力。
-// filepath が指定されていない場合は、デフォルトのログファイルを出力。
+
+/**
+ * ログ echo 出力
+ *
+ * 大量出力しないこと。
+ */
+function echoChatLog(
+  SQLite3Result $chatrows,
+  array $chatroom,
+  array $chatentries
+): void {
+
+  // ログより上を出力
+  $tplVars = [
+    'chatroom' => $chatroom,
+    'chatentries' => $chatentries,
+  ];
+  $htmlTopString = renderTemplateBuffer(
+    CHAT_LOG_TEMPLATE_FILE_PATH .'chatlogstart.tpl.php',
+    $tplVars,
+  );
+  echo $htmlTopString;
+
+  // ログを一行ごとに出力
+  while ($row = $chatrows->fetchArray(SQLITE3_ASSOC)) {
+    $stringHtml = renderChatLog($row, $chatroom);
+    echo $stringHtml;
+  }
+
+  // ログより下の出力
+  $tplVars = [];
+  $htmlEndString = renderTemplateBuffer(
+    CHAT_LOG_TEMPLATE_FILE_PATH .'chatlogend.tpl.php',
+    $tplVars,
+  );
+  echo $htmlEndString;
+
+  return;
+}
+
+
+/**
+ * ログファイル出力
+ * filepath が指定されている場合は、そのファイルを出力。
+ * filepath が指定されていない場合は、デフォルトのログファイルを出力。
+ */
 function exportChatLogFile(
   ?string $filepath,
   ?SQLite3 $dbhChatlogs,
