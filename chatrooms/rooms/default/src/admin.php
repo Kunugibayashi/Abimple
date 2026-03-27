@@ -17,7 +17,7 @@ $inputParams['guide'] = inputParam('guide', 2000);
 $inputParams['toptemplate'] = inputParam('toptemplate', 20);
 $inputParams['logtemplate'] = inputParam('logtemplate', 20);
 $inputParams['isfree'] = inputParam('isfree', 1);
-$inputParams['issecret'] = inputParam('issecret', 1);
+$inputParams['secrettype'] = inputParam('secrettype', 1) ?: 0;
 $inputParams['color'] = inputParam('color', 7) ?: '#000000';
 $inputParams['bgcolor'] = inputParam('bgcolor', 7) ?: '#ffffff';
 $inputParams['bgimage'] = inputParam('bgimage', 1000);
@@ -265,16 +265,18 @@ outputPage:
         <li class="form-col-note">自由設定にした場合、ユーザーがタイトルと説明を変更できます。</li>
       </ul>
       <ul class="form-row">
-        <li class="form-col-title">秘匿ルームにするか<div class="mandatory-mark"></div></li>
+        <li class="form-col-title">ルーム公開範囲の設定<div class="mandatory-mark"></div></li>
         <li class="form-col-item">
           <div class="select-wrap">
-            <select name="issecret">
-              <option <?php echo selectedOption($inputParams['issecret'], '0'); ?> value="0">秘匿ルームにしない</option>
-              <option <?php echo selectedOption($inputParams['issecret'], '1'); ?> value="1">秘匿ルームにする</option>
+            <select name="secrettype">
+              <option <?php echo selectedOption($inputParams['secrettype'], CHAT_ROOM_OPEN); ?> value="<?php echo h(CHAT_ROOM_OPEN); ?>">公開ルームにする</option>
+              <option <?php echo selectedOption($inputParams['secrettype'], CHAT_ROOM_SECRET); ?> value="<?php echo h(CHAT_ROOM_SECRET); ?>">秘匿ルームにする</option>
+              <option <?php echo selectedOption($inputParams['secrettype'], CHAT_ROOM_KEYWORD); ?> value="<?php echo h(CHAT_ROOM_KEYWORD); ?>">キーワードルームにする</option>
             </select>
           </div>
         </li>
-        <li class="form-col-note">秘匿設定にした場合、入室時にキーワードを設定し、キーワードを入力したユーザーのみが入室可能になります。</li>
+        <li class="form-col-note">『秘匿ルーム』にした場合、キーワードを入力したユーザーのみが入室可能になります。キーワードはユーザーが入室画面で設定可能です。参加者全員が退出後、キーワードはリセットされ、ログは削除されます。ログ出力はされません。</li>
+        <li class="form-col-note">『キーワードルーム』にした場合、キーワードを入力したユーザーのみが入室可能になります。キーワードは管理者のみが入室画面で設定可能です。退出後もログが残りますが、ログ出力はされません。</li>
       </ul>
       <ul class="form-row">
         <li class="form-col-title">基本文字色<div class="optional-mark"></div></li>

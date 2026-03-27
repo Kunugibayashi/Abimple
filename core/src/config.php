@@ -333,6 +333,9 @@ define('CHAT_LOG_TEMPLATE1', 'logtemplate1');
 define('OMIKUJI1_ID', 'omi1');
 define('OMIKUJI2_ID', 'omi2');
 define('OMIKUJI3_ID', 'omi3');
+define('CHAT_ROOM_OPEN', 0);
+define('CHAT_ROOM_SECRET', 1);
+define('CHAT_ROOM_KEYWORD', 2);
 /* ログ種別（chatlogs.logtype） */
 define('LOGTYPE_NORMAL',  0); // 通常発言（ユーザー発言）
 define('LOGTYPE_SYSTEM',  1); // システム生成ログ（入退室・通知など）
@@ -347,7 +350,6 @@ define('INFOMATIONS_DB', (INDEX_ROOT.'/infomation/src/db/informations.db'));
 define('CHARACTERS_DB', (INDEX_ROOT.'/characters/src/db/characters.db'));
 define('ROOMS_DB', (INDEX_ROOT.'/chatrooms/src/db/rooms.db'));
 define('ROOM_INOUT_HISTORIES_DB', (INDEX_ROOT.'/chatrooms/src/db/roominouthistories.db'));
-define('CHAT_SECRETS_DB', './db/chatchatsecrets.db');
 define('INBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/inboxletters.db'));
 define('OUTBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/outboxletters.db'));
 define('CHAT_LOG_FILES_DB', (INDEX_ROOT.'/chatloghtml/src/db/chatlogfiles.db'));
@@ -356,3 +358,4 @@ define('CHAT_ONLINES_DB', './db/chatonlines.db');
 define('CHAT_ROOMS_DB', './db/chatrooms.db');
 define('CHAT_ENTRIES_DB', './db/chatentries.db');
 define('CHAT_LOGS_DB', './db/chatlogs.db');
+define('CHAT_SECRETS_DB', './db/chatchatsecrets.db');

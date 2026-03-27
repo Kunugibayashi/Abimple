@@ -42,11 +42,11 @@ $jsonArray['appendlog'] = [];
 $jsonArray['updatelog'] = [];
 
 // DB接続
+$dbhCharacters = connectRo(CHARACTERS_DB);
 $dbhChatrooms = connectRo(__DIR__ .'/' .CHAT_ROOMS_DB);
 $dbhChatentries = connectRo(__DIR__ .'/' .CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRo(__DIR__ .'/' .CHAT_LOGS_DB);
-$dbhChatsecrets = connectRo(CHAT_SECRETS_DB);
-$dbhCharacters = connectRo(CHARACTERS_DB);
+$dbhChatsecrets = connectRo(__DIR__ .'/' .CHAT_SECRETS_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 if (!usedArr($chatrooms)) {
@@ -55,18 +55,18 @@ if (!usedArr($chatrooms)) {
 }
 $chatroom = $chatrooms[0];
 
-// 秘匿ルームの場合
-if ($chatroom['issecret'] == 1) {
+// 公開ルームでない場合
+if ($chatroom['secrettype'] != CHAT_ROOM_OPEN) {
   $chatsecrets = selectChatsecrets($dbhChatsecrets);
   if (!usedArr($chatsecrets)) {
-    firstAccessChatsecrets(CHAT_SECRETS_DB);
+    firstAccessChatsecrets(__DIR__ .'/' .CHAT_SECRETS_DB);
     $chatsecrets = selectChatsecrets($dbhChatsecrets);
   }
   $dbKeyword = $chatsecrets[0]['keyword'];
   $sessionKeyword = getSecretKeyword();
   if (!usedStr($dbKeyword) || !usedStr($sessionKeyword) || $dbKeyword != $sessionKeyword) {
     $jsonArray['code'] = 1;
-    $jsonArray['errorMessage'] = '秘匿ルームです。入室キーワードを入力してください。';
+    $jsonArray['errorMessage'] = '入室キーワードを入力してください。';
     goto outputPage;
   }
 }

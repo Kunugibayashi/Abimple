@@ -17,7 +17,7 @@
 
   <header class="chatroom-header-wrap">
     <h3 class="chatroom-header-title">
-      <?php if ($chatroom['issecret']) { ?>【秘匿】<?php } ?><?php echo h($chatroom['title']); ?>
+      <?php echo h($chatroom['title']); ?>
       <div class="chatroom-header-guide">
         <?php echo h($chatroom['guide']); ?>
       </div>

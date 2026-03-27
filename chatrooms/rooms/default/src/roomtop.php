@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   // DB接続
   $dbhChatrooms = connectRo(__DIR__ .'/' .CHAT_ROOMS_DB);
-  $dbhChatsecrets = connectRo(CHAT_SECRETS_DB);
+  $dbhChatsecrets = connectRo(__DIR__ .'/' .CHAT_SECRETS_DB);
 
   $chatrooms = selectChatroomsConfig($dbhChatrooms);
   if (!usedArr($chatrooms)) {
@@ -31,11 +31,11 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   }
   $chatroom = $chatrooms[0] ?? [];
 
-  // 秘匿ルームの場合、パスワードチェック
-  if ($chatroom['issecret'] == 1) {
+  // 公開ルームでない場合、パスワードチェック
+  if ($chatroom['secrettype'] != CHAT_ROOM_OPEN) {
     $chatsecrets = selectChatsecrets($dbhChatsecrets);
     if (!usedArr($chatsecrets)) {
-      firstAccessChatsecrets(CHAT_SECRETS_DB);
+      firstAccessChatsecrets(__DIR__ .'/' .CHAT_SECRETS_DB);
       $chatsecrets = selectChatsecrets($dbhChatsecrets);
     }
     // DBとセッションのパスワードが異なる場合は弾く
@@ -134,7 +134,7 @@ outputPage:
   <div class="content-log-wrap">
     <header class="chatroom-header-wrap">
       <h3 class="chatroom-header-title">
-        <?php if ($chatroom['issecret']) { ?>【秘匿】<?php } ?><?php echo h($chatroom['title']); ?>
+        <?php if ($chatroom['secrettype'] == CHAT_ROOM_SECRET) { ?>【秘匿】<?php } ?><?php if ($chatroom['secrettype'] == CHAT_ROOM_KEYWORD) { ?>【KEYWORD】<?php } ?><?php echo h($chatroom['title']); ?>
         <div class="chatroom-header-guide">
           <?php echo h($chatroom['guide']); ?>
         </div>
@@ -151,7 +151,7 @@ outputPage:
       </div>
     </header>
 
-    <?php if (CHAT_ROOM_SHOW_ONLINE) { ?>
+    <?php if (CHAT_ROOM_SHOW_ONLINE && $chatroom['secrettype'] == CHAT_ROOM_OPEN) { ?>
       <div class="onlinecount-wrap">
         <h5 class="onlinecount-title">閲覧者：</h5>
         <div id="id-onlinecount" class="onlinecount-item-group"></div>

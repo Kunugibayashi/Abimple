@@ -38,11 +38,11 @@ checkChatToken($inputParams['characterid']);
 // DB接続
 $dbhCharacters = connectRo(CHARACTERS_DB);
 $dbhInouthistory = connectRw(ROOM_INOUT_HISTORIES_DB);
-$dbhChatsecrets = connectRw(CHAT_SECRETS_DB);
 $dbhChatlogfiles = connectRw(CHAT_LOG_FILES_DB);
 $dbhChatrooms  = connectRo(__DIR__ .'/' .CHAT_ROOMS_DB);
 $dbhChatentries = connectRw(__DIR__ .'/' .CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRw(__DIR__ .'/' .CHAT_LOGS_DB);
+$dbhChatsecrets = connectRw(__DIR__ .'/' .CHAT_SECRETS_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0]; // 必ずある想定
@@ -76,13 +76,15 @@ if (usedArr($myChatentries)) {
       'message' => '<span class="fullname">' .$character['fullname'] .'</span>' .'が退室しました。'
     ]);
 
-    // 秘匿ルームでない場合のみ履歴に登録
-    if ($chatroom['issecret'] != 1) {
+    // 公開ルームのみ履歴に登録
+    if ($chatroom['secrettype'] == CHAT_ROOM_OPEN) {
       insertRoominouthistories($dbhInouthistory, [
         'roomtitle' => $chatroom['title'],
         'message' => '<span style="font-weight: bold;">' .$character['fullname'] .'</span>' .'が退室しました。',
       ]);
     }
+
+    // 負荷対策として指定数以上の履歴ログを削除
     deleteRoominouthistoriesLimit1000($dbhInouthistory);
   }
 }
@@ -98,17 +100,35 @@ setChatEntry($save);
 
 $nowChatentries = selectEqualChatentries($dbhChatentries);
 
-if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($nowChatentries)) {
+if (
+  $chatroom['secrettype'] == CHAT_ROOM_SECRET
+  && isset($myChatentry) && usedArr($myChatentry) && !usedArr($nowChatentries)
+) {
   // 秘匿ルーム、かつ、最終退室者の場合はログを削除
   deleteChatlogs($dbhChatlogs);
 
-  // 秘匿パスワードのリセット
+  // DB内キーワードのリセット
   updateChatsecrets($dbhChatsecrets, '');
 
   // 余分な参加者ログを削除
   deleteChatentriesExit($dbhChatentries);
 
-} else if (isset($myChatentry) && usedArr($myChatentry) && !usedArr($nowChatentries)) {
+} else if (
+  $chatroom['secrettype'] == CHAT_ROOM_KEYWORD
+  && isset($myChatentry) && usedArr($myChatentry) && !usedArr($nowChatentries)
+) {
+  // パスワードルーム、かつ、最終退室者の場合は負荷対策のログ削除のみ
+  // DB内キーワードのリセットはしない
+
+  // 負荷対策として指定数以上のログを削除
+  deleteChatlogsLimit10000($dbhChatlogs);
+
+  // 余分な参加者ログを削除
+  deleteChatentriesExit($dbhChatentries);
+} else if (
+  isset($myChatentry) && usedArr($myChatentry) && !usedArr($nowChatentries)
+) {
+  // 公開ルームの場合のルート
   // 最終退室者の場合はログを出力
   $entrykey = $myChatentry['entrykey'];
   $chatentries = selectEqualLogChatentries($dbhChatentries, $entrykey);
@@ -151,8 +171,8 @@ if ($chatroom['issecret'] == 1 && usedArr($myChatentry) && !usedArr($nowChatentr
   deleteChatentriesExit($dbhChatentries);
 }
 
-// 秘匿ルームの場合は保持キーワードをリセット
-if ($chatroom['issecret'] == 1) {
+// 秘匿ルーム、キーワードルームの場合は session 内保持キーワードをリセット
+if ($chatroom['secrettype'] == CHAT_ROOM_SECRET || $chatroom['secrettype'] == CHAT_ROOM_KEYWORD) {
   setSecretKeyword('');
   clearSecretKeyword();
 }
@@ -231,7 +251,7 @@ outputPage:
   <div class="content-log-wrap">
     <header class="chatroom-header-wrap">
       <h3 class="chatroom-header-title">
-        <?php if ($chatroom['issecret']) { ?>【秘匿】<?php } ?><?php echo h($chatroom['title']); ?>
+        <?php if ($chatroom['secrettype'] == CHAT_ROOM_SECRET) { ?>【秘匿】<?php } ?><?php if ($chatroom['secrettype'] == CHAT_ROOM_KEYWORD) { ?>【KEYWORD】<?php } ?><?php echo h($chatroom['title']); ?>
         <div class="chatroom-header-guide">
           <?php echo h($chatroom['guide']); ?>
         </div>
@@ -248,7 +268,7 @@ outputPage:
       </div>
     </header>
 
-    <?php if (CHAT_ROOM_SHOW_ONLINE) { ?>
+    <?php if (CHAT_ROOM_SHOW_ONLINE && $chatroom['secrettype'] == CHAT_ROOM_OPEN) { ?>
       <div class="onlinecount-wrap">
         <h5 class="onlinecount-title">閲覧者：</h5>
         <div id="id-onlinecount" class="onlinecount-item-group"></div>

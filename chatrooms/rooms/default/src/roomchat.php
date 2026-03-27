@@ -61,11 +61,11 @@ if (isNowRoomEntry($inputParams['characterid'], $roomdir)) {
 
 // DB接続
 $dbhCharacters = connectRo(CHARACTERS_DB);
-$dbhChatsecrets = connectRo(CHAT_SECRETS_DB);
 $dbhInouthistory = connectRw(ROOM_INOUT_HISTORIES_DB);
 $dbhChatrooms  = connectRo(__DIR__ .'/' .CHAT_ROOMS_DB);
 $dbhChatentries = connectRw(__DIR__ .'/' .CHAT_ENTRIES_DB);
 $dbhChatlogs = connectRw(__DIR__ .'/' .CHAT_LOGS_DB);
+$dbhChatsecrets = connectRo(__DIR__ .'/' .CHAT_SECRETS_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0]; // 必ずある想定
@@ -81,11 +81,11 @@ $character = $characters[0];
 // 本人確認
 identityUser($character['userid'], $character['username']);
 
-// 秘匿ルームの場合
-if ($chatroom['issecret'] == 1) {
+// 公開ルームでない場合
+if ($chatroom['secrettype'] != CHAT_ROOM_OPEN) {
   $chatsecrets = selectChatsecrets($dbhChatsecrets);
   if (!usedArr($chatsecrets)) {
-    firstAccessChatsecrets(CHAT_SECRETS_DB);
+    firstAccessChatsecrets(__DIR__ .'/' .CHAT_SECRETS_DB);
     $chatsecrets = selectChatsecrets($dbhChatsecrets);
   }
   $dbKeyword = $chatsecrets[0]['keyword'];
@@ -126,8 +126,8 @@ if (!usedArr($chatentries)) {
       'message' => '<span class="fullname">' .$character['fullname'] .'</span>' .'が入室しました。',
     ]);
 
-    // 秘匿ルームでない場合のみ履歴に登録
-    if ($chatroom['issecret'] != 1) {
+    // 公開ルームのみ履歴に登録
+    if ($chatroom['secrettype'] == CHAT_ROOM_OPEN) {
       insertRoominouthistories($dbhInouthistory, [
         'roomtitle' => $chatroom['title'],
         'message' => '<span style="font-weight: bold;">' .$character['fullname'] .'</span>' .'が入室しました。',
@@ -165,8 +165,8 @@ if (!usedArr($myChatentries)) {
       'message' => '<span class="fullname">' .$character['fullname'] .'</span>' .'が入室しました。'
     ]);
 
-    // 秘匿ルームでない場合のみ履歴に登録
-    if ($chatroom['issecret'] != 1) {
+    // 公開ルームのみ履歴に登録
+    if ($chatroom['secrettype'] == CHAT_ROOM_OPEN) {
       insertRoominouthistories($dbhInouthistory, [
         'roomtitle' => $chatroom['title'],
         'message' => '<span style="font-weight: bold;">' .$character['fullname'] .'</span>' .'が入室しました。',
@@ -453,7 +453,7 @@ outputPage:
   <div class="content-log-wrap">
     <header class="chatroom-header-wrap">
       <h3 class="chatroom-header-title">
-        <?php if ($chatroom['issecret']) { ?>【秘匿】<?php } ?><?php echo h($chatroom['title']); ?>
+        <?php if ($chatroom['secrettype'] == CHAT_ROOM_SECRET) { ?>【秘匿】<?php } ?><?php if ($chatroom['secrettype'] == CHAT_ROOM_KEYWORD) { ?>【KEYWORD】<?php } ?><?php echo h($chatroom['title']); ?>
         <div class="chatroom-header-guide">
           <?php echo h($chatroom['guide']); ?>
         </div>
@@ -470,7 +470,7 @@ outputPage:
       </div>
     </header>
 
-    <?php if (CHAT_ROOM_SHOW_ONLINE) { ?>
+    <?php if (CHAT_ROOM_SHOW_ONLINE && $chatroom['secrettype'] == CHAT_ROOM_OPEN) { ?>
       <div class="onlinecount-wrap">
         <h5 class="onlinecount-title">閲覧者：</h5>
         <div id="id-onlinecount" class="onlinecount-item-group"></div>

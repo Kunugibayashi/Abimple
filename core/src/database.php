@@ -225,11 +225,11 @@ function checkDB($dbname) {
     createChatentries($dbh);
   } else if (strpos($dbname, CHAT_LOGS_DB) !== false) {
     createChatlogs($dbh);
+  } else if (strpos($dbname, CHAT_SECRETS_DB) !== false) {
+    createChatsecrets($dbh);
 
   } else if (CHAT_LOG_FILES_DB === $dbname) {
     createChatlogfiles($dbh);
-  } else if (CHAT_SECRETS_DB === $dbname) {
-    createChatsecrets($dbh);
   } else if (INBOX_LETTERS_DB === $dbname) {
     createInboxLetters($dbh);
   } else if (OUTBOX_LETTERS_DB === $dbname) {
@@ -1120,7 +1120,7 @@ function createChatrooms($dbh) {
       toptemplate   VARCHAR(20)    NOT NULL DEFAULT 'default',
       logtemplate   VARCHAR(20)    NOT NULL DEFAULT 'default',
       isfree        INTEGER        NOT NULL DEFAULT 0,
-      issecret      INTEGER        NOT NULL DEFAULT 0,
+      secrettype      INTEGER        NOT NULL DEFAULT 0,
       color         VARCHAR(7)     NOT NULL DEFAULT '#696969',
       bgcolor       VARCHAR(7)     NOT NULL DEFAULT '#f5f5f5',
       bgimage       TEXT           NOT NULL DEFAULT '',
