@@ -114,7 +114,6 @@
         lognum: lognum
       }
     }).done(function(data) {
-      console.log(data);
       if (!data) return;
       if (data.code !== 0) {
         jQuery('#id-log-error').text(data.errorMessage)

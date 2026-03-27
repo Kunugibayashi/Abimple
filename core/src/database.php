@@ -175,7 +175,8 @@ function setEqualArryBindValue($stmt, $params) {
   return $stmt;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * DB
  * ****************************************************************************
  */
@@ -215,12 +216,16 @@ function checkDB($dbname) {
     creatRooms($dbh);
   } else if (ROOM_INOUT_HISTORIES_DB === $dbname) {
     createRoominouthistories($dbh);
+
+  } else if (strpos($dbname, CHAT_ONLINES_DB) !== false) {
+    createChatonlines($dbh);
   } else if (strpos($dbname, CHAT_ROOMS_DB) !== false) {
     createChatrooms($dbh);
   } else if (strpos($dbname, CHAT_ENTRIES_DB) !== false) {
     createChatentries($dbh);
   } else if (strpos($dbname, CHAT_LOGS_DB) !== false) {
     createChatlogs($dbh);
+
   } else if (CHAT_LOG_FILES_DB === $dbname) {
     createChatlogfiles($dbh);
   } else if (CHAT_SECRETS_DB === $dbname) {
@@ -253,7 +258,8 @@ function connectRo($dbname) {
   return $dbh;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * ログインチェック
  * 管理側から削除された場合、ユーザー側でログイン時の処理ができないよう、
  * DBに存在するかをチェックする
@@ -304,7 +310,8 @@ function loginOnly() {
 }
 
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * ユーザーテーブル
  * ****************************************************************************
  */
@@ -444,7 +451,8 @@ function selectUsersMy($dbh, $userid, $username) {
 }
 
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * お知らせテーブル
  * ****************************************************************************
  */
@@ -564,7 +572,8 @@ function deleteInfomations($dbh, $id) {
   return $results;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * キャラクターテーブル
  * ****************************************************************************
  */
@@ -786,7 +795,8 @@ function getAllCharacterIds($dbh, $params = array()) {
   return $data;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * チャットルーム管理
  * ****************************************************************************
  */
@@ -911,7 +921,8 @@ function selectEqualRoomsList($dbh, $params = array()) {
   return $data;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * 入退室履歴
  * ****************************************************************************
  */
@@ -1009,7 +1020,94 @@ function deleteRoominouthistories($dbh, $id) {
   return $results;
 }
 
-/* ****************************************************************************
+
+/**
+ * ****************************************************************************
+ * チャット閲覧数
+ * ****************************************************************************
+ */
+function createChatonlines($dbh) {
+  $sql = "
+    CREATE TABLE chatonlines (
+      id        INTEGER      PRIMARY KEY AUTOINCREMENT,
+      sessionid VARCHAR(128) NOT NULL,
+      userid    INTEGER      NOT NULL DEFAULT 0,
+
+      created   DATETIME     NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+      modified  DATETIME     NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+
+      UNIQUE(sessionid)
+    )
+  ";
+
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
+
+  $sql = "
+    CREATE INDEX idx_chatonlines_modified ON chatonlines(modified);
+    CREATE INDEX idx_chatonlines_userid ON chatonlines(userid);
+  ";
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
+}
+
+function insertChatonlines($dbh, $sessionid, $userid, $modified, $params = array()) {
+  $sql = '
+    INSERT INTO chatonlines (
+      sessionid,
+      userid,
+      modified
+  ';
+  $sql = setInsertColumnArryParam($sql, $params);
+  $sql = $sql .'
+    ) VALUES (
+      :sessionid,
+      :userid,
+      :modified
+  ';
+  $sql = setInsertVluesArryParam($sql, $params);
+  $sql = $sql .'
+    )
+    ON CONFLICT(sessionid) DO UPDATE SET
+      userid   = excluded.userid,
+      modified = excluded.modified
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt->bindValue(':sessionid', $sessionid);
+  $stmt->bindValue(':userid', $userid);
+  $stmt->bindValue(':modified', $modified);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function selectOnlineCount($dbh, $modifiedlimit, $params = array()) {
+  $sql = '
+    SELECT
+      COUNT(*) AS onlinecount
+    FROM chatonlines
+    WHERE
+      modified >= :modifiedlimit
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt->bindValue(':modifiedlimit', $modifiedlimit);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+
+
+/**
+ * ****************************************************************************
  * チャットルーム設定
  * ****************************************************************************
  */
@@ -1108,7 +1206,8 @@ function updateChatroomsConfig($dbh, $params = array()) {
   return $results;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * 入室状態
  * ****************************************************************************
  */
@@ -1253,7 +1352,8 @@ function deleteChatentriesExit($dbh) {
   return $results;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * ログ
  * ****************************************************************************
  */
@@ -1630,7 +1730,8 @@ function deleteChatlogs($dbh) {
   return $results;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * 秘匿ルーム用
  * ****************************************************************************
  */
@@ -1703,7 +1804,8 @@ function selectChatsecrets($dbh) {
   return $data;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * 私書テーブル（受信BOX）
  * ****************************************************************************
  */
@@ -1929,7 +2031,8 @@ function selectInboxLettersFromMessage($dbh, $fromcharacterid, $fromfullname, $m
   return $data;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * 私書テーブル（送信BOX）
  * ****************************************************************************
  */
@@ -2059,7 +2162,8 @@ function selectOutboxLettersId($dbh, $id) {
   return $data;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * ログファイル一覧
  * ****************************************************************************
  */
@@ -2182,7 +2286,8 @@ function deleteChatlogfilesById($dbh, $id) {
   return $results;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * チャットルーム用関数
  * ****************************************************************************
  */

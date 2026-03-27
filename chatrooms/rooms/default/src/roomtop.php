@@ -89,6 +89,7 @@ outputPage:
   <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
   <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
   <script src="<?php echo h(CHAT_ROOM_SRC_LINK); ?>/js/chatlog-sync.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(CHAT_ROOM_SRC_LINK); ?>/js/chatheartbeat-sync.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
 <div id="id-roomtop-content-wrap" class="content-wrap"><!-- roomtopと共通 -->
@@ -149,6 +150,15 @@ outputPage:
         </ul>
       </div>
     </header>
+
+    <?php if (CHAT_ROOM_SHOW_ONLINE) { ?>
+      <div class="onlinecount-wrap">
+        <h5 class="onlinecount-title">閲覧者：</h5>
+        <div id="id-onlinecount" class="onlinecount-item-group"></div>
+        <div class="onlinecount-note">人</div>
+      </div>
+    <?php } ?>
+
     <div class="entries-wrap">
       <h5 class="entries-title">参加者：</h5>
       <ul id="id-chat-entries" class="entries-item-group"></ul><?php /* id="id-chat-entries" は変更しないこと。ログ一覧で使うため */ ?>
@@ -194,6 +204,18 @@ jQuery(function() {
 
 });
 </script>
+<?php if (CHAT_ROOM_SHOW_ONLINE) { ?>
+  <script>
+  // js 内使用変数
+  var CHAT_ONLINE_COUNT_API = "<?php echo h($ROOMDIR_SRC_LINK); ?>chatheartbeat.php";
+  var beatsec = 30000;
+
+  // DOMとjQueryが使える状態で開始
+  jQuery(function() {
+    startHeartbeatTimer(beatsec);
+  });
+  </script>
+<?php } ?>
 
 </body>
 </html>

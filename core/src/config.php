@@ -99,10 +99,19 @@ define('SITE_UPDATE', time());
 define('CHAT_SOUND_FILE', 'pipipi.mp3');
 
 /**
- * システムメッセージ発言者。
+ * チャットログのシステムメッセージ発言者。
  * 編集任意。
  */
 define('CHAT_LOG_SYSTEM_NAME', 'システム');
+
+/**
+ * チャットルームの閲覧者数を表示するか。
+ * 編集任意。
+ *
+ * 1:表示する
+ * 0:表示しない
+ */
+define('CHAT_ROOM_SHOW_ONLINE', 1);
 
 /**
  * ファイル出力時の使用メモリ。
@@ -343,6 +352,7 @@ define('INBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/inboxletters.db'));
 define('OUTBOX_LETTERS_DB', (INDEX_ROOT.'/letters/src/db/outboxletters.db'));
 define('CHAT_LOG_FILES_DB', (INDEX_ROOT.'/chatloghtml/src/db/chatlogfiles.db'));
 // 以下の変数はPathが可変のため相対Path設定。DB作成は同様に追加すること。
+define('CHAT_ONLINES_DB', './db/chatonlines.db');
 define('CHAT_ROOMS_DB', './db/chatrooms.db');
 define('CHAT_ENTRIES_DB', './db/chatentries.db');
 define('CHAT_LOGS_DB', './db/chatlogs.db');
