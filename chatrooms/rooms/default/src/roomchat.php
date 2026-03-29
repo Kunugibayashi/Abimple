@@ -383,8 +383,8 @@ outputPage:
             <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
             <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
             <div class="dice-wrap">
-              <input type="text" name="dice" value="" maxlength="6" placeholder="1d6 など">
-              <div class="form-omi-note">最大 10d100 （100面ダイス10個）</div>
+              <input type="text" name="dice" value="" maxlength="200" placeholder="1d6 など">
+              <div class="form-omi-note">使用可能な形式についてはこちら。</div>
             </div>
             <div class="form-button-wrap dice-button-wrap">
               <button type="button" class="dice-button">ダイスを振る</button>

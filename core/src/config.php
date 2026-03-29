@@ -189,6 +189,7 @@ define('NAMELIST_JOB', 1); // ONOFF（1:表示する／0:表示しない）
 define('NAMELIST_JOB_NAME', '仕事'); // 表示名
 /* 自由設定1 （ラジオボタン） */
 define('NAMELIST_FREE1', 1);
+define('NAMELIST_FREE1_ISDICE', 1); // ダイスの判定に使用可能とするか（1:使用可能／0:使用不可）
 define('NAMELIST_FREE1_NAME', '自由設定1'); // 表示名
 define('NAMELIST_FREE1_LIST', [ // 保存ワード「'表示名' => '値',」形式。最大 20 文字。
   '自由設定1選択A' => '自由設定1選択A',
@@ -197,6 +198,7 @@ define('NAMELIST_FREE1_LIST', [ // 保存ワード「'表示名' => '値',」形
 ]);
 /* 自由設定2 （ラジオボタン） */
 define('NAMELIST_FREE2', 0); // ONOFF（1:表示する／0:表示しない）
+define('NAMELIST_FREE2_ISDICE', 1); // ダイスの判定に使用可能とするか（1:使用可能／0:使用不可）
 define('NAMELIST_FREE2_NAME', '自由設定2'); // 表示名
 define('NAMELIST_FREE2_LIST', [ // 保存ワード「'表示名' => '値',」形式。最大 20 文字。
   '自由設定2選択A' => '自由設定2選択A',
@@ -205,6 +207,7 @@ define('NAMELIST_FREE2_LIST', [ // 保存ワード「'表示名' => '値',」形
 ]);
 /* 自由設定3 （ラジオボタン） */
 define('NAMELIST_FREE3', 0); // ONOFF（1:表示する／0:表示しない）
+define('NAMELIST_FREE3_ISDICE', 1); // ダイスの判定に使用可能とするか（1:使用可能／0:使用不可）
 define('NAMELIST_FREE3_NAME', '自由設定3'); // 表示名
 define('NAMELIST_FREE3_LIST', [ // 保存ワード「'表示名' => '値',」形式。最大 20 文字。
   '自由設定3選択A' => '自由設定3選択A',
@@ -213,6 +216,7 @@ define('NAMELIST_FREE3_LIST', [ // 保存ワード「'表示名' => '値',」形
 ]);
 /* 自由設定4 （プルダウン） */
 define('NAMELIST_FREE4', 1); // ONOFF（1:表示する／0:表示しない）
+define('NAMELIST_FREE4_ISDICE', 1); // ダイスの判定に使用可能とするか（1:使用可能／0:使用不可）
 define('NAMELIST_FREE4_NAME', '自由設定4'); // 表示名
 define('NAMELIST_FREE4_LIST', [ // 保存ワード「'表示名' => '値',」形式。最大 20 文字。
   '--------' => '',
@@ -222,6 +226,7 @@ define('NAMELIST_FREE4_LIST', [ // 保存ワード「'表示名' => '値',」形
 ]);
 /* 自由設定5 （プルダウン） */
 define('NAMELIST_FREE5', 0); // ONOFF（1:表示する／0:表示しない）
+define('NAMELIST_FREE5_ISDICE', 1); // ダイスの判定に使用可能とするか（1:使用可能／0:使用不可）
 define('NAMELIST_FREE5_NAME', '自由設定5'); // 表示名
 define('NAMELIST_FREE5_LIST', [ // 保存ワード「'表示名' => '値',」形式。最大 20 文字。
   '--------' => '',
@@ -231,6 +236,7 @@ define('NAMELIST_FREE5_LIST', [ // 保存ワード「'表示名' => '値',」形
 ]);
 /* 自由設定6 （プルダウン） */
 define('NAMELIST_FREE6', 0); // ONOFF（1:表示する／0:表示しない）
+define('NAMELIST_FREE6_ISDICE', 1); // ダイスの判定に使用可能とするか（1:使用可能／0:使用不可）
 define('NAMELIST_FREE6_NAME', '自由設定6'); // 表示名
 define('NAMELIST_FREE6_LIST', [ // 保存ワード「'表示名' => '値',」形式。最大 20 文字。
   '--------' => '',
@@ -240,12 +246,15 @@ define('NAMELIST_FREE6_LIST', [ // 保存ワード「'表示名' => '値',」形
 ]);
 /* 自由設定7 （テキストボックス） */
 define('NAMELIST_FREE7', 1); // ONOFF（1:表示する／0:表示しない）
+define('NAMELIST_FREE7_ISDICE', 1); // ダイスの判定に使用可能とするか（1:使用可能／0:使用不可）
 define('NAMELIST_FREE7_NAME', '自由設定7'); // 表示名
 /* 自由設定8 （テキストボックス） */
 define('NAMELIST_FREE8', 0); // ONOFF（1:表示する／0:表示しない）
+define('NAMELIST_FREE8_ISDICE', 1); // ダイスの判定に使用可能とするか（1:使用可能／0:使用不可）
 define('NAMELIST_FREE8_NAME', '自由設定8'); // 表示名
 /* 自由設定9 （テキストボックス） */
 define('NAMELIST_FREE9', 0); // ONOFF（1:表示する／0:表示しない）
+define('NAMELIST_FREE9_ISDICE', 1); // ダイスの判定に使用可能とするか（1:使用可能／0:使用不可）
 define('NAMELIST_FREE9_NAME', '自由設定9'); // 表示名
 /* 自由設定10 （テキストエリア） */
 define('NAMELIST_FREE10', 1); // ONOFF（1:表示する／0:表示しない）
