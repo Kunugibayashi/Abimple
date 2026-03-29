@@ -92,33 +92,38 @@ code {
  */
 .index-wrap {
   display: grid;
-  grid-template-columns: 1fr 17rem;
-  grid-template-rows: 8rem 1fr 8rem;
-  margin: 2rem 4rem;
+  grid-template-rows: 8rem 3rem 3rem 1fr;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
 }
 .index-header {
   grid-row: 1 / 2;
-  grid-column: 2 / 3;
   margin: 2rem 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100vw;
 }
 .index-menu {
-  grid-row: 2 / 3;
-  grid-column: 2 / 3;
-  display: hidden;
+  grid-row: 3 / 4;
+  display: flex;
+  justify-content: center;
+  z-index: 100;
 }
 .index-footer {
-  grid-row: 3 / 4;
-  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: center;
 }
 .index-frame-wrap {
-  grid-row: 1 / 4;
-  grid-column: 1 / 2;
-  margin: 0 4rem 0 0;
-  height: 90vh;
+  grid-row: 4 / 5;
+  margin: 0;
+  height: 75vh;
+  width: 100%;
+  z-index: 10;
 }
 .index-footer-menu {
   font-size: 0.6rem;
@@ -258,31 +263,41 @@ h4 {
  * メニュー
  * ****************************************************************************
  */
+.index-menu {
+  background-color: #232523;
+}
 .menu {
-  display: flex;
-  flex-direction: row;
-  margin: 1rem 0;
+  margin: 0;
 }
 .menu-title {
-  width: 5rem;
-  height: 5rem;
+  width: 15rem;
+  height: 3rem;
   border-bottom: none;
-  padding: 2rem 0.5rem;
-  background-color: #3e463b;
+  padding: 0.5rem;
+  background-color: #232523;
   color: #e3e2dc;
-  border-radius: 1rem;
   font-size: 1rem;
   cursor: pointer;
-  overflow: hidden;
 }
 .menu-title::first-letter {
   font-size: 200%;
 }
 .menu-item-group {
   margin: 0 2rem;
+  background-color: #232523;
+  color: #e3e2dc;
+  width: 10rem;
+  z-index: 90;
+  display: none;
 }
 .menu-item {
-  list-style-type: disc;
+  list-style-type: none;
+  border-radius: 1rem;
+  margin: 0 1rem;
+  padding: 0.5rem;
+}
+.menu-item a {
+  color: #e3e2dc;
 }
 .menu-nolink {
   text-decoration: line-through;

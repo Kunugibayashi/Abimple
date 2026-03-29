@@ -12,17 +12,17 @@ jQuery(function(){
   });
 
   // メニュー全体の表示非表示切り替え
-  jQuery('button.menu-button').on('click', function(){
+  jQuery('.menu-button').on('click', function(){
     jQuery('div.index-menu').toggle('slow');
   });
 
   // メニュー表示非表示切り替え
-  jQuery('h2.menu-title').on('click', function(){
+  jQuery('.menu-title').on('click', function(){
     jQuery(this).next('ul').toggle('slow');
   });
 
   // HTMLタグの説明
-  jQuery('div.htmltag-mark').on('mouseover', function(){
+  jQuery('.htmltag-mark').on('mouseover', function(){
     var divStr = [
       '<div class="htmltag-tooltip-wrap">',
       '使用可能タグは以下の通りです。',
@@ -35,17 +35,17 @@ jQuery(function(){
     var htmltag = jQuery(divStr.join(''));
     jQuery(this).append(htmltag);
   });
-  jQuery('div.htmltag-mark').on('mouseout', function(){
+  jQuery('.htmltag-mark').on('mouseout', function(){
     jQuery(this).find("div.htmltag-tooltip-wrap").remove();
   });
 
   // フレーム表示の場合は親全画面リロードでトップに戻る
-  jQuery('button.sitetop-button').on('click', function(){
+  jQuery('.sitetop-button').on('click', function(){
     parent.location.reload();
   });
 
   // 名前色
-  jQuery('input.select-color').on('input', function(){
+  jQuery('.select-color').on('input', function(){
     var code = jQuery(this).val();
     jQuery(this).parent().find('input[name="color"]').val(code);
   });
@@ -55,7 +55,7 @@ jQuery(function(){
   });
 
   // 背景色
-  jQuery('input.select-bgcolor').on('input', function(){
+  jQuery('.select-bgcolor').on('input', function(){
     var code = jQuery(this).val();
     jQuery(this).parent().find('input[name="bgcolor"]').val(code);
   });

@@ -40,7 +40,8 @@ define('SITE_ROOT', '/Abimple');
  *
  * core/css/ 配下のテンプレート名を入力してください。拡張子はいりません。
  * 例）
- * template1 … シンプルなテンプレート
+ * template1 … シンプルな横型テンプレート
+ * template2 … シンプルな縦型テンプレート
  */
 define('SITE_TEMPLATE', 'template1');
 
