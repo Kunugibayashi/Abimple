@@ -94,7 +94,8 @@ code {
   display: grid;
   grid-template-columns: 1fr 17rem;
   grid-template-rows: 8rem 1fr 8rem;
-  margin: 2rem 4rem;
+  height: 100%;
+  width: 100%;
 }
 .index-header {
   grid-row: 1 / 2;
@@ -117,8 +118,8 @@ code {
 .index-frame-wrap {
   grid-row: 1 / 4;
   grid-column: 1 / 2;
-  margin: 0 4rem 0 0;
-  height: 90vh;
+  margin: 0 3rem 0 0;
+  height: calc(100vh - 7px);
 }
 .index-footer-menu {
   font-size: 0.6rem;

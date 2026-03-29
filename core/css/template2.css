@@ -121,7 +121,7 @@ code {
 .index-frame-wrap {
   grid-row: 4 / 5;
   margin: 0;
-  height: 75vh;
+  height: calc(100vh - 14rem - 7px);
   width: 100%;
   z-index: 10;
 }
