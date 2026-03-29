@@ -65,6 +65,8 @@ function writeLog($level, $message) {
         || $function === 'selectChatroomsConfig'
         || $function === 'selectEqualChatentries'
         || $function === 'insertChatlogs'
+        || $function === 'selectOnlineCount'
+        || $function === 'insertChatonlines'
       )
     ) {
       return;
