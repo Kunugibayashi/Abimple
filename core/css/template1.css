@@ -527,6 +527,9 @@ td {
 .cell-roomtitle { min-width: 20rem; width: 20rem; }
 .cell-logentries { min-width: 10rem; }
 .cell-action1button { min-width: 8rem; width: 8rem; }
+.cell-dicerule { min-width: 10rem; width: 10rem; }
+.cell-diceinput { min-width: 27rem; width: 27rem; }
+.cell-diceexample { min-width: 27rem; width: 27rem; }
 
 /* お知らせ */
 .infomation-table-wrap th {

@@ -22,7 +22,9 @@ logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
 
 $jsonArray['code'] = 0;
 $jsonArray['errorMessage'] = '';
+
 $messageString = '';
+$outputCmment = '';
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // GETは処理しない。

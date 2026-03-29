@@ -57,9 +57,14 @@ function renderChatLog(array $chatline, array $chatroom): string {
  * システムログ成形
  */
 function renderSystemLog(array $chatline): string {
+  if ($chatline['whisperflg'] != 0) {
+    $classname = 'whisper-message-wrap';
+  } else {
+    $classname = '';
+  }
   ob_start();
 ?>
-<div class="chat-narr-wrap">
+<div class="chat-narr-wrap <?php echo h($classname); ?>">
   <span class="chat-narr-fullname">
     <?php if ($chatline['whisperflg'] != 0) {  /* ささやき */  ?>
       （システム→<?php echo h($chatline['wtofullname']); ?>）
@@ -83,12 +88,17 @@ function renderSystemLog(array $chatline): string {
  * 発言ログ成形
  */
 function renderCharacterLog(array $chatline, array $chatroom): string {
+  if ($chatline['whisperflg'] != 0) {
+    $classname = 'whisper-message-wrap';
+  } else {
+    $classname = '';
+  }
   ob_start();
 ?>
 <?php if ($chatroom['logtemplate'] === CHAT_LOG_TEMPLATE1) { ?>
-  <div class="chat-wrap" style="background-color: unset; color: <?php echo h($chatline['color']); ?>;">
+  <div class="chat-wrap <?php echo h($classname); ?>" style="background-color: unset; color: <?php echo h($chatline['color']); ?>;">
 <?php } else { ?>
-  <div class="chat-wrap" style="background-color: <?php echo h($chatline['bgcolor']); ?>; color: <?php echo h($chatline['color']); ?>;">
+  <div class="chat-wrap <?php echo h($classname); ?>" style="background-color: <?php echo h($chatline['bgcolor']); ?>; color: <?php echo h($chatline['color']); ?>;">
 <?php } ?>
     <span class="chat-fullname">
       <?php if ($chatline['whisperflg'] != 0) {  /* ささやき */  ?>

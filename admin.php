@@ -46,7 +46,13 @@ adminOnly();
       <ul class="menu-item-group">
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>manual/src/manual.php" target="indexTop">管理説明書</a></li>
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>manual/src/design.php" target="indexTop">デザイン確認</a></li>
+      </ul>
+    </nav>
+    <nav class="menu menu-site">
+      <h2 class="menu-title">Rule</h2>
+      <ul class="menu-item-group">
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>manual/src/htmltag.php" target="indexTop">使用可能タグ</a></li>
+        <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>manual/src/diceinfo.php" target="indexTop">ダイス記載</a></li>
       </ul>
     </nav>
     <nav class="menu menu-site">
