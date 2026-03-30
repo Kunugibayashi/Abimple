@@ -61,7 +61,18 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   $chatentries = selectEqualChatentries($dbhChatentries);
 
   // 既に入室しているキャラクターがいる場合は一覧を取得
-  $myEntryCharacternames = getRoomChatCharacternames($roomdir);
+  $myEntryCharactes = getRoomChatCharacternames();
+  $thisRoomEntry = array();
+  $otherRoomEntry = array();
+  foreach ($myEntryCharactes as $entry) {
+    $tmpRoomdir = (string)($entry['roomdir'] ?? '');
+    $tmpnNme = (string)($entry['charactername'] ?? '');
+    if ($tmpRoomdir === $roomdir) {
+      $thisRoomEntry[] = $tmpnNme;
+    } else {
+      $otherRoomEntry[] = $tmpnNme;
+    }
+  }
 
   goto outputPage;
 }
@@ -111,6 +122,13 @@ outputPage:
 <div id="id-roomtop-content-wrap" class="content-wrap"><!-- roomtopと共通 -->
 
   <header id="id-roomtop-header" class="roomtop-header"><!-- roomtopと共通 -->
+    <nav class="roomtop-header-menu">
+      <ul class="roomtop-header-item-group">
+        <?php if (CHAT_ROOM_SHOW_ONLINE) { ?>
+          <li class="roomtop-header-item onlinecount-wrap">閲覧者：<span id="id-onlinecount"></span>人</li>
+        <?php } ?>
+      </ul>
+    </nav>
   </header>
 
   <?php if (usedArr($errors)) { /* エラーメッセージ */ ?>
@@ -131,10 +149,16 @@ outputPage:
         <p class="note">
           この画面は同ブラウザで複数開くと入室エラーとなります。ご注意ください。エラーとなった場合は画面を更新するか、前のページに戻ってください。<br>
         </p>
-        <?php if (usedArr($myEntryCharacternames)) { /* 入室している場合は名前の一覧を出力する */ ?>
+        <?php if (usedArr($thisRoomEntry)) { /* 現ルームに入室している場合は名前の一覧を出力する */ ?>
           <p class="note">
-            すでに『<?php echo h(implode('』『', $myEntryCharacternames)); ?>』で入室しています。<br>
+            すでに『<?php echo h(implode('』『', $thisRoomEntry)); ?>』で入室しています。<br>
             入室ナレーションを表示させたくない場合は、同じキャラクターを選んで入室してください。<br>
+          </p>
+        <?php } ?>
+        <?php if (usedArr($otherRoomEntry)) { /* 他ルームに入室している場合は名前の一覧を出力する */ ?>
+          <p class="note">
+            他ルームに『<?php echo h(implode('』『', $otherRoomEntry)); ?>』で入室しています。<br>
+            このキャラクターで入室することはできません。<br>
           </p>
         <?php } ?>
       </div>
@@ -224,14 +248,6 @@ outputPage:
         </ul>
       </div>
     </header>
-
-    <?php if (CHAT_ROOM_SHOW_ONLINE && $chatroom['secrettype'] == CHAT_ROOM_OPEN) { ?>
-      <div class="onlinecount-wrap">
-        <h5 class="onlinecount-title">閲覧者：</h5>
-        <div id="id-onlinecount" class="onlinecount-item-group"></div>
-        <div class="onlinecount-note">人</div>
-      </div>
-    <?php } ?>
 
     <div class="entries-wrap">
       <h5 class="entries-title">参加者：</h5>

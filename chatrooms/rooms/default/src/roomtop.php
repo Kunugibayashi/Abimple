@@ -97,6 +97,9 @@ outputPage:
   <header id="id-roomtop-header" class="roomtop-header"><!-- roomtopと共通 -->
     <nav class="roomtop-header-menu">
       <ul class="roomtop-header-item-group">
+        <?php if (CHAT_ROOM_SHOW_ONLINE) { ?>
+          <li class="roomtop-header-item onlinecount-wrap">閲覧者：<span id="id-onlinecount"></span>人</li>
+        <?php } ?>
         <?php if ($chatroom['isfree']) { ?>
           <li class="roomtop-header-item"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>roomseting.php">ルーム設定変更</a></li>
         <?php } ?>
@@ -150,14 +153,6 @@ outputPage:
         </ul>
       </div>
     </header>
-
-    <?php if (CHAT_ROOM_SHOW_ONLINE && $chatroom['secrettype'] == CHAT_ROOM_OPEN) { ?>
-      <div class="onlinecount-wrap">
-        <h5 class="onlinecount-title">閲覧者：</h5>
-        <div id="id-onlinecount" class="onlinecount-item-group"></div>
-        <div class="onlinecount-note">人</div>
-      </div>
-    <?php } ?>
 
     <div class="entries-wrap">
       <h5 class="entries-title">参加者：</h5>

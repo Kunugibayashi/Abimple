@@ -325,6 +325,16 @@ function isChatEntry($characterid): bool {
   return isset($_SESSION['chatentry'][$characterid])
     && (string)($_SESSION['chatentry'][$characterid]['roomdir'] ?? '') !== '';
 }
+/* 指定キャラが入室しているルーム */
+function isChatEntryRoom($characterid): string {
+  $characterid = (string)$characterid;
+  if (isset($_SESSION['chatentry'][$characterid])
+    && (string)($_SESSION['chatentry'][$characterid]['roomdir']) !==''
+  ) {
+    return (string)($_SESSION['chatentry'][$characterid]['roomdir']);
+  }
+  return '';
+}
 /* 指定キャラの現在ルーム取得 */
 function getCharacterRoomEntry($characterid): string {
   $characterid = (string)$characterid;
@@ -338,27 +348,27 @@ function isNowRoomEntry($characterid, $roomdir): bool {
   $nowRoom = $_SESSION['chatentry'][$characterid]['roomdir'] ?? '';
   return $nowRoom === $roomdir;
 }
-/* 指定ルームに入室しているキャラクター名一覧取得 */
-function getRoomChatCharacternames($roomdir): array {
-  $roomdir = (string)$roomdir;
+/* 既に入室しているキャラクター名一覧取得 */
+function getRoomChatCharacternames(): array {
   $entries = $_SESSION['chatentry'] ?? [];
-  if (!is_array($entries) || $roomdir === '') {
+  if (!is_array($entries)) {
     return [];
   }
-  $result = [];
+  $results = [];
   foreach ($entries as $entry) {
     if (!is_array($entry)) {
       continue;
     }
-    if ((string)($entry['roomdir'] ?? '') !== $roomdir) {
-      continue;
-    }
+    $roomdir = (string)($entry['roomdir'] ?? '');
+    $characterid = (string)($entry['characterid'] ?? '');
     $name = (string)($entry['charactername'] ?? '');
-    if ($name !== '') {
-      $result[] = $name;
-    }
+    $results[] = [
+      'roomdir' => $roomdir,
+      'characterid' => $characterid,
+      'charactername' => $name,
+    ];
   }
-  return $result;
+  return $results;
 }
 
 /* チャットトークン保存（characterid単位） */

@@ -410,7 +410,6 @@ header.chatroom-header-wrap {
   align-items: center;
   margin-left: 0.5rem;
 }
-.onlinecount-title,
 .entries-title {
   font-weight: bold;
   font-size: 1rem;
@@ -426,10 +425,6 @@ header.chatroom-header-wrap {
   margin-right: 0.5rem;
   border-radius: 0.2rem;
   padding: 0.2rem;
-  font-size: 0.8rem;
-}
-.onlinecount-note,
-.onlinecount-item-group {
   font-size: 0.8rem;
 }
 /* 部屋案内ポップアップ */

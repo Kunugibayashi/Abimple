@@ -34,6 +34,15 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 // 画面表示時はキャラクターIDが決まっていないため、空でチェック
 checkChatEnterToken();
 
+$nowEntryRoom = (string)isChatEntryRoom($inputParams['characterid']);
+if ($nowEntryRoom !=='' && $nowEntryRoom !== (string)$roomdir) {
+  // 空の場合は未入室のためOK
+  // roomdir が一致しない場合は他ルーム
+  echo 'このキャラクターは他のルーム（' .$nowEntryRoom .'）に入室しています。';
+  echo '入室者一覧に名前が表示されていないまま、このメッセージが表示される場合は一度ログアウトし、ログインしなおしてください。';
+  exit;
+}
+
 // 管理者のみ複数キャラクター入室可能の場合はチェック
 if (CHAT_MULTI_ENTRY_MODE === 1 && !isAdmin()) {
   // セッションから値を取得
@@ -233,6 +242,9 @@ outputPage:
   <header id="id-roomtop-header" class="roomtop-header"><!-- roomtopと共通 -->
     <nav class="roomtop-header-menu">
       <ul class="roomtop-header-item-group">
+        <?php if (CHAT_ROOM_SHOW_ONLINE) { ?>
+          <li class="roomtop-header-item onlinecount-wrap">閲覧者：<span id="id-onlinecount"></span>人</li>
+        <?php } ?>
         <li class="roomtop-header-item">
           <?php /* アクセス先で本人確認しているため GET で良い */ ?>
           <a href="<?php echo h($ROOMDIR_SRC_LINK); ?>chatinroomlogdl.php?id=<?php echo h($inputParams['characterid']); ?>">現行ログDL</a>
@@ -469,14 +481,6 @@ outputPage:
         </ul>
       </div>
     </header>
-
-    <?php if (CHAT_ROOM_SHOW_ONLINE && $chatroom['secrettype'] == CHAT_ROOM_OPEN) { ?>
-      <div class="onlinecount-wrap">
-        <h5 class="onlinecount-title">閲覧者：</h5>
-        <div id="id-onlinecount" class="onlinecount-item-group"></div>
-        <div class="onlinecount-note">人</div>
-      </div>
-    <?php } ?>
 
     <div class="entries-wrap">
       <h5 class="entries-title">参加者：</h5>
