@@ -92,7 +92,7 @@ code {
  */
 .index-wrap {
   display: grid;
-  grid-template-columns: 1fr 17rem;
+  grid-template-columns: 1fr 18rem;
   grid-template-rows: 8rem 1fr 8rem;
   height: 100%;
   width: 100%;
@@ -118,7 +118,6 @@ code {
 .index-frame-wrap {
   grid-row: 1 / 4;
   grid-column: 1 / 2;
-  margin: 0 3rem 0 0;
   height: calc(100vh - 7px);
 }
 .index-footer-menu {
@@ -194,6 +193,10 @@ code {
 .index-warning-wrap {
   margin-top: 3rem;
   font-size: 0.9rem;
+}
+.index-footer,
+.index-menu {
+  margin: 0 0 0 1.7rem;
 }
 
 /* ****************************************************************************
@@ -961,6 +964,7 @@ td {
   font-size: 0.8rem;
   padding: 0.2rem;
   margin: 0 0.5rem 0 0;
+  border-radius: 0.2rem;
 }
 .chatroom-wrap .news-row:nth-child(1) {
   border-bottom: 1px solid;

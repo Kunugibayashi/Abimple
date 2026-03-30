@@ -805,7 +805,6 @@ function creatRooms($dbh) {
     CREATE TABLE rooms (
       id        INTEGER        PRIMARY KEY AUTOINCREMENT,
       roomdir   VARCHAR(20)    NOT NULL UNIQUE,
-      roomtitle VARCHAR(100)   NOT NULL,
       published INTEGER        NOT NULL DEFAULT 0,
       displayno INTEGER        NOT NULL DEFAULT 0,
 
@@ -900,7 +899,6 @@ function selectEqualRoomsList($dbh, $params = array()) {
     SELECT
       id,
       roomdir,
-      roomtitle,
       published,
       displayno,
       created,
@@ -1115,12 +1113,12 @@ function createChatrooms($dbh) {
   $sql = "
     CREATE TABLE chatrooms (
       id            INTEGER        PRIMARY KEY AUTOINCREMENT,
-      title         VARCHAR(100)   NOT NULL,
+      title         VARCHAR(100)   NOT NULL DEFAULT '',
       guide         TEXT           NOT NULL,
       toptemplate   VARCHAR(20)    NOT NULL DEFAULT 'default',
       logtemplate   VARCHAR(20)    NOT NULL DEFAULT 'default',
       isfree        INTEGER        NOT NULL DEFAULT 0,
-      secrettype      INTEGER        NOT NULL DEFAULT 0,
+      secrettype    INTEGER        NOT NULL DEFAULT 0,
       color         VARCHAR(7)     NOT NULL DEFAULT '#696969',
       bgcolor       VARCHAR(7)     NOT NULL DEFAULT '#f5f5f5',
       bgimage       TEXT           NOT NULL DEFAULT '',

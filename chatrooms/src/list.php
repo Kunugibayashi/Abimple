@@ -82,7 +82,6 @@ outputPage:
             <th class="cell-action">操作</th>
           <?php } ?>
           <th class="cell-roomdir">roomdir</th>
-          <th class="cell-roomtitle">ルームタイトル</th>
           <th class="cell-published">一覧に表示するか</th>
           <th class="cell-displayno">順序</th>
           <th class="cell-roomlink"></th>
@@ -97,7 +96,6 @@ outputPage:
               </td>
             <?php } ?>
             <td><?php echo h($value['roomdir']); ?></td>
-            <td><?php echo h($value['roomtitle']); ?></td>
             <td><?php if ($value['published']) { echo '表示する'; } else { echo '表示しない'; } ?></td>
             <td><?php echo h($value['displayno']); ?></td>
             <td><a href="<?php echo h(CHAT_ROOM_ROOMS_LINK); ?><?php echo h($value['roomdir']); ?>/src/roomtop.php">トップへ</a></td>

@@ -18,12 +18,29 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   $chatrooms = array();
   foreach ($roomList as $key => $value) {
-    $chatroom = array();
 
-    $dbPath = CHAT_ROOM_ROOMS_PATH .$value['roomdir'] .'/src/' .CHAT_ENTRIES_DB;
+    $dbPathChatrooms = CHAT_ROOM_ROOMS_PATH .$value['roomdir'] .'/src/' .CHAT_ROOMS_DB;
+    $dbPathEntryes = CHAT_ROOM_ROOMS_PATH .$value['roomdir'] .'/src/' .CHAT_ENTRIES_DB;
 
-    if (file_exists($dbPath)) {
-      $dbhChatentries = connectRo($dbPath);
+    if (file_exists($dbPathChatrooms)) {
+      $dbhChatrooms = connectRo($dbPathChatrooms);
+      $tmpChatrooms = selectChatroomsConfig($dbhChatrooms);
+      $tmpChatroom = $tmpChatrooms[0] ?? [];
+      $chatroom = $tmpChatroom;
+      // この関数内のみでコネクションを完結する
+      $dbhChatrooms->close();
+    } else {
+      // DBが作成されていない場合は空を格納
+      $chatroom = [
+        'secrettype' => 0,
+        'title' => '',
+        'bgcolor' => '#000000',
+        'color' => '#ffffff',
+      ];
+    }
+
+    if (file_exists($dbPathEntryes)) {
+      $dbhChatentries = connectRo($dbPathEntryes);
       $chatentries = selectEqualChatentries($dbhChatentries);
       // この関数内のみでコネクションを完結する
       $dbhChatentries->close();
@@ -32,7 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
       $chatentries = array();
     }
 
-    $chatroom['roomtitle'] = $value['roomtitle'];
     $chatroom['chatentries'] = $chatentries;
     $chatroom['roomtop'] = CHAT_ROOM_ROOMS_LINK .$value['roomdir'] .'/src/roomtop.php';
 
@@ -57,7 +73,12 @@ outputPage:
 <?php foreach ($chatrooms as $chatroom) { ?>
 <div class="news-contents">
   <ul class="news-row">
-    <li class="news-col-title"><a href="<?php echo h($chatroom['roomtop']); ?>"><?php echo h($chatroom['roomtitle']); ?></a>（<a href="<?php echo h($chatroom['roomtop']); ?>" target="_blank">別窓表示</a>）</li>
+    <li class="news-col-title">
+<a href="<?php echo h($chatroom['roomtop']); ?>">
+<?php if ($chatroom['secrettype'] == CHAT_ROOM_SECRET) { ?>【秘匿】<?php } ?>
+<?php if ($chatroom['secrettype'] == CHAT_ROOM_KEYWORD) { ?>【KEYWORD】<?php } ?>
+<?php echo h($chatroom['title']); ?>
+</a>（<a href="<?php echo h($chatroom['roomtop']); ?>" target="_blank">別窓表示</a>）</li>
   </ul>
   <ul class="news-row">
     <li class="news-col-title">参加者：</li>
@@ -68,9 +89,16 @@ outputPage:
         <?php } ?>
         <?php if (usedArr($chatroom['chatentries'])) { /* 参加者がいる場合 */ ?>
           <?php foreach ($chatroom['chatentries'] as $key => $value) { ?>
-            <li class="news-col-item-row-item" style="background-color: <?php echo h($value['bgcolor']); ?>;" >
-              <span style="color: <?php echo h($value['color']); ?>;" ><?php echo h($value['fullname']); ?></span>
-            </li>
+            <?php if ($chatroom['secrettype'] == CHAT_ROOM_OPEN) { ?>
+              <li class="news-col-item-row-item" style="background-color: <?php echo h($value['bgcolor']); ?>;" >
+                <span style="color: <?php echo h($value['color']); ?>;" ><?php echo h($value['fullname']); ?></span>
+              </li>
+            <?php } else if($chatroom['secrettype'] == CHAT_ROOM_KEYWORD) { ?>
+              <li class="news-col-item-row-item" style="background-color: <?php echo h($chatroom['bgcolor']); ?>;" >
+                <span style="color: <?php echo h($chatroom['color']); ?>;" >―</span>
+              </li>
+            <?php } ?>
+            <?php /* 秘匿ルームは参加者を表示しない */ ?>
           <?php } ?>
         <?php } ?>
       </ul>

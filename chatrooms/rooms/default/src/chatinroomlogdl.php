@@ -85,7 +85,7 @@ if (!usedArr($myChatentries)) {
 
 // 入室時はささやきを含めてログを取得する
 $characterid = (int)$inputParams['characterid'];
-$chatrows = selectEqualInroomChatlogsChunk($dbhChatlogs, 100, $characterid);
+$chatrows = selectEqualInroomChatlogsChunk($dbhChatlogs, 200, $characterid);
 
 // DL名
 $siteTitle = removeUnsafeChars(SITE_TITLE);

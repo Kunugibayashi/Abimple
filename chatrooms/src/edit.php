@@ -14,7 +14,6 @@ $inputParams = array();
 
 $inputParams['id'] = inputParam('id', 20);
 $inputParams['roomdir'] = inputParam('roomdir', 20);
-$inputParams['roomtitle'] = inputParam('roomtitle', 100);
 $inputParams['published'] = inputParam('published', 1);
 $inputParams['displayno'] = inputParam('displayno', 10000);
 
@@ -47,12 +46,6 @@ if ($inputParams['roomdir'] === 'default') {
 }
 if (preg_match('/[^A-Za-z0-9]/', $inputParams['roomdir'])) {
   $errors[] = 'roomdir に使用できるのは数字とアルファベットのみです。';
-}
-if (!usedStr($inputParams['roomtitle'])) {
-  $errors[] = 'ルーム名を入力してください。';
-}
-if (usedStr($inputParams['roomtitle']) && isUnsafeChars($inputParams['roomtitle'])) {
-  $errors[] = 'ルームタイトルに利用不可な制御文字、あるいは記号が含まれています。';
 }
 if (!usedStr($inputParams['displayno'])) {
   $errors[] = '表示順序を入力してください。';
@@ -167,11 +160,6 @@ outputPage:
           <li class="form-col-title">roomdir<div class="mandatory-mark"></div></li>
           <li class="form-col-item"><input type="text" name="roomdir" value="<?php echo h($inputParams['roomdir']); ?>" maxlength="20"></li>
           <li class="form-col-note">最大 20 文字まで。チャットルームの URL に使用されます。</li>
-        </ul>
-        <ul class="form-row">
-          <li class="form-col-title">ルーム名<div class="mandatory-mark"></div></li>
-          <li class="form-col-item"><input type="text" name="roomtitle" value="<?php echo h($inputParams['roomtitle']); ?>" maxlength="100"></li>
-          <li class="form-col-note">最大 100 文字まで。一覧の部屋タイトルに使用されます。</li>
         </ul>
         <ul class="form-row">
           <li class="form-col-title">一覧に表示するか<div class="mandatory-mark"></div></li>

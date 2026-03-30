@@ -54,6 +54,7 @@ outputPage:
           intervalId = null;
         }
       };
+      // 裏に回った場合は更新しない
       document.addEventListener('visibilitychange', () => {
         if (document.hidden) stop();
         else start();
