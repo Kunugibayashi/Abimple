@@ -158,7 +158,7 @@ $expressionString = preg_replace_callback($pattern, function($matches) use (&$te
 // {} 単語リストを具体的な値に変換
 $replaceTable = [];
 foreach ($statusArray as $key => $data) {
-    $replaceTable[$key] = '(' .$data['status'] .')';
+    $replaceTable[$key] = $data['status'];
 }
 $processString = strtr($processString, $replaceTable);
 $parsedArray['process'] = $processString;
@@ -203,9 +203,9 @@ if ($isComparison) {
       .'<span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span>'
       .'</span>'
       .'<span class="dice">'  .' ' .$parsedArray['command'] .$outputCmment
-      .' ＞ ' .$parsedArray['process']
-      .' ＞ ' .$parsedArray['scoreString']
-      .' ＞ ' .$parsedArray['resultString']
+      .'<span class="dice-arrow">＞</span>' .$parsedArray['process']
+      .'<span class="dice-arrow">＞</span>' .$parsedArray['scoreString']
+      .'<span class="dice-arrow">＞</span>' .$parsedArray['resultString']
     .'</span>'
   );
 } else {
@@ -219,8 +219,8 @@ if ($isComparison) {
       .'<span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span>'
       .'</span>'
       .'<span class="dice">' .' ' .$parsedArray['command'] .$outputCmment
-      .' ＞ ' .$parsedArray['process']
-      .' ＞ ' .$parsedArray['total']
+      .'<span class="dice-arrow">＞</span>' .$parsedArray['process']
+      .'<span class="dice-arrow">＞</span>' .$parsedArray['total']
     .'</span>'
   );
 }

@@ -108,12 +108,15 @@ $text = $omiArray[$me - 1];
 // メッセージ作成
 $messageString = (
   '<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-    .'<span class="omikuji">（' .$omiName .'）＞ [' .$me .'] ＞ ' .$text
+    .'<span class="omikuji">（' .$omiName .'）'
+    .'<span class="omi-arrow">＞</span>' .'[' .$me .'] '
+    .'<span class="omi-arrow">＞</span>' .$text
   .'</span>'
 );
 $announceString = (
   '<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-    .'<span class="deck">（' .$omiName .'）＞ ' .$character['fullname'] .' が ' .$omiName .' を引きました。'
+    .'<span class="omikuji">（' .$omiName .'）'
+    .'<span class="omi-arrow">＞</span>' .$character['fullname'] .' が ' .$omiName .' を引きました。'
   .'</span>'
 );
 

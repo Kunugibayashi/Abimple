@@ -111,7 +111,8 @@ updateChatroomsConfig($dbhChatrooms, [
 
 $messageString = (
   '<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-    .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .$character['fullname'] .' が山札をリセットしました。'
+    .'<span class="deck">（' .$chatroom['deck1name'] .'）'
+    .'<span class="deck-arrow">＞</span>' .$character['fullname'] .' が山札をリセットしました。'
   .'</span>'
 );
 

@@ -298,6 +298,20 @@ input[name="memo"] {
 input[name="dice"] {
   width: 13rem;
 }
+.deck-arrow,
+.omi-arrow,
+.dice-arrow {
+  font-size: 0.7rem;
+  margin: 0 1rem;
+}
+.dice-success {
+  font-weight: bold;
+  color: #00bfff;
+}
+.dice-fail {
+  font-weight: bold;
+  color: #8b0000;
+}
 .drawonly-button {
   border: 1px solid #3e463b;
 }

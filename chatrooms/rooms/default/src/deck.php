@@ -143,12 +143,14 @@ $showTextArray = explode('#', $showTailArray['deckValue']);
 // メッセージ作成
 $messageString = (
   '<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-    .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .$showTextArray[1]
+    .'<span class="deck">（' .$chatroom['deck1name'] .'）'
+    .'<span class="deck-arrow">＞</span>' .$showTextArray[1]
   .'</span>'
 );
 $announceString = (
   '<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-    .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .$character['fullname'] .' がカードを引きました。'
+    .'<span class="deck">（' .$chatroom['deck1name'] .'）'
+    .'<span class="deck-arrow">＞</span>' .$character['fullname'] .' がカードを引きました。'
   .'</span>'
 );
 
