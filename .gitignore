@@ -10,6 +10,10 @@ chatrooms/rooms/*
 chatloghtml/zip/*.zip
 characterhtml/html/css/*.css
 characterhtml/zip/*.zip
+characterhtml/img/*.png
+characterhtml/img/*.jpg
+characterhtml/img/*.gif
+characterhtml/img/*.webp
 systemlog/*.log
 letterinboxhtml/html/css/*.css
 letterinboxhtml/html/*.html
