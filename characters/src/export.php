@@ -23,6 +23,10 @@ $characterIds = array_column($tmpCharacterIds, 'id');
 
 $nameListColumns = buildNameListColumns();
 
+// DL名に使用。使用不可文字が混じらないように変換。
+$userName = getUsername();
+$userName = removeUnsafeChars($userName);
+
 // index 用データの取得
 $characters = selectLikeCharactersList($dbhCharacters);
 
@@ -76,7 +80,7 @@ file_put_contents($indexOutPath, $indexHtmlString, LOCK_EX);
 
 // zip ファイル変換
 $zip = new ZipArchive();
-$zipName = 'CharacterData.zip';
+$zipName = $userName .'_CharacterData.zip';
 $zipFilePath = CHARACTER_ZIP_PATH .'' .$zipName;
 $opened = false;
 
@@ -113,6 +117,18 @@ header('Connection: close');
 while (ob_get_level()) { ob_end_clean(); }
 
 // ファイルの内容を出力
-readfile($zipFilePath);
+$handle = fopen($zipFilePath, 'rb');
+if ($handle) {
+  while (!feof($handle)) {
+    echo fread($handle, 1024 * 1024);
+    flush();
+  }
+  fclose($handle);
+
+  // ファイルを削除
+  if (file_exists($zipFilePath)) {
+    unlink($zipFilePath);
+  }
+}
 
 exit;

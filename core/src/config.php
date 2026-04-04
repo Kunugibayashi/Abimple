@@ -308,8 +308,8 @@ define('CHARACTER_TEMPLATE_FILE_PATH', (INDEX_ROOT.'/characters/src/templates/')
 define('CHARACTER_HTML_DIR', '/characterhtml/');
 define('CHARACTER_HTML_PATH', (INDEX_ROOT.CHARACTER_HTML_DIR.'html/'));
 define('CHARACTER_ZIP_PATH', (INDEX_ROOT.CHARACTER_HTML_DIR.'zip/'));
-define('CHARACTER_IMAGE_PATH', (INDEX_ROOT.CHARACTER_HTML_DIR.'html/img/'));
-define('CHARACTER_IMAGE_LINK', (SITE_ROOT.CHARACTER_HTML_DIR.'html/img/'));
+define('CHARACTER_IMAGE_PATH', (INDEX_ROOT.CHARACTER_HTML_DIR.'img/'));
+define('CHARACTER_IMAGE_LINK', (SITE_ROOT.CHARACTER_HTML_DIR.'img/'));
 /* 私書出力 */
 define('LETTER_SRC_LINK', (SITE_ROOT.'/letters/src/'));
 define('LETTER_TEMPLATE_FILE_PATH', (INDEX_ROOT.'/letters/src/templates/'));

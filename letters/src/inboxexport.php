@@ -131,6 +131,18 @@ header('Connection: close');
 while (ob_get_level()) { ob_end_clean(); }
 
 // ファイルの内容を出力
-readfile($zipFilePath);
+$handle = fopen($zipFilePath, 'rb');
+if ($handle) {
+  while (!feof($handle)) {
+    echo fread($handle, 1024 * 1024);
+    flush();
+  }
+  fclose($handle);
+
+  // ファイルを削除
+  if (file_exists($zipFilePath)) {
+    unlink($zipFilePath);
+  }
+}
 
 exit;

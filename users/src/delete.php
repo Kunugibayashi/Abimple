@@ -72,7 +72,22 @@ if ($username === ADMIN_USERNAME) {
   goto outputPage;
 }
 
-/* 削除するDB順序。
+// 出力済キャラクターファイルがある場合は削除
+$characters = selectCharactersMy($dbhCharacters, getUserid(), getUsername());
+if (usedArr($characters)) {
+  foreach ($characters as $key => $character) {
+    $characterhtmlPath = CHARACTER_HTML_PATH  .$character['id'] .'.html';
+    if (file_exists($characterhtmlPath)) {
+      if (!unlink($characterhtmlPath)) {
+        $errors[] = '名簿ファイルの削除に失敗しました。もう一度お試しください。';
+        goto outputPage;
+      }
+    }
+  }
+}
+
+/**
+ * 削除するDB順序。
  * ・キャラクターDB
  * ・ユーザーDB
  */

@@ -66,7 +66,19 @@ header('Connection: close');
 // 出力バッファクリア
 while (ob_get_level()) { ob_end_clean(); }
 
-// HTML内容を出力
-readfile($filepath);
+// ファイルの内容を出力
+$handle = fopen($filepath, 'rb');
+if ($handle) {
+  while (!feof($handle)) {
+    echo fread($handle, 1024 * 1024);
+    flush();
+  }
+  fclose($handle);
+
+  // ファイルを削除
+  if (file_exists($filepath)) {
+    unlink($filepath);
+  }
+}
 
 exit;

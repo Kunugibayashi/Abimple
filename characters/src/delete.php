@@ -73,11 +73,20 @@ $userid = $character['userid'];
 $username = $character['username'];
 
 if (NAMELIST_UPLOAD_IMAGE || isAdmin()) {
-  // 削除
+  // 画像削除
   $delresult = deleteImageFile(CHARACTER_IMAGE_PATH, $character['imgfile']);
   if (!usedArr($delresult) && $delresult['code'] != 0) {
     $errors[] = '画像の削除に失敗しました。もう一度お試しください。';
     $errors[] = $delresult['errorMessage'];
+    goto outputPage;
+  }
+}
+
+// 出力済キャラクターファイルがある場合は削除
+$characterhtmlPath = CHARACTER_HTML_PATH  .$character['id'] .'.html';
+if (file_exists($characterhtmlPath)) {
+  if (!unlink($characterhtmlPath)) {
+    $errors[] = '名簿ファイルの削除に失敗しました。もう一度お試しください。';
     goto outputPage;
   }
 }
