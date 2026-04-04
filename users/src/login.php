@@ -56,6 +56,8 @@ if(!password_verify($inputParams['password'], $user['password'])){
 setUserid($user['id']);
 setUsername($user['username']);
 
+sessionLog();
+
 // セッションハイジャック対策
 session_regenerate_id(true);
 $success = 'ログインに成功しました。';

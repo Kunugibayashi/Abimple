@@ -615,12 +615,12 @@ jQuery(function(){
   jQuery('button.change-display-button').on('click', function(){
     if (jQuery('div.random-wrap').css('display') == 'block') {
       // 隠す
-      jQuery('textarea[name="message"]').css('width', '85vw');
+      jQuery('textarea[name="message"]').css('width', 'calc(100vw - 10rem)');
       jQuery('div.roomchat-content-wrap').css('grid-template-columns', '1fr 0rem');
       jQuery('#id-roomtop-content-wrap').css('grid-template-rows', '2rem 16rem 1fr');
     } else {
       // 表示
-      jQuery('textarea[name="message"]').css('width', '60vw');
+      jQuery('textarea[name="message"]').css('width', 'calc(100vw - 25rem)');
       jQuery('div.roomchat-content-wrap').css('grid-template-columns', '1fr 16rem');
       jQuery('#id-roomtop-content-wrap').css('grid-template-rows', '2rem 28rem 1fr');
     }

@@ -116,11 +116,12 @@
   #id-roomchat-content-wrap {
     display: grid;
     grid-template-columns: auto;
-    grid-template-rows: 3rem 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr;
   }
   #id-roomtop-header {
     grid-column: 1 / 2;
     grid-row: 1 / 2;
+    overflow: auto;
   }
   .chat-form-wrap {
     grid-column: 1 / 2;
@@ -134,36 +135,37 @@
     overflow: visible;
     margin: 0 0 1rem 1rem;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
   }
   .chatroom-frame-wrap {
     grid-column: 1 / 2;
     grid-row: 4 / 5;
     overflow: visible;
   }
-  #chat-form .form-row {
+  #id-chat-form .form-row {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
-  #chat-form .form-col-title,
-  #chat-form .form-col-title:not(:first-child) {
+  #id-chat-form .form-col-title,
+  #id-chat-form .form-col-title:not(:first-child) {
     width: 7rem;
     min-width: 7rem;
     margin: 0.5rem 0;
     font-weight: bold;
   }
-  #chat-form textarea[name="message"] ,
-  #chat-form input[name="memo"] {
-    width: 25rem;
+  #id-chat-form textarea[name="message"] ,
+  #id-chat-form input[name="memo"] {
+    width: calc(100vw - 3rem);
+    box-sizing: border-box;
   }
-  #reload-form .form-row {
+  #id-reload-form .form-row {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
-  #reload-form .form-col-title,
-  #reload-form .form-col-title:not(:first-child) {
+  #id-reload-form .form-col-title,
+  #id-reload-form .form-col-title:not(:first-child) {
     width: 7rem;
     min-width: 7rem;
     margin: 0.5rem 0;

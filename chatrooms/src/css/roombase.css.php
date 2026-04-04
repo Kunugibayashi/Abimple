@@ -176,6 +176,7 @@ input[name="memo"] {
   display: grid;
   grid-template-columns: 1fr 16rem;
   grid-template-rows: 28rem 1fr;
+  overflow: auto;
 }
 .chat-form-wrap {
   grid-column: 1 / 2;
@@ -194,6 +195,7 @@ input[name="memo"] {
 }
 .chat-form input[name="memo"] {
   width: 60vw;
+  width: calc(100vw - 24rem);
 }
 .chat-form select[name="whisperid"],
 .reload-form select[name="lognum"],
@@ -203,7 +205,7 @@ input[name="memo"] {
 }
 .chat-form textarea[name="message"] {
   resize: both;
-  width: 60vw;
+  width: calc(100vw - 24rem);
   height: 4rem;
 }
 /* エラーメッセージ */
@@ -418,6 +420,9 @@ header.chatroom-header-wrap {
   display: none;
 }
 /* 参加者 */
+#id-onlinecount {
+  min-width: 0.8rem;
+}
 .onlinecount-wrap,
 .entries-wrap {
   display: flex;
