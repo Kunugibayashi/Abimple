@@ -90,7 +90,8 @@ $chatrows = selectEqualInroomChatlogsChunk($dbhChatlogs, 200, $characterid);
 // DL名
 $siteTitle = removeUnsafeChars(SITE_TITLE);
 $chatroomTitle = removeUnsafeChars($chatroom['title']);
-$downloadName = nowYmdhi() .'_' .$siteTitle .'_' .$chatroomTitle .'_'. $chatroom['id'] .'.html';
+$characterName = removeUnsafeChars($character['fullname']);
+$downloadName = nowYmdhi() .'_' .$siteTitle .'_' .$chatroomTitle .'_'. $characterName  .'.html';
 
 header('Content-Type: text/html; charset=UTF-8');
 header('X-Content-Type-Options: nosniff');
