@@ -228,6 +228,7 @@ outputPage:
         <li class="form-col-item"><textarea name="guide" maxlength="2000"><?php echo h($inputParams['guide']); ?></textarea></li>
         <li class="form-col-note">最大 2000 文字</li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">トップテンプレート<div class="mandatory-mark"></div></li>
         <li class="form-col-item">
@@ -278,6 +279,7 @@ outputPage:
         <li class="form-col-note">『秘匿ルーム』にした場合、キーワードを入力したユーザーのみが入室可能になります。キーワードはユーザーが入室画面で設定可能です。参加者全員が退出後、キーワードはリセットされ、ログは削除されます。ログ出力はされません。</li>
         <li class="form-col-note">『キーワードルーム』にした場合、キーワードを入力したユーザーのみが入室可能になります。キーワードは管理者のみが入室画面で設定可能です。退出後もログが残りますが、ログ出力はされません。</li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">基本文字色<div class="optional-mark"></div></li>
         <li class="form-col-item">
@@ -303,6 +305,7 @@ outputPage:
         <li class="form-col-item"><input type="text" name="bgimage" value="<?php echo h($inputParams['bgimage']); ?>" maxlength="1000"></li>
         <li class="form-col-note">最大 1000 文字。絶対パス指定を推奨。 例）/Abimple/assets/img/sample.jpg</li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">おみくじ1を表示するか<div class="mandatory-mark"></div></li>
         <li class="form-col-item">
@@ -342,6 +345,7 @@ outputPage:
           </div>
         </li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">おみくじ2を表示するか<div class="mandatory-mark"></div></li>
         <li class="form-col-item">
@@ -381,6 +385,7 @@ outputPage:
           </div>
         </li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">おみくじ3を表示するか<div class="mandatory-mark"></div></li>
         <li class="form-col-item">
@@ -420,6 +425,7 @@ outputPage:
           </div>
         </li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">山札を表示するか<div class="mandatory-mark"></div></li>
         <li class="form-col-item">
@@ -459,11 +465,13 @@ outputPage:
           </div>
         </li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">ルームCSS追加<div class="optional-mark"></div></li>
         <li class="form-col-item"><textarea name="roomcss" maxlength="10000"><?php echo h($inputParams['roomcss']); ?></textarea></li>
         <li class="form-col-note">最大 10000 文字。チャットルームすべてのページの最下部 <style></style> 内に記載されます。</li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">作成日</li>
         <li class="form-col-item"><?php echo h($inputParams['created']); ?></li>

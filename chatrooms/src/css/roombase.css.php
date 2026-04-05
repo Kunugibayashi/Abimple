@@ -18,6 +18,11 @@ body {
 a {
   color: var(--chat-color);
 }
+.chat-admin-line {
+  border: none;
+  border-top: 1px solid #e3e2dc;
+  margin: 16px 0;
+}
 .note-wrap {
   margin: 0;
 }
