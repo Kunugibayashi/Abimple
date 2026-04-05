@@ -309,7 +309,7 @@ input[name="dice"] {
   color: #8b0000;
 }
 .drawonly-button {
-  border: 1px solid #3e463b;
+  border: 2px solid #3e463b;
 }
 .form-omi-note {
   font-size: 0.75rem;
