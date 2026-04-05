@@ -9,6 +9,12 @@
   <link rel="stylesheet" href="./css/base.css?up=<?php echo h($updateDate); ?>"/>
   <link rel="stylesheet" href="./css/<?php echo h($siteTemplate); ?>.css?up=<?php echo h($updateDate); ?>"/>
   <link rel="stylesheet" href="./css/user-edit.css?up=<?php echo h($updateDate); ?>"/>
+  <!-- 共通として出力できないデザインを上書き -->
+  <style>
+  .table-wrap {
+    overflow: visible;
+  }
+  </style>
   <!-- レスポンシブ用 -->
   <link rel="stylesheet" href="./css/responsive.css?up=<?php echo h($updateDate); ?>"/>
 </head>
