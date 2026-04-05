@@ -882,6 +882,7 @@ td {
 /* お知らせ */
 #id-infomation-contents .news-col-item:nth-child(3){
   width: 100%;
+  min-width: 12rem;
   margin-right: 2rem;
 }
 
@@ -892,6 +893,7 @@ td {
 }
 #id-characters-contents .news-col-item:nth-child(4){
   width: 100%;
+  min-width: 12rem;
   margin-right: 2rem;
 }
 
@@ -904,6 +906,7 @@ td {
 }
 #id-letters-contents .news-col-item:nth-child(5){
   width: 100%;
+  min-width: 12rem;
   margin-right: 2rem;
 }
 
@@ -916,6 +919,7 @@ td {
 }
 #id-myletters-contents .news-col-item:nth-child(5){
   width: 100%;
+  min-width: 12rem;
   margin-right: 2rem;
 }
 
