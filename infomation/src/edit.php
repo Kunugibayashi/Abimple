@@ -15,6 +15,8 @@ $inputParams['id'] = inputParam('id', 20);
 $inputParams['title'] = inputParam('title', 100);
 $inputParams['message'] = inputParam('message', 10000);
 
+$info = [];
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策
   setToken();
@@ -23,6 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   $dbhInfomation = connectRw(INFOMATIONS_DB);
 
   $infoList = selectInfomationsId($dbhInfomation, $inputParams['id']);
+  if (!usedArr($infoList)) {
+    $errors[] = 'データがありません。';
+    goto outputPage;
+  }
   $info = $infoList[0];
 
   // データ更新
@@ -116,7 +122,7 @@ outputPage:
     </div>
   <?php } ?>
 
-  <?php if (!usedStr($success)) { /* 成功以外にフォームを表示 */ ?>
+  <?php if (!usedArr($errors) && !usedStr($success)) { /* エラー、成功以外にフォームを表示 */ ?>
     <div class="form-wrap">
       <form name="user-form" class="user-form" action="<?php echo h(INFO_SEC_LINK); ?>edit.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="token" value="<?php echo h(getToken()); ?>">

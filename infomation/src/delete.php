@@ -21,6 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   $dbhInfomation = connectRw(INFOMATIONS_DB);
 
   $infoList = selectInfomationsId($dbhInfomation, $inputParams['id']);
+  if (!usedArr($infoList)) {
+    $errors[] = 'データがありません。';
+    goto outputPage;
+  }
   $info = $infoList[0];
 
   // データ更新
