@@ -19,6 +19,8 @@ if (!defined('CSS_STRING_MODE')) {
 .chatconfig-title-wrap {
   grid-column: 1 / 2; /* 横 */
   grid-row: 1 / 3; /* 縦 */
+  background-image: var(--chat-bgimage);
+  background-repeat: var(--chat-bg-repeat);
 }
 .chatconfig-guide {
   grid-column: 2 / 3; /* 横 */

@@ -14,8 +14,6 @@ body, h1, h2, h3, h4, ul, li, div {
 body {
   color: var(--chat-color);
   background-color: var(--chat-bgcolor);
-  background-image: var(--chat-bgimage);
-  background-repeat: var(--chat-bg-repeat);
 }
 a {
   color: var(--chat-color);
@@ -104,10 +102,6 @@ ul, li {
 /* ------------------------------------------------------------------------------------------------- */
 /* チャットTOP画面                                                                                   */
 /* ------------------------------------------------------------------------------------------------- */
-.chatconfig-title-wrap {
-  background-image: var(--chat-bgimage);
-  background-repeat: var(--chat-bg-repeat);
-}
 .roomtop-form-wrap {
   overflow: auto;
   margin: 0;
