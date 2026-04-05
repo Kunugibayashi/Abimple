@@ -108,7 +108,7 @@ if (count($tailArray) === 0) {
     .'</span>'
   );
   $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
-    'logtype' => LOGTYPE_DECK,
+    'logtype' => LOGTYPE_SYSTEM,
     'entrykey' => $myChatentry['entrykey'],
     'characterid' => $character['id'],
     'fullname' => CHAT_LOG_SYSTEM_NAME,
@@ -158,7 +158,7 @@ $deck1type = $chatroom['deck1type'] ?? 0;
 if ($deck1type == 1) {
   // アナウンスを通常の発言に追加
   $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
-    'logtype' => LOGTYPE_DECK,
+    'logtype' => LOGTYPE_SYSTEM,
     'entrykey' => $myChatentry['entrykey'],
     'characterid' => $character['id'],
     'fullname' => CHAT_LOG_SYSTEM_NAME,
@@ -173,7 +173,7 @@ if ($deck1type == 1) {
   }
   // ささやきで内容を追加
   $result2 = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
-    'logtype' => LOGTYPE_DECK,
+    'logtype' => LOGTYPE_SYSTEM,
     'entrykey' => $myChatentry['entrykey'],
     'characterid' => $character['id'],
     'fullname' => CHAT_LOG_SYSTEM_NAME,
@@ -192,7 +192,7 @@ if ($deck1type == 1) {
 } else {
   // 通常の発言
   $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
-    'logtype' => LOGTYPE_DECK,
+    'logtype' => LOGTYPE_SYSTEM,
     'entrykey' => $myChatentry['entrykey'],
     'characterid' => $character['id'],
     'fullname' => CHAT_LOG_SYSTEM_NAME,

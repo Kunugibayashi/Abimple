@@ -118,7 +118,7 @@ $messageString = (
 
 // 発言
 $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
-  'logtype' => LOGTYPE_DECK,
+  'logtype' => LOGTYPE_SYSTEM,
   'entrykey' => $myChatentry['entrykey'],
   'characterid' => $character['id'],
   'fullname' => CHAT_LOG_SYSTEM_NAME,

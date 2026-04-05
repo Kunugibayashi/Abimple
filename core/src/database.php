@@ -1590,6 +1590,14 @@ function selectEqualChatlogsEdit($dbh, $limit, $characterid, $isAdmin, $params =
         whisperflg = 1
         AND
           characterid = :characterid
+  ';
+  if ($isAdmin != 1) {
+    $sql = $sql .'
+        AND
+          logtype in (:LOGTYPE_NORMAL)
+    ';
+  }
+  $sql = $sql .'
       )
     )
   ';

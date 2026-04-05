@@ -227,7 +227,7 @@ if ($isComparison) {
 
 // 発言
 $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
-  'logtype' => LOGTYPE_DICE,
+  'logtype' => LOGTYPE_SYSTEM,
   'entrykey' => $myChatentry['entrykey'],
   'characterid' => $character['id'],
   'fullname' => CHAT_LOG_SYSTEM_NAME,
