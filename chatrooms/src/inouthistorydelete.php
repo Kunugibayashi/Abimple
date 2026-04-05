@@ -102,7 +102,7 @@ outputPage:
   <?php if (!usedStr($success) && !usedArr($errors)) { /* 成功でもエラーでもない場合にフォームを表示 */ ?>
     <div class="note-wrap">
       <p class="note">
-        <span class="point"><?php echo h($inouthistory['roomdir']); ?>：<?php echo ht($inouthistory['message']); ?></span> を削除します。<br>
+        <span class="point"><?php echo h($inouthistory['roomtitle']); ?>：<?php echo ht($inouthistory['message']); ?></span> を削除します。<br>
       </p>
     </div>
     <div class="page-button-wrap">
