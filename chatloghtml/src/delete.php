@@ -48,7 +48,7 @@ if (!usedArr($logLists)) {
 $logfile = $logLists[0];
 
 // ファイル削除
-$filePath = (INDEX_ROOT. '/chatrooms/rooms/' .$logfile['roomdir'] .'/logs/' .$logfile['filename']);
+$filePath = (CHAT_LOG_HTML_PATH .$logfile['filename']);
 
 // ファイルがない場合は削除処理をしない
 if (file_exists($filePath)) {
@@ -150,7 +150,7 @@ outputPage:
     <div class="page-button-wrap">
       <button type="button" class="warning delete-button">はい</button>
     </div>
-    <form id="delete-form" class="hidden-form" action="<?php echo h(CHARACTER_SRC_LINK); ?>delete.php" method="POST">
+    <form id="delete-form" class="hidden-form" action="<?php echo h(CHAT_LOG_SRC_LINK); ?>delete.php" method="POST">
       <input type="hidden" name="token" value="<?php echo h(getToken()); ?>">
       <input type="hidden" name="id" value="<?php echo h($inputParams['id']); ?>">
     </form>
@@ -159,7 +159,6 @@ outputPage:
   <?php if (usedStr($success) || usedArr($errors)) { /* 成功かエラーが起こった場合 */ ?>
     <div class="page-back-wrap">
       <button type="button" class="tolist-button">一覧に戻る</button>
-      <button type="button" class="sitetop-button">サイトトップへ</button><!-- jQuery -->
     </div>
   <?php } ?>
 

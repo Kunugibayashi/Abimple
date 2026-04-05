@@ -1317,8 +1317,15 @@ function selectEqualChatentries($dbh, $params = array()) {
 
 function selectEqualLogChatentries($dbh, $entrykey, $params = array()) {
   $sql = '
-    SELECT
-      *
+    SELECT DISTINCT
+      entrykey,
+      deleteflg,
+      characterid,
+      fullname,
+      color,
+      bgcolor,
+      userid,
+      username
     FROM chatentries
     WHERE
       deleteflg = 1
