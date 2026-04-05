@@ -139,9 +139,16 @@ if ($handle) {
   }
   fclose($handle);
 
-  // ファイルを削除
+  // zip ファイルを削除
   if (file_exists($zipFilePath)) {
     unlink($zipFilePath);
+  }
+  // htmlファイルの削除
+  if (file_exists($indexOutPath)) {
+    unlink($indexOutPath);
+  }
+  if (file_exists($letterOutPath)) {
+    unlink($letterOutPath);
   }
 }
 

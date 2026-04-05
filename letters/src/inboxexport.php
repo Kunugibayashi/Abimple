@@ -143,6 +143,13 @@ if ($handle) {
   if (file_exists($zipFilePath)) {
     unlink($zipFilePath);
   }
+  // htmlファイルの削除
+  if (file_exists($indexOutPath)) {
+    unlink($indexOutPath);
+  }
+  if (file_exists($letterOutPath)) {
+    unlink($letterOutPath);
+  }
 }
 
 exit;
