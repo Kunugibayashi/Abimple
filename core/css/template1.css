@@ -272,12 +272,18 @@ h4 {
   height: 5rem;
   border-bottom: none;
   padding: 2rem 0.5rem;
-  background-color: #3e463b;
-  color: #e3e2dc;
   border-radius: 1rem;
   font-size: 1rem;
   cursor: pointer;
   overflow: hidden;
+}
+.top-menu-title {
+  background-color: #3e463b;
+  color: #e3e2dc;
+}
+.admin-menu-title {
+  background-color: #2f3a46;
+  color: #e3e2dc;
 }
 .menu-title::first-letter {
   font-size: 200%;

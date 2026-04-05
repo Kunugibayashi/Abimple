@@ -279,6 +279,14 @@ h4 {
   font-size: 1rem;
   cursor: pointer;
 }
+.top-menu-title {
+  background-color: #3e463b;
+  color: #e3e2dc;
+}
+.admin-menu-title {
+  background-color: #232523;
+  color: #e3e2dc;
+}
 .menu-title::first-letter {
   font-size: 200%;
 }

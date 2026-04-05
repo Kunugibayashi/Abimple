@@ -42,35 +42,35 @@ adminOnly();
 
   <div class="index-menu">
     <nav class="menu menu-site">
-      <h2 class="menu-title">Manual</h2>
+      <h2 class="menu-title admin-menu-title">Manual</h2>
       <ul class="menu-item-group">
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>manual/src/manual.php" target="indexTop">管理説明書</a></li>
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>manual/src/design.php" target="indexTop">デザイン確認</a></li>
       </ul>
     </nav>
     <nav class="menu menu-site">
-      <h2 class="menu-title">Rule</h2>
+      <h2 class="menu-title admin-menu-title">Rule</h2>
       <ul class="menu-item-group">
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>manual/src/htmltag.php" target="indexTop">使用可能タグ</a></li>
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>manual/src/diceinfo.php" target="indexTop">ダイス記載</a></li>
       </ul>
     </nav>
     <nav class="menu menu-site">
-      <h2 class="menu-title">Info</h2>
+      <h2 class="menu-title admin-menu-title">Info</h2>
       <ul class="menu-item-group">
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>infomation/src/list.php" target="indexTop">お知らせ管理</a></li>
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>infomation/src/signup.php" target="indexTop">お知らせ登録</a></li>
       </ul>
     </nav>
     <nav class="menu menu-site">
-      <h2 class="menu-title">User</h2>
+      <h2 class="menu-title admin-menu-title">User</h2>
       <ul class="menu-item-group">
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>users/src/list.php" target="indexTop">ユーザー管理</a></li>
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>users/src/signup.php" target="indexTop">ユーザー登録</a></li>
       </ul>
     </nav>
     <nav class="menu menu-site">
-      <h2 class="menu-title">Chat</h2>
+      <h2 class="menu-title admin-menu-title">Chat</h2>
       <ul class="menu-item-group">
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>chatrooms/src/list.php" target="indexTop">ルーム管理</a></li>
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>chatrooms/src/entrance.php" target="indexTop">ルーム一覧</a></li>

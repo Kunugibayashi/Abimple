@@ -40,7 +40,7 @@ require_once(__DIR__ .'/core/src/administrator.php');
 
   <div class="index-menu">
     <nav class="menu menu-site">
-      <h2 class="menu-title">World</h2>
+      <h2 class="menu-title top-menu-title">World</h2>
       <ul class="menu-item-group">
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>world/src/world.php" target="indexTop">世界観</a></li>
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>world/src/rule.php" target="indexTop">利用規約</a></li>
@@ -49,7 +49,7 @@ require_once(__DIR__ .'/core/src/administrator.php');
     </nav>
 
     <nav class="menu menu-world">
-      <h2 class="menu-title">Site</h2>
+      <h2 class="menu-title top-menu-title">Site</h2>
       <ul class="menu-item-group">
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>infomation/src/list.php" target="indexTop">お知らせ</a></li>
         <?php if (isLogin()) { /* ログイン時 */ ?>
@@ -64,7 +64,7 @@ require_once(__DIR__ .'/core/src/administrator.php');
     </nav>
 
     <nav class="menu menu-user">
-      <h2 class="menu-title">NameList</h2>
+      <h2 class="menu-title top-menu-title">NameList</h2>
       <ul class="menu-item-group">
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>characters/src/list.php" target="indexTop">名簿</a></li>
         <?php if (isLogin()) { /* ログイン時 */ ?>
@@ -79,7 +79,7 @@ require_once(__DIR__ .'/core/src/administrator.php');
     </nav>
 
     <nav class="menu menu-room">
-      <h2 class="menu-title">Room</h2>
+      <h2 class="menu-title top-menu-title">Room</h2>
       <ul class="menu-item-group">
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>chatrooms/src/entrance.php" target="indexTop">ルーム一覧</a></li>
         <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>chatrooms/src/inouthistorylist.php" target="indexTop">入退室履歴</a></li>
@@ -89,7 +89,7 @@ require_once(__DIR__ .'/core/src/administrator.php');
 
 <?php if (SITE_LETTER_OPEN == 1 || SITE_LETTER_OPEN == 2) { /* 公開私書、または、個別私書の場合 */ ?>
     <nav class="menu menu-chara">
-      <h2 class="menu-title">Letter</h2>
+      <h2 class="menu-title top-menu-title">Letter</h2>
       <ul class="menu-item-group">
         <?php if (SITE_LETTER_OPEN == 1) { /* 公開私書の場合 */ ?>
           <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>letters/src/publiclist.php" target="indexTop">公開私書箱</a></li>
