@@ -72,7 +72,7 @@ if (usedArr($errors)) {
 }
 
 // 画像アップロードがONの場合、画像アップロード処理
-if ((NAMELIST_UPLOAD_IMAGE || isAdmin()) && isset($_FILES['uploadfile'])) {
+if ((NAMELIST_UPLOAD_IMAGE || isAdmin()) && isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] !== UPLOAD_ERR_NO_FILE) {
   // 画像ファイル名作成
   $bytes = random_bytes(16);
   $imgFilename = bin2hex($bytes); // 32文字

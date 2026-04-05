@@ -117,8 +117,8 @@ if (NAMELIST_UPLOAD_IMAGE || isAdmin()) {
     $inputParams['imgfile'] = '';
   }
 
-  // 更新
-  if (isset($_FILES['uploadfile'])) {
+  // 画像アップロードがONの場合、画像アップロード処理
+  if ((NAMELIST_UPLOAD_IMAGE || isAdmin()) && isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] !== UPLOAD_ERR_NO_FILE) {
     // 画像ファイル名作成
     $bytes = random_bytes(16);
     $imgFilename = bin2hex($bytes); // 32文字
@@ -239,7 +239,7 @@ outputPage:
         <?php if (NAMELIST_UPLOAD_IMAGE || isAdmin()) { ?>
           <ul class="form-row">
             <li class="form-col-title">名簿画像<div class="optional-mark"></div></li>
-            <?php if (usedStr($character['imgfile'])) { ?>
+            <?php if (isset($character) && usedStr($character['imgfile'])) { ?>
               <?php
                 $dt = new DateTime($character['modified']);
                 $ver = $dt->format('YmdHis');
