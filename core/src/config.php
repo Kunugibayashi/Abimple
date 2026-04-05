@@ -368,4 +368,4 @@ define('CHAT_ONLINES_DB', './db/chatonlines.db');
 define('CHAT_ROOMS_DB', './db/chatrooms.db');
 define('CHAT_ENTRIES_DB', './db/chatentries.db');
 define('CHAT_LOGS_DB', './db/chatlogs.db');
-define('CHAT_SECRETS_DB', './db/chatchatsecrets.db');
+define('CHAT_SECRETS_DB', './db/chatsecrets.db');
