@@ -764,7 +764,7 @@ function selectCharactersMy($dbh, $userid, $username) {
       userid = :userid
     AND
       username = :username
-    ORDER BY id DESC
+    ORDER BY id ASC
   ';
 
   $stmt = myPrepare($dbh, $sql);
@@ -1579,6 +1579,8 @@ function selectEqualChatlogsEdit($dbh, $limit, $characterid, $isAdmin, $params =
     $sql = $sql .'
         AND
           characterid = :characterid
+        AND
+          logtype in (:LOGTYPE_NORMAL)
     ';
   }
   $sql = $sql .'
@@ -1587,11 +1589,7 @@ function selectEqualChatlogsEdit($dbh, $limit, $characterid, $isAdmin, $params =
       (
         whisperflg = 1
         AND
-        (
           characterid = :characterid
-          OR
-          wtocharacterid = :wtocharacterid
-        )
       )
     )
   ';
@@ -1604,7 +1602,9 @@ function selectEqualChatlogsEdit($dbh, $limit, $characterid, $isAdmin, $params =
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt = setEqualArryBindValue($stmt, $params);
   $stmt->bindValue(':characterid', $characterid);
-  $stmt->bindValue(':wtocharacterid', $characterid);
+  if ($isAdmin != 1) {
+    $stmt->bindValue(':LOGTYPE_NORMAL', LOGTYPE_NORMAL);
+  }
   $stmt->bindValue(':limit', $limit);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);

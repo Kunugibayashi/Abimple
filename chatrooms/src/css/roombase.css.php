@@ -543,6 +543,5 @@ header.chatroom-header-wrap {
 }
 .whisper-message-wrap {
   padding-left: 2rem;
-  opacity: 0.7;
   font-size: 0.9rem;
 }
