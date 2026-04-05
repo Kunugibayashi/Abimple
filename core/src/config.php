@@ -23,7 +23,7 @@ define('ADMIN_USERNAME', 'admin');
  *
  * 一括DL時のファイル名として使用するため、特殊記号は出力時にzipファイル名から削除されます。
  */
-define('SITE_TITLE', 'Abimple');
+define('SITE_TITLE', 'Abimp/le');
 
 /**
  * index.phpまでのPATH。

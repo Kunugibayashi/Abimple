@@ -678,6 +678,7 @@ td {
   border: solid #746c74 2px;
   height: 104px;
   width: 104px;
+  overflow: hidden;
 }
 .profile-image-edit {
   max-height: 100px;

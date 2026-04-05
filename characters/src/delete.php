@@ -18,6 +18,8 @@ $user = array();
 // 初期ページは指定されたidから
 $inputParams['id'] = getParam('id');
 
+$character = [];
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策
   setToken();
