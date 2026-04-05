@@ -80,7 +80,7 @@ if ((NAMELIST_UPLOAD_IMAGE || isAdmin()) && isset($_FILES['uploadfile'])) {
   $imgresult = uploadImageFile(
     $_FILES['uploadfile'], CHARACTER_IMAGE_PATH, $imgFilename, NAMELIST_IMAGE_FILESIZE
   );
-  if (!usedArr($imgresult) && $imgresult['code'] != 0) {
+  if (usedArr($imgresult) && $imgresult['code'] != 0) {
     $errors[] = '画像のアップロードに失敗しました。';
     $errors[] = $imgresult['errorMessage'];
     goto outputPage;
