@@ -1,14 +1,29 @@
 <?php
-function myPrepare($dbh, $sql, $params = array()) {
-  // SQLを出力する場合は以下のコメントを外す。開発時のデバッグ用。
-  // --- ここから ---
-  // echo $sql;
-  // echo '<br>';
-  // print_r($params);
-  // echo '<br>';
-  // --- ここまで ---
+require_once(__DIR__ .'/logger.php');
 
-  return $dbh->prepare($sql);
+// SQL実行ラッパー（ログ出力あり）
+function myPrepare($dbh, $sql, $params = array()) {
+
+  $sql = preg_replace('/\s+/', ' ', $sql);
+  logDebug('sql = ' .$sql);
+
+  logDebug('arguments = ' .json_encode($params, JSON_UNESCAPED_UNICODE));
+
+  $stmt = $dbh->prepare($sql);
+  if ($stmt === false) {
+    logError('SQL prepare failed: ' . $dbh->lastErrorMsg());
+  }
+
+  return $stmt;
+}
+
+// 日付形式のチェック
+function isValidDatetime(?string $value): bool {
+  if ($value === null || $value === '') {
+    return false;
+  }
+  $dt = DateTime::createFromFormat('Y-m-d H:i:s', $value);
+  return $dt && $dt->format('Y-m-d H:i:s') === $value;
 }
 
 // 配列内の値を取得。ない場合も空で登録するため
@@ -160,7 +175,8 @@ function setEqualArryBindValue($stmt, $params) {
   return $stmt;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * DB
  * ****************************************************************************
  */
@@ -168,6 +184,9 @@ function setEqualArryBindValue($stmt, $params) {
 function connect($dbname) {
   try {
     $dbh = new SQLite3($dbname);
+    $dbh->exec('PRAGMA journal_mode = WAL;');
+    $dbh->exec('PRAGMA synchronous = NORMAL;');
+    $dbh->exec('PRAGMA busy_timeout = 3000;');
   } catch (Exception $e) {
     echo $e->getMessage();
   }
@@ -179,6 +198,12 @@ function checkDB($dbname) {
   if (file_exists($dbname)) {
     return;
   }
+
+  $dbname = (string)($dbname ?? '');
+  if ($dbname === '') {
+    return;
+  }
+
   $dbh = connect($dbname);
   // DB作成
   if (USERS_DB === $dbname) {
@@ -191,20 +216,24 @@ function checkDB($dbname) {
     creatRooms($dbh);
   } else if (ROOM_INOUT_HISTORIES_DB === $dbname) {
     createRoominouthistories($dbh);
-  } else if (CHAT_ROOMS_DB === $dbname) {
+
+  } else if (strpos($dbname, CHAT_ONLINES_DB) !== false) {
+    createChatonlines($dbh);
+  } else if (strpos($dbname, CHAT_ROOMS_DB) !== false) {
     createChatrooms($dbh);
-  } else if (CHAT_ENTRIES_DB === $dbname) {
+  } else if (strpos($dbname, CHAT_ENTRIES_DB) !== false) {
     createChatentries($dbh);
-  } else if (CHAT_LOGS_DB === $dbname) {
+  } else if (strpos($dbname, CHAT_LOGS_DB) !== false) {
     createChatlogs($dbh);
-  } else if (CHAT_SECRETS_DB === $dbname) {
+  } else if (strpos($dbname, CHAT_SECRETS_DB) !== false) {
     createChatsecrets($dbh);
+
+  } else if (CHAT_LOG_FILES_DB === $dbname) {
+    createChatlogfiles($dbh);
   } else if (INBOX_LETTERS_DB === $dbname) {
     createInboxLetters($dbh);
   } else if (OUTBOX_LETTERS_DB === $dbname) {
     createOutboxLetters($dbh);
-  } else if (ALL_LOG_LISTS_DB === $dbname) {
-    createAllloglists($dbh);
   }
   // この関数内のみでコネクションを完結する
   $dbh->close();
@@ -222,13 +251,15 @@ function connectRo($dbname) {
   checkDB($dbname);
   try {
     $dbh = new SQLite3($dbname, SQLITE3_OPEN_READONLY);
+    $dbh->exec('PRAGMA busy_timeout = 3000;');
   } catch (Exception $e) {
     echo $e->getMessage();
   }
   return $dbh;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * ログインチェック
  * 管理側から削除された場合、ユーザー側でログイン時の処理ができないよう、
  * DBに存在するかをチェックする
@@ -279,7 +310,8 @@ function loginOnly() {
 }
 
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * ユーザーテーブル
  * ****************************************************************************
  */
@@ -419,7 +451,8 @@ function selectUsersMy($dbh, $userid, $username) {
 }
 
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * お知らせテーブル
  * ****************************************************************************
  */
@@ -539,7 +572,8 @@ function deleteInfomations($dbh, $id) {
   return $results;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * キャラクターテーブル
  * ****************************************************************************
  */
@@ -550,6 +584,7 @@ function createCharacters($dbh) {
       fullname  VARCHAR(20)  NOT NULL DEFAULT '',
       color     VARCHAR(7)   NOT NULL DEFAULT '#000000',
       bgcolor   VARCHAR(7)   NOT NULL DEFAULT '#ffffff',
+      imgfile   TEXT         NOT NULL DEFAULT '',
       gender    VARCHAR(10)  NOT NULL DEFAULT '',
       species   VARCHAR(10)  NOT NULL DEFAULT '',
       team      VARCHAR(10)  NOT NULL DEFAULT '',
@@ -729,7 +764,7 @@ function selectCharactersMy($dbh, $userid, $username) {
       userid = :userid
     AND
       username = :username
-    ORDER BY id DESC
+    ORDER BY id ASC
   ';
 
   $stmt = myPrepare($dbh, $sql);
@@ -740,7 +775,28 @@ function selectCharactersMy($dbh, $userid, $username) {
   return $data;
 }
 
-/* ****************************************************************************
+function getAllCharacterIds($dbh, $params = array()) {
+  $sql = '
+    SELECT
+      id
+    FROM characters
+    WHERE
+      id IS NOT NULL
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY id ASC
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+/**
+ * ****************************************************************************
  * チャットルーム管理
  * ****************************************************************************
  */
@@ -749,7 +805,6 @@ function creatRooms($dbh) {
     CREATE TABLE rooms (
       id        INTEGER        PRIMARY KEY AUTOINCREMENT,
       roomdir   VARCHAR(20)    NOT NULL UNIQUE,
-      roomtitle VARCHAR(100)   NOT NULL,
       published INTEGER        NOT NULL DEFAULT 0,
       displayno INTEGER        NOT NULL DEFAULT 0,
 
@@ -844,7 +899,6 @@ function selectEqualRoomsList($dbh, $params = array()) {
     SELECT
       id,
       roomdir,
-      roomtitle,
       published,
       displayno,
       created,
@@ -865,7 +919,8 @@ function selectEqualRoomsList($dbh, $params = array()) {
   return $data;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * 入退室履歴
  * ****************************************************************************
  */
@@ -963,7 +1018,94 @@ function deleteRoominouthistories($dbh, $id) {
   return $results;
 }
 
-/* ****************************************************************************
+
+/**
+ * ****************************************************************************
+ * チャット閲覧数
+ * ****************************************************************************
+ */
+function createChatonlines($dbh) {
+  $sql = "
+    CREATE TABLE chatonlines (
+      id        INTEGER      PRIMARY KEY AUTOINCREMENT,
+      sessionid VARCHAR(128) NOT NULL,
+      userid    INTEGER      NOT NULL DEFAULT 0,
+
+      created   DATETIME     NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+      modified  DATETIME     NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+
+      UNIQUE(sessionid)
+    )
+  ";
+
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
+
+  $sql = "
+    CREATE INDEX idx_chatonlines_modified ON chatonlines(modified);
+    CREATE INDEX idx_chatonlines_userid ON chatonlines(userid);
+  ";
+  $results = $dbh->query($sql);
+  if (!$results) {
+    echo $dbh->lastErrorMsg();
+  }
+}
+
+function insertChatonlines($dbh, $sessionid, $userid, $modified, $params = array()) {
+  $sql = '
+    INSERT INTO chatonlines (
+      sessionid,
+      userid,
+      modified
+  ';
+  $sql = setInsertColumnArryParam($sql, $params);
+  $sql = $sql .'
+    ) VALUES (
+      :sessionid,
+      :userid,
+      :modified
+  ';
+  $sql = setInsertVluesArryParam($sql, $params);
+  $sql = $sql .'
+    )
+    ON CONFLICT(sessionid) DO UPDATE SET
+      userid   = excluded.userid,
+      modified = excluded.modified
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt->bindValue(':sessionid', $sessionid);
+  $stmt->bindValue(':userid', $userid);
+  $stmt->bindValue(':modified', $modified);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  return $results;
+}
+
+function selectOnlineCount($dbh, $modifiedlimit, $params = array()) {
+  $sql = '
+    SELECT
+      COUNT(*) AS onlinecount
+    FROM chatonlines
+    WHERE
+      modified >= :modifiedlimit
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt->bindValue(':modifiedlimit', $modifiedlimit);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+
+
+/**
+ * ****************************************************************************
  * チャットルーム設定
  * ****************************************************************************
  */
@@ -971,25 +1113,29 @@ function createChatrooms($dbh) {
   $sql = "
     CREATE TABLE chatrooms (
       id            INTEGER        PRIMARY KEY AUTOINCREMENT,
-      title         VARCHAR(100)   NOT NULL,
+      title         VARCHAR(100)   NOT NULL DEFAULT '',
       guide         TEXT           NOT NULL,
       toptemplate   VARCHAR(20)    NOT NULL DEFAULT 'default',
       logtemplate   VARCHAR(20)    NOT NULL DEFAULT 'default',
       isfree        INTEGER        NOT NULL DEFAULT 0,
-      issecret      INTEGER        NOT NULL DEFAULT 0,
+      secrettype    INTEGER        NOT NULL DEFAULT 0,
       color         VARCHAR(7)     NOT NULL DEFAULT '#696969',
       bgcolor       VARCHAR(7)     NOT NULL DEFAULT '#f5f5f5',
       bgimage       TEXT           NOT NULL DEFAULT '',
       omi1flg       INTEGER        NOT NULL DEFAULT 0,
+      omi1type      INTEGER        NOT NULL DEFAULT 0,
       omi1name      VARCHAR(10)    NOT NULL DEFAULT '',
       omi1text      TEXT           NOT NULL DEFAULT '',
       omi2flg       INTEGER        NOT NULL DEFAULT 0,
+      omi2type      INTEGER        NOT NULL DEFAULT 0,
       omi2name      VARCHAR(10)    NOT NULL DEFAULT '',
       omi2text      TEXT           NOT NULL DEFAULT '',
       omi3flg       INTEGER        NOT NULL DEFAULT 0,
+      omi3type      INTEGER        NOT NULL DEFAULT 0,
       omi3name      VARCHAR(10)    NOT NULL DEFAULT '',
       omi3text      TEXT           NOT NULL DEFAULT '',
       deck1flg      INTEGER        NOT NULL DEFAULT 0,
+      deck1type     INTEGER        NOT NULL DEFAULT 0,
       deck1name     VARCHAR(10)    NOT NULL DEFAULT '',
       deck1text     TEXT           NOT NULL DEFAULT '',
       roomcss       TEXT           NOT NULL DEFAULT '',
@@ -1058,7 +1204,8 @@ function updateChatroomsConfig($dbh, $params = array()) {
   return $results;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * 入室状態
  * ****************************************************************************
  */
@@ -1168,13 +1315,22 @@ function selectEqualChatentries($dbh, $params = array()) {
   return $data;
 }
 
-function selectEqualLogChatentries($dbh, $params = array()) {
+function selectEqualLogChatentries($dbh, $entrykey, $params = array()) {
   $sql = '
-    SELECT
-      *
+    SELECT DISTINCT
+      entrykey,
+      deleteflg,
+      characterid,
+      fullname,
+      color,
+      bgcolor,
+      userid,
+      username
     FROM chatentries
     WHERE
-      id IS NOT NULL
+      deleteflg = 1
+    AND
+      entrykey = :entrykey
   ';
   $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
@@ -1182,6 +1338,7 @@ function selectEqualLogChatentries($dbh, $params = array()) {
   ';
 
   $stmt = myPrepare($dbh, $sql, $params);
+  $stmt->bindValue(':entrykey', $entrykey);
   $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
@@ -1200,7 +1357,8 @@ function deleteChatentriesExit($dbh) {
   return $results;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * ログ
  * ****************************************************************************
  */
@@ -1208,6 +1366,8 @@ function createChatlogs($dbh) {
   $sql = "
     CREATE TABLE chatlogs (
       id             INTEGER        PRIMARY KEY AUTOINCREMENT,
+      logtype        INTEGER        NOT NULL DEFAULT 0,
+
       entrykey       VARCHAR(40)    NOT NULL,
       characterid    INTEGER        NOT NULL,
       fullname       VARCHAR(20)    NOT NULL,
@@ -1234,6 +1394,9 @@ function createChatlogs($dbh) {
 
   $sql = "
     CREATE INDEX IF NOT EXISTS idx_chatroom_entrykey_id ON chatlogs(entrykey, id);
+    CREATE INDEX IF NOT EXISTS idx_chatlogs_entrykey_modified ON chatlogs(entrykey, modified);
+    CREATE INDEX IF NOT EXISTS idx_chatlogs_entrykey_modified_id ON chatlogs(entrykey, modified, id);
+    CREATE INDEX IF NOT EXISTS idx_chatlogs_modified ON chatlogs(modified);
   ";
 
   $results = $dbh->query($sql);
@@ -1271,7 +1434,10 @@ function insertChatlogs($dbh, $userid, $username, $params = array()) {
   return $results;
 }
 
-function selectEqualChatlogs($dbh, $limit, $params = array()) {
+function selectEqualAppendChatlogs($dbh, $limit, $dommaxid = 0,
+    $isinroom = 0, $characterid = null,
+    $params = array()
+  ) {
   $sql = '
     SELECT
       *
@@ -1279,8 +1445,33 @@ function selectEqualChatlogs($dbh, $limit, $params = array()) {
     WHERE
       id IS NOT NULL
     AND
+    (
       whisperflg = 0
   ';
+  // 入室時はささやきを表示する（送信者本人 or 宛先本人）
+  if ($isinroom) {
+    $sql = $sql .'
+      OR
+      (
+        whisperflg = 1
+        AND
+        (
+          characterid = :characterid
+          OR
+          wtocharacterid = :wtocharacterid
+        )
+      )
+    ';
+  }
+  $sql = $sql . '
+    )
+  ';
+  if ($dommaxid != 0) {
+    $sql = $sql .'
+      AND
+        id > :dommaxid
+    ';
+  }
   $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
     ORDER BY id DESC
@@ -1289,13 +1480,24 @@ function selectEqualChatlogs($dbh, $limit, $params = array()) {
 
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt = setEqualArryBindValue($stmt, $params);
+  if ($isinroom) {
+    $stmt->bindValue(':characterid', $characterid);
+    $stmt->bindValue(':wtocharacterid', $characterid);
+  }
+  if ($dommaxid != 0) {
+    $stmt->bindValue(':dommaxid', $dommaxid);
+  }
   $stmt->bindValue(':limit', $limit);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
   return $data;
 }
 
-function selectEqualChatlogsAdmin($dbh, $limit, $params = array()) {
+function selectEqualUpdateChatlogs($dbh, $limit, $dommaxid = 0,
+    $domminid = 0, $syncmodifiedts = 0,
+    $isinroom = 0, $characterid = null,
+    $params = array()
+  ) {
   $sql = '
     SELECT
       *
@@ -1303,39 +1505,101 @@ function selectEqualChatlogsAdmin($dbh, $limit, $params = array()) {
     WHERE
       id IS NOT NULL
     AND
+    (
       whisperflg = 0
-    OR
-      (characterid = :characterid and whisperflg = 1)
   ';
-  $sql = setAndEqualArryParam($sql, $params);
+  // 入室時はささやきを表示する（送信者本人 or 宛先本人）
+  if ($isinroom) {
+    $sql = $sql .'
+      OR
+      (
+        whisperflg = 1
+        AND
+        (
+          characterid = :characterid
+          OR
+          wtocharacterid = :wtocharacterid
+        )
+      )
+    ';
+  }
+  $sql = $sql . '
+    )
+  ';
   $sql = $sql .'
-    ORDER BY id DESC
-    LIMIT :limit
-  ';
-
-  $stmt = myPrepare($dbh, $sql, $params);
-  $stmt = setEqualArryBindValue($stmt, $params);
-  $stmt->bindValue(':limit', $limit);
-  $results = $stmt->execute();
-  $data = fetchArraytoArray($results);
-  return $data;
-}
-
-function selectEqualChatlogsInroom($dbh, $limit, $characterid, $params = array()) {
-  $sql = '
-    SELECT
-      *
-    FROM chatlogs
-    WHERE
-      id IS NOT NULL
     AND
       (
-        whisperflg = 0
-      OR
-        (characterid = :characterid and whisperflg <> 0)
-      OR
-        (wtocharacterid = :wtocharacterid and whisperflg <> 0)
+        :domminid <= id AND id <= :dommaxid
       )
+  ';
+  if (usedStr($syncmodifiedts) && $syncmodifiedts != 0) {
+    $sql = $sql .'
+      AND
+        modified > :syncmodifiedts
+    ';
+  }
+  $sql = $sql . '
+    AND
+      created != modified
+  ';
+  $sql = setAndEqualArryParam($sql, $params);
+  $sql = $sql .'
+    ORDER BY id DESC
+    LIMIT :limit
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  if ($isinroom) {
+    $stmt->bindValue(':characterid', $characterid);
+    $stmt->bindValue(':wtocharacterid', $characterid);
+  }
+  $stmt->bindValue(':domminid', $domminid);
+  $stmt->bindValue(':dommaxid', $dommaxid);
+  if (usedStr($syncmodifiedts) && $syncmodifiedts != 0) {
+    $stmt->bindValue(':syncmodifiedts', $syncmodifiedts);
+  }
+  $stmt->bindValue(':limit', $limit);
+  $results = $stmt->execute();
+  $data = fetchArraytoArray($results);
+  return $data;
+}
+
+function selectEqualChatlogsEdit($dbh, $limit, $characterid, $isAdmin, $params = array()) {
+  $sql = '
+    SELECT
+      *
+    FROM chatlogs
+    WHERE
+    (
+      (
+        whisperflg = 0
+  ';
+  if ($isAdmin != 1) {
+    $sql = $sql .'
+        AND
+          characterid = :characterid
+        AND
+          logtype in (:LOGTYPE_NORMAL)
+    ';
+  }
+  $sql = $sql .'
+        )
+      OR
+      (
+        whisperflg = 1
+        AND
+          characterid = :characterid
+  ';
+  if ($isAdmin != 1) {
+    $sql = $sql .'
+        AND
+          logtype in (:LOGTYPE_NORMAL)
+    ';
+  }
+  $sql = $sql .'
+      )
+    )
   ';
   $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
@@ -1346,21 +1610,37 @@ function selectEqualChatlogsInroom($dbh, $limit, $characterid, $params = array()
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt = setEqualArryBindValue($stmt, $params);
   $stmt->bindValue(':characterid', $characterid);
-  $stmt->bindValue(':wtocharacterid', $characterid);
+  if ($isAdmin != 1) {
+    $stmt->bindValue(':LOGTYPE_NORMAL', LOGTYPE_NORMAL);
+  }
   $stmt->bindValue(':limit', $limit);
   $results = $stmt->execute();
   $data = fetchArraytoArray($results);
   return $data;
 }
 
-function selectEqualChatlogsEntrykey($dbh, $limit, $entrykey, $params = array()) {
+function selectEqualChatlogsChunk(
+  $dbh, $limit, $entrykey = '', $beforeid = 0, $params = array()
+): SQLite3Result {
   $sql = '
     SELECT
       *
     FROM chatlogs
     WHERE
-      entrykey = :entrykey
+      id IS NOT NULL
   ';
+  if ($entrykey != '') {
+    $sql = $sql .'
+      AND
+        entrykey = :entrykey
+    ';
+  }
+  if ($beforeid != 0) {
+    $sql = $sql .'
+      AND
+        id < :beforeid
+    ';
+  }
   $sql = setAndEqualArryParam($sql, $params);
   $sql = $sql .'
     ORDER BY id DESC
@@ -1369,11 +1649,51 @@ function selectEqualChatlogsEntrykey($dbh, $limit, $entrykey, $params = array())
 
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt = setEqualArryBindValue($stmt, $params);
-  $stmt->bindValue(':entrykey', $entrykey);
-  $stmt->bindValue(':limit', $limit);
+  if ($entrykey != '') {
+    $stmt->bindValue(':entrykey', $entrykey, SQLITE3_TEXT);
+  }
+  if ($beforeid != 0) {
+    $stmt->bindValue(':beforeid', $beforeid, SQLITE3_INTEGER);
+  }
+  $stmt->bindValue(':limit', $limit, SQLITE3_INTEGER);
   $results = $stmt->execute();
-  $data = fetchArraytoArray($results);
-  return $data;
+  // ログ出力負荷軽減のため fetchArraytoArray は噛ませない
+  return $results;
+}
+
+function selectEqualInroomChatlogsChunk(
+  $dbh, $limit, $characterid = null, $params = array()
+): SQLite3Result {
+  $sql = '
+    SELECT
+      *
+    FROM chatlogs
+    WHERE
+    (
+      whisperflg = 0
+      OR
+      (
+        whisperflg = 1
+        AND
+        (
+          characterid = :characterid
+          OR
+          wtocharacterid = :wtocharacterid
+        )
+      )
+    )
+    ORDER BY id DESC
+    LIMIT :limit
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $stmt->bindValue(':characterid', $characterid, SQLITE3_INTEGER);
+  $stmt->bindValue(':wtocharacterid', $characterid, SQLITE3_INTEGER);
+  $stmt->bindValue(':limit', $limit, SQLITE3_INTEGER);
+  $results = $stmt->execute();
+  // ログ出力負荷軽減のため fetchArraytoArray は噛ませない
+  return $results;
 }
 
 function updateChatlogs($dbh, $id, $params = array()) {
@@ -1395,7 +1715,7 @@ function updateChatlogs($dbh, $id, $params = array()) {
   return $results;
 }
 
-function deleteChatlogsLimit1000($dbh) {
+function deleteChatlogsLimit10000($dbh) {
   $sql = "
     DELETE FROM chatlogs
     WHERE
@@ -1404,7 +1724,7 @@ function deleteChatlogsLimit1000($dbh) {
         SELECT id
         FROM chatlogs
         ORDER BY id DESC
-        LIMIT 1000
+        LIMIT 10000
       )
   ";
 
@@ -1423,7 +1743,8 @@ function deleteChatlogs($dbh) {
   return $results;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * 秘匿ルーム用
  * ****************************************************************************
  */
@@ -1496,7 +1817,8 @@ function selectChatsecrets($dbh) {
   return $data;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * 私書テーブル（受信BOX）
  * ****************************************************************************
  */
@@ -1678,7 +2000,11 @@ function selectInboxLettersId($dbh, $id) {
 function selectInboxLettersMy($dbh, $userid, $username) {
   $sql = '
     SELECT
-      *
+      id,
+      title,
+      tofullname,
+      fromfullname,
+      modified
     FROM inboxletters AS box1
     WHERE
       touserid = :userid
@@ -1718,7 +2044,8 @@ function selectInboxLettersFromMessage($dbh, $fromcharacterid, $fromfullname, $m
   return $data;
 }
 
-/* ****************************************************************************
+/**
+ * ****************************************************************************
  * 私書テーブル（送信BOX）
  * ****************************************************************************
  */
@@ -1832,7 +2159,7 @@ function selectOutboxLettersMy($dbh, $userid, $username) {
   return $data;
 }
 
-function selectOutboxMessageId($dbh, $id) {
+function selectOutboxLettersId($dbh, $id) {
   $sql = '
     SELECT
       *
@@ -1848,13 +2175,14 @@ function selectOutboxMessageId($dbh, $id) {
   return $data;
 }
 
-/* ****************************************************************************
- * 全てのログ一覧
+/**
+ * ****************************************************************************
+ * ログファイル一覧
  * ****************************************************************************
  */
-function createAllloglists($dbh) {
+function createChatlogfiles($dbh) {
   $sql = "
-    CREATE TABLE allloglists (
+    CREATE TABLE chatlogfiles (
       id             INTEGER        PRIMARY KEY AUTOINCREMENT,
       entrykey       VARCHAR(40)    NOT NULL,
       roomdir        VARCHAR(20)    NOT NULL,
@@ -1874,7 +2202,7 @@ function createAllloglists($dbh) {
   }
 
   $sql = "
-    CREATE INDEX IF NOT EXISTS idx_allloglists_roomdir ON allloglists(roomdir);
+    CREATE INDEX IF NOT EXISTS idx_chatlogfiles_roomdir ON chatlogfiles(roomdir);
   ";
 
   $results = $dbh->query($sql);
@@ -1883,7 +2211,7 @@ function createAllloglists($dbh) {
   }
 }
 
-function selectEqualAllloglistsList($dbh, $params = array()) {
+function selectEqualChatlogfiles($dbh, $params = array()) {
   $sql = '
     SELECT
       id,
@@ -1892,7 +2220,7 @@ function selectEqualAllloglistsList($dbh, $params = array()) {
       filename,
       entries,
       created
-    FROM allloglists
+    FROM chatlogfiles
     WHERE
       id IS NOT NULL
   ';
@@ -1908,9 +2236,9 @@ function selectEqualAllloglistsList($dbh, $params = array()) {
   return $data;
 }
 
-function insertAllloglists($dbh, $entrykey, $roomdir, $roomtitle, $filename, $entries) {
+function insertChatlogfiles($dbh, $entrykey, $roomdir, $roomtitle, $filename, $entries) {
   $sql = '
-    INSERT INTO allloglists (
+    INSERT INTO chatlogfiles (
       entrykey,
       roomdir,
       roomtitle,
@@ -1939,13 +2267,13 @@ function insertAllloglists($dbh, $entrykey, $roomdir, $roomtitle, $filename, $en
   return $results;
 }
 
-function selectAllLogListsId($dbh, $id) {
+function selectChatlogfilesById($dbh, $id) {
   $sql = '
     SELECT
       id,
       roomdir,
       filename
-    FROM allloglists
+    FROM chatlogfiles
     WHERE
       id = :id
     LIMIT 1
@@ -1958,9 +2286,9 @@ function selectAllLogListsId($dbh, $id) {
   return $data;
 }
 
-function deleteAllLogListsId($dbh, $id) {
+function deleteChatlogfilesById($dbh, $id) {
   $sql = '
-    DELETE FROM allloglists
+    DELETE FROM chatlogfiles
     WHERE
       id = :id
   ';
@@ -1970,3 +2298,23 @@ function deleteAllLogListsId($dbh, $id) {
   $results = $stmt->execute();
   return $results;
 }
+
+/**
+ * ****************************************************************************
+ * チャットルーム用関数
+ * ****************************************************************************
+ */
+function firstAccessChatroom($dbname) {
+  $dbh = connectRw($dbname);
+  insertInitChatrooms($dbh);
+  // この関数内のみでコネクションを完結する
+  $dbh->close();
+}
+
+function firstAccessChatsecrets($dbname) {
+  $dbh = connectRw($dbname);
+  insertChatsecrets($dbh, '');
+  // この関数内のみでコネクションを完結する
+  $dbh->close();
+}
+

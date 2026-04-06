@@ -1,44 +1,57 @@
 <?php
-require_once('../../../../core/src/config.php');
-require_once('../../../../core/src/functions.php');
-require_once('../../../../core/src/session.php');
-require_once('../../../../core/src/database.php');
-require_once('../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/config.php');
+require_once(__DIR__ .'/../../../../core/src/functions.php');
+require_once(__DIR__ .'/../../../../core/src/session.php');
+require_once(__DIR__ .'/../../../../core/src/database.php');
+require_once(__DIR__ .'/../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/logger.php');
 
-require_once('./config.php');
-require_once('./functions.php');
+require_once(__DIR__ .'/../../../src/chatlogexport.php');
 
 $errors = array();
 $inputParams = array();
+
+sessionLogChatEntry();
+
+// roomdir
+$roomdir = getPageRoomdir();
+$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src/';
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策はフォーム表示時にセット
 
   // DB接続
-  $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
-  $dbhChatsecrets = connectRo(CHAT_SECRETS_DB);
+  $dbhChatrooms = connectRo(__DIR__ .'/' .CHAT_ROOMS_DB);
+  $dbhChatsecrets = connectRo(__DIR__ .'/' .CHAT_SECRETS_DB);
 
   $chatrooms = selectChatroomsConfig($dbhChatrooms);
   if (!usedArr($chatrooms)) {
-    firstAccessChatroom(CHAT_ROOMS_DB);
+    firstAccessChatroom(__DIR__ .'/' .CHAT_ROOMS_DB);
     $chatrooms = selectChatroomsConfig($dbhChatrooms);
   }
-  $chatroom = $chatrooms[0];
+  $chatroom = $chatrooms[0] ?? [];
 
-  // 秘匿ルームの場合
-  if ($chatroom['issecret'] == 1) {
+  // 公開ルームでない場合、パスワードチェック
+  if ($chatroom['secrettype'] != CHAT_ROOM_OPEN) {
     $chatsecrets = selectChatsecrets($dbhChatsecrets);
     if (!usedArr($chatsecrets)) {
-      firstAccessChatsecrets(CHAT_SECRETS_DB);
+      firstAccessChatsecrets(__DIR__ .'/' .CHAT_SECRETS_DB);
       $chatsecrets = selectChatsecrets($dbhChatsecrets);
     }
+    // DBとセッションのパスワードが異なる場合は弾く
     $dbKeyword = $chatsecrets[0]['keyword'];
     $sessionKeyword = getSecretKeyword();
     if (!usedStr($dbKeyword) || !usedStr($sessionKeyword) || $dbKeyword != $sessionKeyword) {
-      header('Location: ./secrettop.php');
+      header('Location: ' .$ROOMDIR_SRC_LINK .'secrettop.php');
       exit;
     }
   }
+
+  // DB接続
+  $dbhChatentries = connectRo(__DIR__ .'/' .CHAT_ENTRIES_DB);
+
+  // 入室者一覧取得
+  $chatentries = selectEqualChatentries($dbhChatentries);
 
   goto outputPage;
 }
@@ -60,28 +73,38 @@ outputPage:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title><?php echo h($chatroom['title']); ?></title>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <!-- DB参照値用 -->
+  <?php echo renderDbCssVariables($chatroom); ?>
+  <!-- チャット画面用CSS -->
+  <?php echo renderCssLinkUrl($chatroom); ?>
   <!-- レスポンシブ用 -->
-  <!-- 直接記載があるため下部に移動 -->
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <!-- DB登録のCSS記載 -->
+  <?php if (usedStr($chatroom['roomcss'])) echo '<style>' . h($chatroom['roomcss']) . '</>'; ?>
   <!-- script -->
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(CHAT_ROOM_SRC_LINK); ?>/js/chatlog-sync.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(CHAT_ROOM_SRC_LINK); ?>/js/chatheartbeat-sync.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
-<div id="id-roomtop-content-wrap" class="content-wrap">
+<div id="id-roomtop-content-wrap" class="content-wrap"><!-- roomtopと共通 -->
 
-  <header id="id-roomtop-header" class="header">
-    <nav class="header-menu">
-      <ul class="header-item-group">
-        <?php if ($chatroom['isfree']) { ?>
-          <li class="header-item"><a href="./roomseting.php">ルーム設定変更</a></li>
+  <header id="id-roomtop-header" class="roomtop-header"><!-- roomtopと共通 -->
+    <nav class="roomtop-header-menu">
+      <ul class="roomtop-header-item-group">
+        <?php if (CHAT_ROOM_SHOW_ONLINE) { ?>
+          <li class="roomtop-header-item onlinecount-wrap">閲覧者：<span id="id-onlinecount"></span>人</li>
         <?php } ?>
-        <li class="header-item"><a href="./log.php?lognum=100&logsec=25" target="_blank">ログ別窓表示</a></li>
+        <?php if ($chatroom['isfree']) { ?>
+          <li class="roomtop-header-item"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>roomseting.php">ルーム設定変更</a></li>
+        <?php } ?>
         <?php if (isAdmin()) { ?>
-          <li class="header-item"><a href="./admin.php">管理画面</a></li>
+          <li class="roomtop-header-item"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>admin.php">管理画面</a></li>
         <?php } ?>
       </ul>
     </nav>
@@ -101,11 +124,9 @@ outputPage:
     <div class="chatconfig-title-wrap">
       <h3 class="chatconfig-title"><?php echo h($chatroom['title']); ?></h3>
     </div>
-
     <div class="chatconfig-guide"><?php echo hb($chatroom['guide']); ?></div>
-
-    <div class="form-wrap roomenter-form-wrap">
-      <form name="roomenter-form" class="roomenter-form" action="./roomenter.php" method="GET">
+    <div class="form-wrap roomtop-form-wrap">
+      <form name="roometop-form" class="roometop-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>roomenter.php" method="GET">
         <div class="form-button-wrap submit-wrap">
           <button type="submit">入室キャラクター選択</button>
         </div>
@@ -113,199 +134,83 @@ outputPage:
     </div>
   </div>
 
-  <div class="chatroom-frame-wrap">
-    <iframe id="log-top" name="log" title="ルームログ"
-      src="./log.php">
-    </iframe>
+  <div class="content-log-wrap">
+    <header class="chatroom-header-wrap">
+      <h3 class="chatroom-header-title">
+        <?php if ($chatroom['secrettype'] == CHAT_ROOM_SECRET) { ?>【秘匿】<?php } ?><?php if ($chatroom['secrettype'] == CHAT_ROOM_KEYWORD) { ?>【KEYWORD】<?php } ?><?php echo h($chatroom['title']); ?>
+        <div class="chatroom-header-guide">
+          <?php echo h($chatroom['guide']); ?>
+        </div>
+      </h3>
+      <div class="chatroom-item-wrap">
+        <ul class="chatroom-item-group">
+          <li class="chatroom-item-title">ログ表示</li>
+          <li class="chatroom-item"><span id="id-info-lognum">100</span>行</li>
+        </ul>
+        <ul class="chatroom-item-group">
+          <li class="chatroom-item-title">ログ更新</li>
+          <li class="chatroom-item"><span id="id-info-logsec">60</span>秒</li>
+        </ul>
+      </div>
+    </header>
+
+    <div class="entries-wrap">
+      <h5 class="entries-title">参加者：</h5>
+      <ul id="id-chat-entries" class="entries-item-group"></ul><?php /* id="id-chat-entries" は変更しないこと。ログ一覧で使うため */ ?>
+    </div>
+    <input type="hidden" id="id-lognum" value="100">
+    <input type="hidden" id="id-logsec" value="60000"><?php /* 60000 = 60秒 */ ?>
+    <input type="hidden" id="id-domminid" value="0">
+    <input type="hidden" id="id-dommaxid" value="0">
+    <input type="hidden" id="id-syncmodifiedts" value="0">
+    <div id="id-log-error" class="log-error"></div>
+    <div id="id-log-wrap" class="log-wrap">
+    </div>
   </div>
 
 </div>
+<!-- チャット画面のみ設定 -->
 <style>
-/* 共通 */
-a {
-  color: <?php echo h($chatroom['color']); ?>;
-}
-body {
-  color: <?php echo h($chatroom['color']); ?>;
-  background-color: <?php echo h($chatroom['bgcolor']); ?>;
-}
-div.content-wrap {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 99vh;
-}
-ul, li {
-  list-style-type: none;
-}
-/* レイアウト */
-div.content-wrap {
-  display: grid;
-  grid-template-rows: 2em 28em 1fr;
-}
-header.header {
-  grid-row: 1 / 2;
-}
-div.chatconfig-wrap {
-  grid-row: 2 / 3;
-  overflow: auto;
-}
-div.chatroom-frame-wrap {
-  grid-row: 3 / 4;
-}
-/* ヘッダー */
-header.header {
-  display: flex;
-  justify-content: flex-end;
-  font-size: 0.8em;
-  color: <?php echo h($chatroom['bgcolor']); ?>;
-  background-color: <?php echo h($chatroom['color']); ?>;
-}
-ul.header-item-group {
-  display: flex;
-  margin: 0.5em;
-}
-li.header-item {
-  padding: 0 1em;
-  list-style-type: none;
-}
-li.header-item>a {
-  color: <?php echo h($chatroom['bgcolor']); ?>;
-}
-/* インラインフレーム */
-div.chatroom-frame-wrap {
-  border-top: solid 4px;
-}
-/* チャット画面フォーム */
-div.roomenter-form-wrap {
-  overflow: auto;
-}
-div.form-wrap {
-  margin: 0;
-  padding: 0;
-}
-ul.form-row {
-  display: flex;
-}
-li.form-col-title {
-  width: 8em;
-  padding: 0.2em;
-  margin-top: 0.6em;
-}
-li.form-col-item {
-  margin-top: 0.5em;
-}
-div.form-button-wrap {
-  display: flex;
-  justify-content: flex-end;
-}
-
-<?php if ($chatroom['toptemplate'] === CHAT_TOP_DEFAULT
-       || $chatroom['toptemplate'] === CHAT_TOP_TEMPLATE2
-) { ?>
-  div.chatconfig-wrap {
-    padding: 3em 3em 1em 3em;
+  li.entries-item {
+    cursor: pointer;
   }
-  /* チャット画面レイアウト */
-  div.chatconfig-wrap {
-    display: grid;
-    grid-template-rows: 4em 1fr 5em; /* 縦 */
-  }
-  div.chatconfig-title-wrap {
-    grid-row: 1 / 2; /* 縦 */
-  }
-  div.chatconfig-guide {
-    grid-row: 2 / 3; /* 縦 */
-  }
-  div.form-wrap {
-    grid-row: 3 / 4; /* 縦 */
-  }
-  /* チャットルームタイトル */
-  h3.chatconfig-title {
-    border-bottom: solid 2px;
-    font-size: 3em;
-    text-align: center;
-    word-break: break-all;
-  }
-  /* チャットルーム説明 */
-  div.chatconfig-guide {
-    margin: 1em 0;
-    height: 14em;
-    overflow: auto;
-    word-break: break-all;
-  }
-<?php } ?>
-<?php if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE1
-       || $chatroom['toptemplate'] === CHAT_TOP_TEMPLATE3
-) { ?>
-  div.chatconfig-wrap {
-    margin: 2em;
-  }
-  /* チャット画面レイアウト */
-  div.chatconfig-wrap {
-    display: grid;
-    grid-template-rows: 1fr 2.5em; /* 縦 */
-    grid-template-columns: 24em 1fr; /* 横 */
-  }
-  div.chatconfig-title-wrap {
-    grid-column: 1 / 2; /* 横 */
-    grid-row: 1 / 3; /* 縦 */
-  }
-  div.chatconfig-guide {
-    grid-column: 2 / 3; /* 横 */
-    grid-row: 1 / 2; /* 縦 */
-  }
-  div.form-wrap {
-    grid-column: 2 / 3; /* 横 */
-    grid-row: 2 / 3; /* 縦 */
-  }
-  /* チャットルームタイトル */
-  div.chatconfig-title-wrap {
-    border: double 14px;
-    width: 24em;
-    height: 24em;
-    padding: 2em;
-    color: <?php echo h($chatroom['bgcolor']); ?>;
-    background-color: <?php echo h($chatroom['color']); ?>;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    word-break: break-all;
-  }
-  h3.chatconfig-title {
-    letter-spacing: 0.2em;
-  }
-  /* チャットルーム説明 */
-  div.chatconfig-guide {
-    margin: 1em;
-    overflow: auto;
-    word-break: break-all;
-  }
-<?php } ?>
-<?php if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE2) { ?>
-  body {
-    <?php if (usedStr($chatroom['bgimage'])) { ?>
-      background-image: url("<?php echo h($chatroom['bgimage']); ?>");
-    <?php } ?>
-    background-repeat: repeat;
-  }
-<?php } ?>
-<?php if ($chatroom['toptemplate'] === CHAT_TOP_TEMPLATE3) { ?>
-  div.chatconfig-title-wrap {
-    <?php if (usedStr($chatroom['bgimage'])) { ?>
-      background-image: url("<?php echo h($chatroom['bgimage']); ?>");
-    <?php } ?>
-    background-repeat: repeat;
-  }
-<?php } ?>
 </style>
-<?php if (usedStr($chatroom['roomcss'])) { ?>
-  <style>
-    /* DB登録のCSS記載 */
-    <?php echo h($chatroom['roomcss']) ?>
-  </style>
+<script>
+  jQuery(document).on('click', '#id-chat-entries li.entries-item', function() {
+    var characterId = jQuery(this).data('characterid');
+    var url = '<?php echo h(NAMELIST_VIEW_LINK); ?>' + '?id=' + characterId + '&from=log';
+    window.open(url);
+  });
+</script>
+<script>
+// js 内使用変数
+var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_LINK); ?>chatloglist.php";
+
+// ログ取得起動
+jQuery(function() {
+
+  syncHiddenIdsFromDom();
+  chatReload();
+
+  var logsec = parseInt(jQuery('#id-logsec').val(), 10);
+  if (Number.isNaN(logsec) || logsec < 0) logsec = 60000;
+
+  startChatTimer(logsec);
+
+});
+</script>
+<?php if (CHAT_ROOM_SHOW_ONLINE) { ?>
+  <script>
+  // js 内使用変数
+  var CHAT_ONLINE_COUNT_API = "<?php echo h($ROOMDIR_SRC_LINK); ?>chatheartbeat.php";
+  var beatsec = 30000;
+
+  // DOMとjQueryが使える状態で開始
+  jQuery(function() {
+    startHeartbeatTimer(beatsec);
+  });
+  </script>
 <?php } ?>
-<!-- レスポンシブ用 -->
-<link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+
 </body>
 </html>

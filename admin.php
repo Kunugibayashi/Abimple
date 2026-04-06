@@ -1,9 +1,9 @@
 <?php
-require_once('./core/src/config.php');
-require_once('./core/src/functions.php');
-require_once('./core/src/session.php');
-require_once('./core/src/database.php');
-require_once('./core/src/administrator.php');
+require_once(__DIR__ .'/core/src/config.php');
+require_once(__DIR__ .'/core/src/functions.php');
+require_once(__DIR__ .'/core/src/session.php');
+require_once(__DIR__ .'/core/src/database.php');
+require_once(__DIR__ .'/core/src/administrator.php');
 
 adminOnly();
 
@@ -15,23 +15,23 @@ adminOnly();
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title><?php echo h(SITE_TITLE); ?>管理画面</title>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- レスポンシブ用 -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- script -->
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body class="admin-body">
 <div class="index-wrap">
 
   <header class="index-header">
-    <h1 class="index-title"><a href="./index-top.php" target="indexTop">管理画面</a></h1>
+    <h1 class="index-title"><a href="<?php echo h(SITE_LINK); ?>index-top.php" target="indexTop">管理画面</a></h1>
     <?php if (isLogin()) { /* ログイン時 */ ?>
       <div class="index-login">
         <?php echo h(getUserid()); ?>:<?php echo h(getUsername()); ?>でログイン中...
@@ -42,33 +42,39 @@ adminOnly();
 
   <div class="index-menu">
     <nav class="menu menu-site">
-      <h2 class="menu-title">Manual</h2>
+      <h2 class="menu-title admin-menu-title">Manual</h2>
       <ul class="menu-item-group">
-        <li class="menu-item"><a href="./manual/src/manual.php" target="indexTop">管理説明書</a></li>
-        <li class="menu-item"><a href="./manual/src/design.php" target="indexTop">デザイン確認</a></li>
-        <li class="menu-item"><a href="./manual/src/htmltag.php" target="indexTop">使用可能タグ</a></li>
+        <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>manual/src/manual.php" target="indexTop">管理説明書</a></li>
+        <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>manual/src/design.php" target="indexTop">デザイン確認</a></li>
       </ul>
     </nav>
     <nav class="menu menu-site">
-      <h2 class="menu-title">Info</h2>
+      <h2 class="menu-title admin-menu-title">Rule</h2>
       <ul class="menu-item-group">
-        <li class="menu-item"><a href="./infomation/src/list.php" target="indexTop">お知らせ管理</a></li>
-        <li class="menu-item"><a href="./infomation/src/signup.php" target="indexTop">お知らせ登録</a></li>
+        <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>manual/src/htmltag.php" target="indexTop">使用可能タグ</a></li>
+        <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>manual/src/diceinfo.php" target="indexTop">ダイス記載</a></li>
       </ul>
     </nav>
     <nav class="menu menu-site">
-      <h2 class="menu-title">User</h2>
+      <h2 class="menu-title admin-menu-title">Info</h2>
       <ul class="menu-item-group">
-        <li class="menu-item"><a href="./users/src/list.php" target="indexTop">ユーザー管理</a></li>
-        <li class="menu-item"><a href="./users/src/signup.php" target="indexTop">ユーザー登録</a></li>
+        <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>infomation/src/list.php" target="indexTop">お知らせ管理</a></li>
+        <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>infomation/src/signup.php" target="indexTop">お知らせ登録</a></li>
       </ul>
     </nav>
     <nav class="menu menu-site">
-      <h2 class="menu-title">Chat</h2>
+      <h2 class="menu-title admin-menu-title">User</h2>
       <ul class="menu-item-group">
-        <li class="menu-item"><a href="./chatrooms/src/list.php" target="indexTop">ルーム管理</a></li>
-        <li class="menu-item"><a href="./chatrooms/src/entrance.php" target="indexTop">ルーム一覧</a></li>
-        <li class="menu-item"><a href="./chatrooms/src/inouthistorylist.php" target="indexTop">入退室履歴</a></li>
+        <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>users/src/list.php" target="indexTop">ユーザー管理</a></li>
+        <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>users/src/signup.php" target="indexTop">ユーザー登録</a></li>
+      </ul>
+    </nav>
+    <nav class="menu menu-site">
+      <h2 class="menu-title admin-menu-title">Chat</h2>
+      <ul class="menu-item-group">
+        <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>chatrooms/src/list.php" target="indexTop">ルーム管理</a></li>
+        <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>chatrooms/src/entrance.php" target="indexTop">ルーム一覧</a></li>
+        <li class="menu-item"><a href="<?php echo h(SITE_LINK); ?>chatrooms/src/inouthistorylist.php" target="indexTop">入退室履歴</a></li>
       </ul>
     </nav>
 
@@ -91,14 +97,14 @@ adminOnly();
 
   <div class="index-frame-wrap">
     <iframe id="index-top" name="indexTop" title="ページトップ"
-      src="./index-top.php">
+      src="<?php echo h(SITE_LINK); ?>index-top.php">
     </iframe>
   </div>
 
   <footer class="index-footer">
     <div class="index-footer-menu">
-      <a href="./index.php">サイトトップ</a>
-      <a href="./users/src/logout.php" target="indexTop">ログアウト</a>
+      <a href="<?php echo h(SITE_LINK); ?>index.php">サイトトップ</a>
+      <a href="<?php echo h(SITE_LINK); ?>users/src/logout.php" target="indexTop">ログアウト</a>
     </div>
     <div class="index-copyright">
       Copyright (c) 2022 Kunugibayashi<br>

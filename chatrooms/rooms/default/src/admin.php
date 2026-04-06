@@ -1,12 +1,10 @@
 <?php
-require_once('../../../../core/src/config.php');
-require_once('../../../../core/src/functions.php');
-require_once('../../../../core/src/session.php');
-require_once('../../../../core/src/database.php');
-require_once('../../../../core/src/administrator.php');
-
-require_once('./config.php');
-require_once('./functions.php');
+require_once(__DIR__ .'/../../../../core/src/config.php');
+require_once(__DIR__ .'/../../../../core/src/functions.php');
+require_once(__DIR__ .'/../../../../core/src/session.php');
+require_once(__DIR__ .'/../../../../core/src/database.php');
+require_once(__DIR__ .'/../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/logger.php');
 
 adminOnly();
 
@@ -19,36 +17,46 @@ $inputParams['guide'] = inputParam('guide', 2000);
 $inputParams['toptemplate'] = inputParam('toptemplate', 20);
 $inputParams['logtemplate'] = inputParam('logtemplate', 20);
 $inputParams['isfree'] = inputParam('isfree', 1);
-$inputParams['issecret'] = inputParam('issecret', 1);
-$inputParams['color'] = inputParam('color', 7);
-$inputParams['bgcolor'] = inputParam('bgcolor', 7);
+$inputParams['secrettype'] = inputParam('secrettype', 1) ?: 0;
+$inputParams['color'] = inputParam('color', 7) ?: '#000000';
+$inputParams['bgcolor'] = inputParam('bgcolor', 7) ?: '#ffffff';
 $inputParams['bgimage'] = inputParam('bgimage', 1000);
 $inputParams['omi1flg'] = inputParam('omi1flg', 1);
+$inputParams['omi1type'] = inputParam('omi1type', 1);
 $inputParams['omi1name'] = inputParam('omi1name', 10);
 $inputParams['omi1text'] = inputParam('omi1text', 10000);
 $inputParams['omi2flg'] = inputParam('omi2flg', 1);
+$inputParams['omi2type'] = inputParam('omi2type', 1);
 $inputParams['omi2name'] = inputParam('omi2name', 10);
 $inputParams['omi2text'] = inputParam('omi2text', 10000);
 $inputParams['omi3flg'] = inputParam('omi3flg', 1);
+$inputParams['omi3type'] = inputParam('omi3type', 1);
 $inputParams['omi3name'] = inputParam('omi3name', 10);
 $inputParams['omi3text'] = inputParam('omi3text', 10000);
 $inputParams['deck1flg'] = inputParam('deck1flg', 1);
+$inputParams['deck1type'] = inputParam('deck1type', 1);
 $inputParams['deck1name'] = inputParam('deck1name', 10);
 $inputParams['deck1text'] = inputParam('deck1text', 10000);
 $inputParams['roomcss'] = inputParam('roomcss', 10000);
 $inputParams['created'] = inputParam('created', 20);
 $inputParams['modified'] = inputParam('modified', 20);
 
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
+
+// roomdir
+$roomdir = getPageRoomdir();
+$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src/';
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策
   setToken();
 
   // DB接続
-  $dbhChatrooms = connectRo(CHAT_ROOMS_DB);
+  $dbhChatrooms = connectRo(__DIR__ .'/' .CHAT_ROOMS_DB);
 
   $chatrooms = selectChatroomsConfig($dbhChatrooms);
   if (!usedArr($chatrooms)) {
-    firstAccessChatroom(CHAT_ROOMS_DB);
+    firstAccessChatroom(__DIR__ .'/' .CHAT_ROOMS_DB);
     $chatrooms = selectChatroomsConfig($dbhChatrooms);
   }
   $inputParams = $chatrooms[0];
@@ -63,6 +71,9 @@ checkToken();
 // 入力値チェック
 if (!usedStr($inputParams['title'])) {
   $errors[] = 'ルームタイトルを入力してください。';
+}
+if (usedStr($inputParams['title']) && isUnsafeChars($inputParams['title'])) {
+  $errors[] = 'ルームタイトルに利用不可な制御文字、あるいは記号が含まれています。';
 }
 if (!usedStr($inputParams['guide'])) {
   $errors[] = 'ルーム説明を入力してください。';
@@ -115,7 +126,7 @@ if (usedStr($inputParams['deck1text'])) {
 }
 
 // DB接続
-$dbhChatrooms = connectRw(CHAT_ROOMS_DB);
+$dbhChatrooms = connectRw(__DIR__ .'/' .CHAT_ROOMS_DB);
 
 // チャットルーム更新
 $updateRoom = $inputParams;
@@ -142,17 +153,17 @@ outputPage:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title>チャットルーム管理画面</title>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- レスポンシブ用 -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- script -->
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
 <div class="content-wrap">
@@ -185,8 +196,23 @@ outputPage:
     </div>
   <?php } ?>
 
+  <div class="adminlog-wrap">
+    <h4 class="adminlog-title">ログ取得</h4>
+    <ul class="adminlog-row">
+      <li class="adminlog-col-title"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>adminroomlog.php?up=<?php echo h(SITE_UPDATE); ?>" class="link-pseudo-button">ルームログ全出力</a></li>
+      <li class="adminlog-col-note">DB に残っているログをすべてダウンロードします。対象は現ルームのみです。DBは最大 10000 行保存されています。</li>
+      <li class="adminlog-col-note">ログ出力に失敗した場合に使用することを想定しています。負荷が高いため短時間に連続で行わないでください。</li>
+    </ul>
+    <ul class="adminlog-row">
+      <li class="adminlog-col-title"><a href="<?php echo h($ROOMDIR_SRC_LINK); ?>adminwhisperlog.php?up=<?php echo h(SITE_UPDATE); ?>" class="link-pseudo-button">ささやきログ全出力</a></li>
+      <li class="adminlog-col-note">DB に残っているすべてのユーザーのささやきをダウンロードします。対象は現ルームのみです。DBは最大 10000 行保存されています。</li>
+      <li class="adminlog-col-note">管理者はささやきが管理者から見えることを事前に通達するようお願いします。</li>
+    </ul>
+  </div>
+
   <div class="form-wrap">
-    <form name="characters-form" class="characters-form" action="./admin.php" method="POST">
+    <form name="characters-form" class="characters-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>admin.php" method="POST">
+      <h4 class="characters-form-title">チャットルーム設定</h4>
       <input type="hidden" name="token" value="<?php echo h(getToken()); ?>">
       <ul class="form-row">
         <li class="form-col-title">ルームDIR</li>
@@ -202,6 +228,7 @@ outputPage:
         <li class="form-col-item"><textarea name="guide" maxlength="2000"><?php echo h($inputParams['guide']); ?></textarea></li>
         <li class="form-col-note">最大 2000 文字</li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">トップテンプレート<div class="mandatory-mark"></div></li>
         <li class="form-col-item">
@@ -239,17 +266,20 @@ outputPage:
         <li class="form-col-note">自由設定にした場合、ユーザーがタイトルと説明を変更できます。</li>
       </ul>
       <ul class="form-row">
-        <li class="form-col-title">秘匿ルームにするか<div class="mandatory-mark"></div></li>
+        <li class="form-col-title">ルーム公開範囲の設定<div class="mandatory-mark"></div></li>
         <li class="form-col-item">
           <div class="select-wrap">
-            <select name="issecret">
-              <option <?php echo selectedOption($inputParams['issecret'], '0'); ?> value="0">秘匿ルームにしない</option>
-              <option <?php echo selectedOption($inputParams['issecret'], '1'); ?> value="1">秘匿ルームにする</option>
+            <select name="secrettype">
+              <option <?php echo selectedOption($inputParams['secrettype'], CHAT_ROOM_OPEN); ?> value="<?php echo h(CHAT_ROOM_OPEN); ?>">公開ルームにする</option>
+              <option <?php echo selectedOption($inputParams['secrettype'], CHAT_ROOM_SECRET); ?> value="<?php echo h(CHAT_ROOM_SECRET); ?>">秘匿ルームにする</option>
+              <option <?php echo selectedOption($inputParams['secrettype'], CHAT_ROOM_KEYWORD); ?> value="<?php echo h(CHAT_ROOM_KEYWORD); ?>">キーワードルームにする</option>
             </select>
           </div>
         </li>
-        <li class="form-col-note">秘匿設定にした場合、入室時にキーワードを設定し、キーワードを入力したユーザーのみが入室可能になります。</li>
+        <li class="form-col-note">『秘匿ルーム』にした場合、キーワードを入力したユーザーのみが入室可能になります。キーワードはユーザーが入室画面で設定可能です。参加者全員が退出後、キーワードはリセットされ、ログは削除されます。ログ出力はされません。</li>
+        <li class="form-col-note">『キーワードルーム』にした場合、キーワードを入力したユーザーのみが入室可能になります。キーワードは管理者のみが入室画面で設定可能です。退出後もログが残りますが、ログ出力はされません。</li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">基本文字色<div class="optional-mark"></div></li>
         <li class="form-col-item">
@@ -275,6 +305,7 @@ outputPage:
         <li class="form-col-item"><input type="text" name="bgimage" value="<?php echo h($inputParams['bgimage']); ?>" maxlength="1000"></li>
         <li class="form-col-note">最大 1000 文字。絶対パス指定を推奨。 例）/Abimple/assets/img/sample.jpg</li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">おみくじ1を表示するか<div class="mandatory-mark"></div></li>
         <li class="form-col-item">
@@ -292,6 +323,18 @@ outputPage:
         <li class="form-col-note">最大 10 文字。ボタン名に使用されます。</li>
       </ul>
       <ul class="form-row">
+        <li class="form-col-title">おみくじ1をどのように表示するか<div class="mandatory-mark"></div></li>
+        <li class="form-col-item">
+          <div class="select-wrap">
+            <select name="omi1type">
+              <option <?php echo selectedOption($inputParams['omi1type'], '0'); ?> value="0">全体表示</option>
+              <option <?php echo selectedOption($inputParams['omi1type'], '1'); ?> value="1">ドローのみアナウンス</option>
+            </select>
+          </div>
+        </li>
+        <li class="form-col-note">「ドローのみアナウンス」の場合、おみくじを引いたことのみチャットに表示され、内容はささやきでユーザーに表示されます。</li>
+      </ul>
+      <ul class="form-row">
         <li class="form-col-title">おみくじ1<div class="optional-mark"></div></li>
         <li class="form-col-item">
           <textarea name="omi1text" maxlength="10000"><?php echo h($inputParams['omi1text']); ?></textarea>
@@ -302,6 +345,7 @@ outputPage:
           </div>
         </li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">おみくじ2を表示するか<div class="mandatory-mark"></div></li>
         <li class="form-col-item">
@@ -319,6 +363,18 @@ outputPage:
         <li class="form-col-note">最大 10 文字。ボタン名に使用されます。</li>
       </ul>
       <ul class="form-row">
+        <li class="form-col-title">おみくじ2をどのように表示するか<div class="mandatory-mark"></div></li>
+        <li class="form-col-item">
+          <div class="select-wrap">
+            <select name="omi2type">
+              <option <?php echo selectedOption($inputParams['omi2type'], '0'); ?> value="0">全体表示</option>
+              <option <?php echo selectedOption($inputParams['omi2type'], '1'); ?> value="1">ドローのみアナウンス</option>
+            </select>
+          </div>
+        </li>
+        <li class="form-col-note">「ドローのみアナウンス」の場合、おみくじを引いたことのみチャットに表示され、内容はささやきでユーザーに表示されます。</li>
+      </ul>
+      <ul class="form-row">
         <li class="form-col-title">おみくじ2<div class="optional-mark"></div></li>
         <li class="form-col-item">
           <textarea name="omi2text" maxlength="10000"><?php echo h($inputParams['omi2text']); ?></textarea>
@@ -329,6 +385,7 @@ outputPage:
           </div>
         </li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">おみくじ3を表示するか<div class="mandatory-mark"></div></li>
         <li class="form-col-item">
@@ -339,6 +396,18 @@ outputPage:
             </select>
           </div>
         </li>
+      </ul>
+      <ul class="form-row">
+        <li class="form-col-title">おみくじ3をどのように表示するか<div class="mandatory-mark"></div></li>
+        <li class="form-col-item">
+          <div class="select-wrap">
+            <select name="omi3type">
+              <option <?php echo selectedOption($inputParams['omi3type'], '0'); ?> value="0">全体表示</option>
+              <option <?php echo selectedOption($inputParams['omi3type'], '1'); ?> value="1">ドローのみアナウンス</option>
+            </select>
+          </div>
+        </li>
+        <li class="form-col-note">「ドローのみアナウンス」の場合、おみくじを引いたことのみチャットに表示され、内容はささやきでユーザーに表示されます。</li>
       </ul>
       <ul class="form-row">
         <li class="form-col-title">おみくじ3の名前<div class="optional-mark"></div></li>
@@ -356,6 +425,7 @@ outputPage:
           </div>
         </li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">山札を表示するか<div class="mandatory-mark"></div></li>
         <li class="form-col-item">
@@ -366,6 +436,18 @@ outputPage:
             </select>
           </div>
         </li>
+      </ul>
+      <ul class="form-row">
+        <li class="form-col-title">山札をどのように表示するか<div class="mandatory-mark"></div></li>
+        <li class="form-col-item">
+          <div class="select-wrap">
+            <select name="deck1type">
+              <option <?php echo selectedOption($inputParams['deck1type'], '0'); ?> value="0">全体表示</option>
+              <option <?php echo selectedOption($inputParams['deck1type'], '1'); ?> value="1">ドローのみアナウンス</option>
+            </select>
+          </div>
+        </li>
+        <li class="form-col-note">「ドローのみアナウンス」の場合、山札を引いたことのみチャットに表示され、内容はささやきでユーザーに表示されます。</li>
       </ul>
       <ul class="form-row">
         <li class="form-col-title">山札の名前<div class="optional-mark"></div></li>
@@ -383,11 +465,13 @@ outputPage:
           </div>
         </li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">ルームCSS追加<div class="optional-mark"></div></li>
         <li class="form-col-item"><textarea name="roomcss" maxlength="10000"><?php echo h($inputParams['roomcss']); ?></textarea></li>
         <li class="form-col-note">最大 10000 文字。チャットルームすべてのページの最下部 <style></style> 内に記載されます。</li>
       </ul>
+      <hr class="chat-admin-line">
       <ul class="form-row">
         <li class="form-col-title">作成日</li>
         <li class="form-col-item"><?php echo h($inputParams['created']); ?></li>
@@ -410,7 +494,7 @@ outputPage:
 <script> <!-- 各ボタン制御 -->
 jQuery(function(){
   jQuery('button.tochatroom-button').on('click', function(){
-    window.location.href = './roomtop.php';
+    window.location.href = '<?php echo h($ROOMDIR_SRC_LINK); ?>roomtop.php';
   });
   // プレビュー機能
   jQuery('button.preview-button').on('click', function(){
@@ -458,7 +542,7 @@ jQuery(function(){
 <style>
 input[name="color"],
 input[name="bgcolor"] {
-  width: 8em;
+  width: 8rem;
 }
 </style>
 </body>

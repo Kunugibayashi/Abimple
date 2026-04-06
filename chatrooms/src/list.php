@@ -1,9 +1,10 @@
 <?php
-require_once('../../core/src/config.php');
-require_once('../../core/src/functions.php');
-require_once('../../core/src/session.php');
-require_once('../../core/src/database.php');
-require_once('../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/config.php');
+require_once(__DIR__ . '/../../core/src/functions.php');
+require_once(__DIR__ . '/../../core/src/session.php');
+require_once(__DIR__ . '/../../core/src/database.php');
+require_once(__DIR__ . '/../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/logger.php');
 
 adminOnly();
 
@@ -33,17 +34,17 @@ outputPage:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title>チャットルーム管理</title>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- レスポンシブ用 -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- script -->
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
 <div class="content-wrap">
@@ -61,7 +62,7 @@ outputPage:
 
   <div class="roomlist-menu">
     <ul class="roomlist-menu-item-group">
-      <li class="roomlist-menu-item"><a href="./signup.php">新規チャットルーム追加</a></li>
+      <li class="roomlist-menu-item"><a href="<?php echo h(CHAT_ROOM_SRC_LINK); ?>signup.php">新規チャットルーム追加</a></li>
     </ul>
   </div>
 
@@ -81,7 +82,6 @@ outputPage:
             <th class="cell-action">操作</th>
           <?php } ?>
           <th class="cell-roomdir">roomdir</th>
-          <th class="cell-roomtitle">ルームタイトル</th>
           <th class="cell-published">一覧に表示するか</th>
           <th class="cell-displayno">順序</th>
           <th class="cell-roomlink"></th>
@@ -96,22 +96,21 @@ outputPage:
               </td>
             <?php } ?>
             <td><?php echo h($value['roomdir']); ?></td>
-            <td><?php echo h($value['roomtitle']); ?></td>
             <td><?php if ($value['published']) { echo '表示する'; } else { echo '表示しない'; } ?></td>
             <td><?php echo h($value['displayno']); ?></td>
-            <td><a href="./../rooms/<?php echo h($value['roomdir']); ?>/src/roomtop.php">トップへ</a></td>
-            <td><a href="./../rooms/<?php echo h($value['roomdir']); ?>/src/admin.php">管理画面へ</a></td>
+            <td><a href="<?php echo h(CHAT_ROOM_ROOMS_LINK); ?><?php echo h($value['roomdir']); ?>/src/roomtop.php">トップへ</a></td>
+            <td><a href="<?php echo h(CHAT_ROOM_ROOMS_LINK); ?><?php echo h($value['roomdir']); ?>/src/admin.php">管理画面へ</a></td>
           </tr>
         <?php } ?>
       </table>
     </div>
   <?php } ?>
 
-  <form id="edit-form" class="hidden-form" action="./edit.php" method="GET">
+  <form id="edit-form" class="hidden-form" action="<?php echo h(CHAT_ROOM_SRC_LINK); ?>edit.php" method="GET">
     <input type="hidden" name="id" value="jQueryで入力">
   </form>
 
-  <form id="delete-form" class="hidden-form" action="./delete.php" method="GET">
+  <form id="delete-form" class="hidden-form" action="<?php echo h(CHAT_ROOM_SRC_LINK); ?>delete.php" method="GET">
     <input type="hidden" name="id" value="jQueryで入力">
   </form>
 

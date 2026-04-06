@@ -2,14 +2,12 @@
 /*
  * jQuery による POSTリクエストからのアクセスを想定。
  */
-require_once('../../../../core/src/config.php');
-require_once('../../../../core/src/functions.php');
-require_once('../../../../core/src/session.php');
-require_once('../../../../core/src/database.php');
-require_once('../../../../core/src/administrator.php');
-
-require_once('./config.php');
-require_once('./functions.php');
+require_once(__DIR__ .'/../../../../core/src/config.php');
+require_once(__DIR__ .'/../../../../core/src/functions.php');
+require_once(__DIR__ .'/../../../../core/src/session.php');
+require_once(__DIR__ .'/../../../../core/src/database.php');
+require_once(__DIR__ .'/../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/logger.php');
 
 $success = '';
 $errors = array();
@@ -19,6 +17,9 @@ $inputParams['id'] = inputParam('id', 20);
 $inputParams['characterid'] = inputParam('characterid', 20);
 $inputParams['message'] = inputParam('message', 3000);
 
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
+sessionLogChatEntryCharacter($inputParams['characterid']);
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // GETは処理しない。
   exit;
@@ -26,11 +27,11 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 /* 以降はPOST通信を想定。
  */
 // CSRF対策
-checkChatToken();
+checkChatToken($inputParams['characterid']);
 
 // DB接続
 $dbhCharacters = connectRo(CHARACTERS_DB);
-$dbhChatlogs = connectRw(CHAT_LOGS_DB);
+$dbhChatlogs = connectRw(__DIR__ .'/' .CHAT_LOGS_DB);
 
 if (!isAdmin()) {
   // 管理者でない場合は本人確認をする
@@ -56,6 +57,17 @@ if (!usedStr($inputParams['id'])) {
 if (!usedStr($inputParams['message'])) {
   $jsonArray['code'] = 1;
   $jsonArray['errorMessage'] = '発言が存在しません。';
+  goto outputPage;
+}
+
+// HTML構文チェック
+$doc = new DOMDocument();
+libxml_use_internal_errors(true);
+$result = $doc->loadXML('<div>' . html_entity_decode($inputParams['message']) .'</div>');
+libxml_clear_errors();
+if (!$result) {
+  $jsonArray['code'] = 1;
+  $jsonArray['errorMessage'] = '発言内のHTMLタグが正しくありません。';
   goto outputPage;
 }
 

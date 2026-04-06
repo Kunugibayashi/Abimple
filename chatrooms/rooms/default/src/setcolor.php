@@ -2,21 +2,22 @@
 /* ログに発言を出力する。
  * jQuery による POSTリクエストからのアクセスを想定。
  */
-require_once('../../../../core/src/config.php');
-require_once('../../../../core/src/functions.php');
-require_once('../../../../core/src/session.php');
-require_once('../../../../core/src/database.php');
-require_once('../../../../core/src/administrator.php');
-
-require_once('./config.php');
-require_once('./functions.php');
+require_once(__DIR__ .'/../../../../core/src/config.php');
+require_once(__DIR__ .'/../../../../core/src/functions.php');
+require_once(__DIR__ .'/../../../../core/src/session.php');
+require_once(__DIR__ .'/../../../../core/src/database.php');
+require_once(__DIR__ .'/../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/logger.php');
 
 $jsonArray = array();
 $inputParams = array();
 
 $inputParams['characterid'] = inputParam('characterid', 20);
-$inputParams['color'] = inputParam('color', 7);
-$inputParams['bgcolor'] = inputParam('bgcolor', 7);
+$inputParams['color'] = inputParam('color', 7) ?: '#000000';
+$inputParams['bgcolor'] = inputParam('bgcolor', 7) ?: '#ffffff';
+
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
+sessionLogChatEntryCharacter($inputParams['characterid']);
 
 $jsonArray['code'] = 0;
 $jsonArray['errorMessage'] = '';
@@ -28,11 +29,11 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 /* 以降はPOST通信を想定。
  */
 // CSRF対策
-checkChatToken();
+checkChatToken($inputParams['characterid']);
 
 // DB接続
 $dbhCharacters = connectRo(CHARACTERS_DB);
-$dbhChatentries = connectRw(CHAT_ENTRIES_DB);
+$dbhChatentries = connectRw(__DIR__ .'/' .CHAT_ENTRIES_DB);
 
 $characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
 if (!usedArr($characters)) {

@@ -1,9 +1,10 @@
 <?php
-require_once('../../core/src/config.php');
-require_once('../../core/src/functions.php');
-require_once('../../core/src/session.php');
-require_once('../../core/src/database.php');
-require_once('../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/config.php');
+require_once(__DIR__ . '/../../core/src/functions.php');
+require_once(__DIR__ . '/../../core/src/session.php');
+require_once(__DIR__ . '/../../core/src/database.php');
+require_once(__DIR__ . '/../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/logger.php');
 
 adminOnly();
 
@@ -13,7 +14,6 @@ $inputParams = array();
 
 $inputParams['id'] = inputParam('id', 20);
 $inputParams['roomdir'] = inputParam('roomdir', 20);
-$inputParams['roomtitle'] = inputParam('roomtitle', 100);
 $inputParams['published'] = inputParam('published', 1);
 $inputParams['displayno'] = inputParam('displayno', 10000);
 
@@ -47,9 +47,6 @@ if ($inputParams['roomdir'] === 'default') {
 if (preg_match('/[^A-Za-z0-9]/', $inputParams['roomdir'])) {
   $errors[] = 'roomdir に使用できるのは数字とアルファベットのみです。';
 }
-if (!usedStr($inputParams['roomtitle'])) {
-  $errors[] = 'ルーム名を入力してください。';
-}
 if (!usedStr($inputParams['displayno'])) {
   $errors[] = '表示順序を入力してください。';
 }
@@ -78,8 +75,8 @@ if (usedArr($roomlistList)) {
 $roomlistList = selectRoomsId($dbhRoomlist, $inputParams['id']);
 $roomlist = $roomlistList[0];
 
-$fromPath = './../rooms/'.$roomlist['roomdir'];
-$toPath = './../rooms/'.$inputParams['roomdir'];
+$fromPath = CHAT_ROOM_ROOMS_PATH .$roomlist['roomdir'];
+$toPath = CHAT_ROOM_ROOMS_PATH .$inputParams['roomdir'];
 
 if (!rename($fromPath, $toPath)) {
   $errors[] = 'ルーム名の変更に失敗しました。もう一度お試しください。';
@@ -108,17 +105,17 @@ outputPage:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title>チャットルーム編集</title>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- レスポンシブ用 -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- script -->
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
 <div class="content-wrap">
@@ -156,18 +153,13 @@ outputPage:
 
   <?php if (!usedStr($success)) { /* 成功以外にフォームを表示 */ ?>
     <div class="form-wrap">
-      <form name="user-form" class="user-form" action="./edit.php" method="POST" enctype="multipart/form-data">
+      <form name="user-form" class="user-form" action="<?php echo h(CHAT_ROOM_SRC_LINK); ?>edit.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="token" value="<?php echo h(getToken()); ?>">
         <input type="hidden" name="id" value="<?php echo h($inputParams['id']); ?>">
         <ul class="form-row">
           <li class="form-col-title">roomdir<div class="mandatory-mark"></div></li>
           <li class="form-col-item"><input type="text" name="roomdir" value="<?php echo h($inputParams['roomdir']); ?>" maxlength="20"></li>
           <li class="form-col-note">最大 20 文字まで。チャットルームの URL に使用されます。</li>
-        </ul>
-        <ul class="form-row">
-          <li class="form-col-title">ルーム名<div class="mandatory-mark"></div></li>
-          <li class="form-col-item"><input type="text" name="roomtitle" value="<?php echo h($inputParams['roomtitle']); ?>" maxlength="100"></li>
-          <li class="form-col-note">最大 100 文字まで。一覧の部屋タイトルに使用されます。</li>
         </ul>
         <ul class="form-row">
           <li class="form-col-title">一覧に表示するか<div class="mandatory-mark"></div></li>

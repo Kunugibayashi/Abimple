@@ -2,20 +2,21 @@
 /* ログに発言を出力する。
  * jQuery による POSTリクエストからのアクセスを想定。
  */
-require_once('../../../../core/src/config.php');
-require_once('../../../../core/src/functions.php');
-require_once('../../../../core/src/session.php');
-require_once('../../../../core/src/database.php');
-require_once('../../../../core/src/administrator.php');
-
-require_once('./config.php');
-require_once('./functions.php');
+require_once(__DIR__ .'/../../../../core/src/config.php');
+require_once(__DIR__ .'/../../../../core/src/functions.php');
+require_once(__DIR__ .'/../../../../core/src/session.php');
+require_once(__DIR__ .'/../../../../core/src/database.php');
+require_once(__DIR__ .'/../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/logger.php');
 
 $jsonArray = array();
 $inputParams = array();
 
 $inputParams['characterid'] = inputParam('characterid', 20);
 $inputParams['omikujiid'] = inputParam('omikujiid', 4);
+
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
+sessionLogChatEntryCharacter($inputParams['characterid']);
 
 $jsonArray['code'] = 0;
 $jsonArray['errorMessage'] = '';
@@ -27,13 +28,13 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 /* 以降はPOST通信を想定。
  */
 // CSRF対策
-checkChatToken();
+checkChatToken($inputParams['characterid']);
 
 // DB接続
-$dbhChatrooms  = connectRo(CHAT_ROOMS_DB);
 $dbhCharacters = connectRo(CHARACTERS_DB);
-$dbhChatentries = connectRw(CHAT_ENTRIES_DB);
-$dbhChatlogs = connectRw(CHAT_LOGS_DB);
+$dbhChatrooms  = connectRo(__DIR__ .'/' .CHAT_ROOMS_DB);
+$dbhChatentries = connectRw(__DIR__ .'/' .CHAT_ENTRIES_DB);
+$dbhChatlogs = connectRw(__DIR__ .'/' .CHAT_LOGS_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0]; // 必ずある想定
@@ -65,12 +66,15 @@ $myChatentry = $myChatentries[0];
 if ($inputParams['omikujiid'] === OMIKUJI1_ID) {
   $omiName = $chatroom['omi1name'];
   $omiText = $chatroom['omi1text'];
+  $omiType = $chatroom['omi1type'];
 } else if ($inputParams['omikujiid'] === OMIKUJI2_ID) {
   $omiName = $chatroom['omi2name'];
   $omiText = $chatroom['omi2text'];
+  $omiType = $chatroom['omi2type'];
 } else if ($inputParams['omikujiid'] === OMIKUJI3_ID) {
   $omiName = $chatroom['omi3name'];
   $omiText = $chatroom['omi3text'];
+  $omiType = $chatroom['omi3type'];
 } else {
   $jsonArray['code'] = 1;
   $jsonArray['errorMessage'] = 'おみくじIDがありません。';
@@ -101,21 +105,71 @@ $cnt = count($omiArray);
 $me = mt_rand(1, $cnt);
 $text = $omiArray[$me - 1];
 
+// メッセージ作成
+$messageString = (
+  '<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
+    .'<span class="omikuji">（' .$omiName .'）'
+    .'<span class="omi-arrow">＞</span>' .'[' .$me .'] '
+    .'<span class="omi-arrow">＞</span>' .$text
+  .'</span>'
+);
+$announceString = (
+  '<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
+    .'<span class="omikuji">（' .$omiName .'）'
+    .'<span class="omi-arrow">＞</span>' .$character['fullname'] .' が ' .$omiName .' を引きました。'
+  .'</span>'
+);
+
 // 発言
-$result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
-  'entrykey' => $myChatentry['entrykey'],
-  'characterid' => $character['id'],
-  'fullname' => CHAT_LOG_SYSTEM_NAME,
-  'color' => $chatroom['color'],
-  'bgcolor' => $chatroom['bgcolor'],
-  'message' => ('<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-               .'<span class="omikuji">（' .$omiName .'）＞ [' .$me .'] ＞ ' .$text .'</span>'
-  ),
-]);
-if (!$result) {
-  $jsonArray['code'] = 1;
-  $jsonArray['errorMessage'] = 'おみくじに失敗しました。もう一度お試しください。';
-  goto outputPage;
+if ($omiType == 1) {
+  // アナウンスを通常の発言に追加
+  $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+    'logtype' => LOGTYPE_SYSTEM,
+    'entrykey' => $myChatentry['entrykey'],
+    'characterid' => $character['id'],
+    'fullname' => CHAT_LOG_SYSTEM_NAME,
+    'color' => $chatroom['color'],
+    'bgcolor' => $chatroom['bgcolor'],
+    'message' => $announceString,
+  ]);
+  if (!$result) {
+    $jsonArray['code'] = 1;
+    $jsonArray['errorMessage'] = 'おみくじに失敗しました。もう一度お試しください。';
+    goto outputPage;
+  }
+  // ささやきで内容を追加
+  $result2 = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+    'logtype' => LOGTYPE_SYSTEM,
+    'entrykey' => $myChatentry['entrykey'],
+    'characterid' => $character['id'],
+    'fullname' => CHAT_LOG_SYSTEM_NAME,
+    'color' => $chatroom['color'],
+    'bgcolor' => $chatroom['bgcolor'],
+    'message' => $messageString,
+    'whisperflg' => 1,
+    'wtocharacterid' => $character['id'],
+    'wtofullname' => $character['fullname'],
+  ]);
+  if (!$result2) {
+    $jsonArray['code'] = 1;
+    $jsonArray['errorMessage'] = 'おみくじに失敗しました。もう一度お試しください。';
+    goto outputPage;
+  }
+} else {
+  $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+    'logtype' => LOGTYPE_SYSTEM,
+    'entrykey' => $myChatentry['entrykey'],
+    'characterid' => $character['id'],
+    'fullname' => CHAT_LOG_SYSTEM_NAME,
+    'color' => $chatroom['color'],
+    'bgcolor' => $chatroom['bgcolor'],
+    'message' => $messageString,
+  ]);
+  if (!$result) {
+    $jsonArray['code'] = 1;
+    $jsonArray['errorMessage'] = 'おみくじに失敗しました。もう一度お試しください。';
+    goto outputPage;
+  }
 }
 
 $jsonArray['code'] = 0;

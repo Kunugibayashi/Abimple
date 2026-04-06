@@ -3,5 +3,6 @@ Released under the MIT license
 https://opensource.org/licenses/mit-license.php  
 
 # Wiki
+https://seesaawiki.jp/abimple1/  
 https://seesaawiki.jp/abimple/  
 

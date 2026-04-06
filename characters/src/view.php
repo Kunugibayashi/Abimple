@@ -1,14 +1,18 @@
 <?php
-require_once('../../core/src/config.php');
-require_once('../../core/src/functions.php');
-require_once('../../core/src/session.php');
-require_once('../../core/src/database.php');
-require_once('../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/config.php');
+require_once(__DIR__ . '/../../core/src/functions.php');
+require_once(__DIR__ . '/../../core/src/session.php');
+require_once(__DIR__ . '/../../core/src/database.php');
+require_once(__DIR__ . '/../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/logger.php');
 
 $errors = array();
+$inputParams = array();
+
+$inputParams['from'] = inputParam('from', 10);
+$inputParams['characterid'] = inputParam('id', 20);
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-  $inputParams['characterid'] = getParam('id');
   if (!usedStr($inputParams['characterid'])) {
     $errors[] = 'キャラクターIDが不正です。';
     goto outputPage;
@@ -47,17 +51,17 @@ outputPage:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title>名簿参照</title>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- レスポンシブ用 -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- script -->
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
 <div class="content-wrap">
@@ -82,6 +86,18 @@ outputPage:
   <?php } ?>
 
   <?php if (usedArr($characters) && usedArr($character) && usedStr($character['id'])) { /* データがある場合は表示 */ ?>
+    <?php if ((NAMELIST_UPLOAD_IMAGE || isAdmin()) && usedStr($character['imgfile'])) { ?>
+      <?php
+        $dt = new DateTime($character['modified']);
+        $ver = $dt->format('YmdHis');
+        $profileimagelink = CHARACTER_SRC_LINK .'profileimage.php?f=' .$character['imgfile'] .'&v=' .$ver;
+      ?>
+      <div class="view-wrap view-profileimage-wrap">
+        <a href="<?php echo h($profileimagelink); ?>" target="_blank">
+          <img class="profile-image" src="<?php echo h($profileimagelink); ?>">
+        </a>
+      </div>
+    <?php } ?>
     <div class="view-wrap view-character-wrap">
       <div class="view-contents">
         <ul class="view-row">
@@ -217,7 +233,7 @@ outputPage:
       </div>
     <?php } ?>
 
-    <?php if (!isPrevLog()) { ?>
+    <?php if ($inputParams['from'] != 'log') { ?>
       <div class="page-back-wrap">
         <button type="button" class="tolist-button">一覧に戻る</button>
       </div>

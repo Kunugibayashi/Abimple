@@ -1,9 +1,9 @@
 <?php
-require_once('../../core/src/config.php');
-require_once('../../core/src/functions.php');
-require_once('../../core/src/session.php');
-require_once('../../core/src/database.php');
-require_once('../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/config.php');
+require_once(__DIR__ . '/../../core/src/functions.php');
+require_once(__DIR__ . '/../../core/src/session.php');
+require_once(__DIR__ . '/../../core/src/database.php');
+require_once(__DIR__ . '/../../core/src/administrator.php');
 
 adminOnly();
 
@@ -15,6 +15,8 @@ $inputParams['id'] = inputParam('id', 20);
 $inputParams['title'] = inputParam('title', 100);
 $inputParams['message'] = inputParam('message', 10000);
 
+$info = [];
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策
   setToken();
@@ -23,6 +25,10 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   $dbhInfomation = connectRw(INFOMATIONS_DB);
 
   $infoList = selectInfomationsId($dbhInfomation, $inputParams['id']);
+  if (!usedArr($infoList)) {
+    $errors[] = 'データがありません。';
+    goto outputPage;
+  }
   $info = $infoList[0];
 
   // データ更新
@@ -74,17 +80,17 @@ outputPage:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title>お知らせ更新</title>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- レスポンシブ用 -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- script -->
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
 <div class="content-wrap">
@@ -116,9 +122,9 @@ outputPage:
     </div>
   <?php } ?>
 
-  <?php if (!usedStr($success)) { /* 成功以外にフォームを表示 */ ?>
+  <?php if (!usedArr($errors) && !usedStr($success)) { /* エラー、成功以外にフォームを表示 */ ?>
     <div class="form-wrap">
-      <form name="user-form" class="user-form" action="./edit.php" method="POST" enctype="multipart/form-data">
+      <form name="user-form" class="user-form" action="<?php echo h(INFO_SEC_LINK); ?>edit.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="token" value="<?php echo h(getToken()); ?>">
         <input type="hidden" name="id" value="<?php echo h($inputParams['id']); ?>">
         <ul class="form-row">
@@ -129,7 +135,7 @@ outputPage:
         <ul class="form-row">
           <li class="form-col-title">メッセージ<div class="mandatory-mark"></div><div class="htmltag-mark"></div></li>
           <li class="form-col-item"><textarea name="message" maxlength="10000"><?php echo h($inputParams['message']); ?></textarea></li>
-          <li class="form-col-note">最大 10000 文字。<a href="../../manual/src/htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
+          <li class="form-col-note">最大 10000 文字。<a href="<?php echo h(MANUAL_SEC_LINK); ?>htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
         </ul>
         <div class="form-button-wrap">
           <button type="submit">更新</button>

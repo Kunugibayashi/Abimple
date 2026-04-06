@@ -1,9 +1,10 @@
 <?php
-require_once('../../core/src/config.php');
-require_once('../../core/src/functions.php');
-require_once('../../core/src/session.php');
-require_once('../../core/src/database.php');
-require_once('../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/config.php');
+require_once(__DIR__ . '/../../core/src/functions.php');
+require_once(__DIR__ . '/../../core/src/session.php');
+require_once(__DIR__ . '/../../core/src/database.php');
+require_once(__DIR__ . '/../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/logger.php');
 
 adminOnly();
 
@@ -13,6 +14,8 @@ $inputParams = array();
 
 $inputParams['id'] = inputParam('id', 20);
 $inputParams['roomdir'] = inputParam('roomdir', 20);
+
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策
@@ -34,7 +37,11 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 // CSRF対策
 checkToken();
 
-$errors = deleteRoomdir($inputParams['roomdir']);
+// roomdir
+$roomdir = $inputParams['roomdir'];
+$deleteDir = CHAT_ROOM_ROOMS_PATH . $roomdir;
+
+$errors = deleteRoomdir($deleteDir);
 if (usedArr($errors)) {
   goto outputPage;
 }
@@ -63,17 +70,17 @@ outputPage:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title>チャットルーム削除</title>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- レスポンシブ用 -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- script -->
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
 <div class="content-wrap">
@@ -118,7 +125,7 @@ outputPage:
     <div class="page-button-wrap">
       <button type="button" class="warning delete-button">はい</button>
     </div>
-    <form id="delete-form" class="hidden-form" action="./delete.php" method="POST">
+    <form id="delete-form" class="hidden-form" action="<?php echo h(CHAT_ROOM_SRC_LINK); ?>delete.php" method="POST">
       <input type="hidden" name="token" value="<?php echo h(getToken()); ?>">
       <input type="hidden" name="roomdir" value="<?php echo h($inputParams['roomdir']); ?>">
       <input type="hidden" name="id" value="<?php echo h($inputParams['id']); ?>">

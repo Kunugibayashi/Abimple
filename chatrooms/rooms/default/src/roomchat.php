@@ -1,42 +1,80 @@
 <?php
-require_once('../../../../core/src/config.php');
-require_once('../../../../core/src/functions.php');
-require_once('../../../../core/src/session.php');
-require_once('../../../../core/src/database.php');
-require_once('../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/config.php');
+require_once(__DIR__ .'/../../../../core/src/functions.php');
+require_once(__DIR__ .'/../../../../core/src/session.php');
+require_once(__DIR__ .'/../../../../core/src/database.php');
+require_once(__DIR__ .'/../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/logger.php');
 
-require_once('./config.php');
-require_once('./functions.php');
+require_once(__DIR__ .'/../../../src/chatlogexport.php');
 
 $inputParams = array();
 
-$inputParams['characterid'] = inputParam('characterid', 20);
-$inputParams['color'] = inputParam('color', 7) ? inputParam('color', 7) : '#000000';
-$inputParams['bgcolor'] = inputParam('bgcolor', 7) ? inputParam('bgcolor', 7) : '#ffffff';
+$inputParams['characterid'] = inputParam('viewcharacterid', 20);
+$inputParams['color'] = inputParam('color', 7) ?: '#000000';
+$inputParams['bgcolor'] = inputParam('bgcolor', 7) ?: '#ffffff';
 $inputParams['memo'] = inputParam('memo', 200);
-$inputParams['inoutmesflg'] = inputParam('inoutmesflg', 1);
+$inputParams['inoutmesflg'] = inputParam('inoutmesflg', 1) ?? 0;
+
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
+sessionLogChatEntryCharacter($inputParams['characterid']);
+
+// roomdir
+$roomdir = getPageRoomdir();
+$ROOMDIR_SRC_LINK = SITE_ROOT .'/chatrooms/rooms/'. $roomdir .'/src/';
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // GETは処理しない。
   exit;
 }
-/* 以降はPOST通信を想定。
+/**
+ * 以降はPOST通信を想定。
  */
 // CSRF対策
-checkChatToken();
+// 画面表示時はキャラクターIDが決まっていないため、空でチェック
+checkChatEnterToken();
+
+$nowEntryRoom = (string)isChatEntryRoom($inputParams['characterid']);
+if ($nowEntryRoom !=='' && $nowEntryRoom !== (string)$roomdir) {
+  // 空の場合は未入室のためOK
+  // roomdir が一致しない場合は他ルーム
+  echo 'このキャラクターは他のルーム（' .$nowEntryRoom .'）に入室しています。';
+  echo '入室者一覧に名前が表示されていないまま、このメッセージが表示される場合は一度ログアウトし、ログインしなおしてください。';
+  exit;
+}
+
+// 管理者のみ複数キャラクター入室可能の場合はチェック
+if (CHAT_MULTI_ENTRY_MODE === 1 && !isAdmin()) {
+  // セッションから値を取得
+  $sessionChatentry = getChatEntries();
+  if (usedArr($sessionChatentry) && count($sessionChatentry) > 1) {
+    // 多重入室
+    echo '既に他キャラクターで入室しています。';
+    echo '入室者一覧に名前が表示されていないまま、このメッセージが表示される場合は一度ログアウトし、ログインしなおしてください。';
+    exit;
+  }
+  if (usedArr($sessionChatentry) && count($sessionChatentry) == 1
+    && !isset($sessionChatentry[$inputParams['characterid']])
+  ) {
+    // 多重入室
+    echo '既に他キャラクターで入室しています。';
+    echo '入室者一覧に名前が表示されていないまま、このメッセージが表示される場合は一度ログアウトし、ログインしなおしてください。';
+    exit;
+  }
+}
 
 // 既に入室している場合はセッションから取得
-if (isNowRoomEntry(getPageRoomdir())) {
-  $inputParams = getChatEntry();
+if (isNowRoomEntry($inputParams['characterid'], $roomdir)) {
+  $inputParams = getChatEntry($inputParams['characterid']);
 }
 
 // DB接続
-$dbhChatrooms  = connectRo(CHAT_ROOMS_DB);
 $dbhCharacters = connectRo(CHARACTERS_DB);
-$dbhChatentries = connectRw(CHAT_ENTRIES_DB);
-$dbhChatlogs = connectRw(CHAT_LOGS_DB);
-$dbhChatsecrets = connectRo(CHAT_SECRETS_DB);
 $dbhInouthistory = connectRw(ROOM_INOUT_HISTORIES_DB);
+$dbhChatrooms  = connectRo(__DIR__ .'/' .CHAT_ROOMS_DB);
+$dbhChatentries = connectRw(__DIR__ .'/' .CHAT_ENTRIES_DB);
+$dbhChatlogs = connectRw(__DIR__ .'/' .CHAT_LOGS_DB);
+$dbhChatsecrets = connectRo(__DIR__ .'/' .CHAT_SECRETS_DB);
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 $chatroom = $chatrooms[0]; // 必ずある想定
@@ -52,11 +90,11 @@ $character = $characters[0];
 // 本人確認
 identityUser($character['userid'], $character['username']);
 
-// 秘匿ルームの場合
-if ($chatroom['issecret'] == 1) {
+// 公開ルームでない場合
+if ($chatroom['secrettype'] != CHAT_ROOM_OPEN) {
   $chatsecrets = selectChatsecrets($dbhChatsecrets);
   if (!usedArr($chatsecrets)) {
-    firstAccessChatsecrets(CHAT_SECRETS_DB);
+    firstAccessChatsecrets(__DIR__ .'/' .CHAT_SECRETS_DB);
     $chatsecrets = selectChatsecrets($dbhChatsecrets);
   }
   $dbKeyword = $chatsecrets[0]['keyword'];
@@ -75,10 +113,10 @@ $chatentries = selectEqualChatentries($dbhChatentries);
 // 最初の入室者かどうか
 if (!usedArr($chatentries)) {
   // 最初の入室者の場合はエントリーキーを入れる
-  $entrykey = sha1(uniqid(mt_rand(), true));
+  $entrykey = bin2hex(random_bytes(20));
   insertChatentries($dbhChatentries, getUserid(), getUsername(), [
     'entrykey' => $entrykey,
-    'characterid' => $character['id'],
+    'characterid' => $inputParams['characterid'],
     'fullname' => $character['fullname'],
     'color' => $inputParams['color'],
     'bgcolor' => $inputParams['bgcolor'],
@@ -88,16 +126,17 @@ if (!usedArr($chatentries)) {
   // 入室ログ
   if ($inputParams['inoutmesflg'] == 1) {
     insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+      'logtype' => LOGTYPE_SYSTEM,
       'entrykey' => $entrykey,
-      'characterid' => $character['id'],
+      'characterid' => $inputParams['characterid'],
       'fullname' => CHAT_LOG_SYSTEM_NAME,
       'color' => $chatroom['color'],
       'bgcolor' => $chatroom['bgcolor'],
       'message' => '<span class="fullname">' .$character['fullname'] .'</span>' .'が入室しました。',
     ]);
 
-    // 秘匿ルームでない場合のみ履歴に登録
-    if ($chatroom['issecret'] != 1) {
+    // 公開ルームのみ履歴に登録
+    if ($chatroom['secrettype'] == CHAT_ROOM_OPEN) {
       insertRoominouthistories($dbhInouthistory, [
         'roomtitle' => $chatroom['title'],
         'message' => '<span style="font-weight: bold;">' .$character['fullname'] .'</span>' .'が入室しました。',
@@ -109,33 +148,34 @@ $chatentry = $chatentries[0];
 
 // 自分は入室しているかどうか
 $myChatentries = selectEqualChatentries($dbhChatentries, [
-  'characterid' => $character['id'],
+  'characterid' => $inputParams['characterid'],
 ]);
 if (!usedArr($myChatentries)) {
   insertChatentries($dbhChatentries, getUserid(), getUsername(), [
     'entrykey' => $chatentry['entrykey'],
-    'characterid' => $character['id'],
+    'characterid' => $inputParams['characterid'],
     'fullname' => $character['fullname'],
     'color' => $inputParams['color'],
     'bgcolor' => $inputParams['bgcolor'],
   ]);
   $myChatentries = selectEqualChatentries($dbhChatentries, [
-    'characterid' => $character['id'],
+    'characterid' => $inputParams['characterid'],
   ]);
 
   // 入室していない場合は入室ログを出す
   if ($inputParams['inoutmesflg'] == 1) {
     insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+      'logtype' => LOGTYPE_SYSTEM,
       'entrykey' => $chatentry['entrykey'],
-      'characterid' => $character['id'],
+      'characterid' => $inputParams['characterid'],
       'fullname' => CHAT_LOG_SYSTEM_NAME,
       'color' => $chatroom['color'],
       'bgcolor' => $chatroom['bgcolor'],
       'message' => '<span class="fullname">' .$character['fullname'] .'</span>' .'が入室しました。'
     ]);
 
-    // 秘匿ルームでない場合のみ履歴に登録
-    if ($chatroom['issecret'] != 1) {
+    // 公開ルームのみ履歴に登録
+    if ($chatroom['secrettype'] == CHAT_ROOM_OPEN) {
       insertRoominouthistories($dbhInouthistory, [
         'roomtitle' => $chatroom['title'],
         'message' => '<span style="font-weight: bold;">' .$character['fullname'] .'</span>' .'が入室しました。',
@@ -147,17 +187,20 @@ $myChatentry = $myChatentries[0];
 
 // 入室情報の保存
 $save = [
-  'roomdir' => getPageRoomdir(),
+  'roomdir' => $roomdir,
   'entrykey' => $chatentry['entrykey'],
-  'characterid' => $character['id'],
+  'characterid' => $inputParams['characterid'],
+  'charactername' => $character['fullname'],
   'color' => $inputParams['color'],
   'bgcolor' => $inputParams['bgcolor'],
   'memo' => $inputParams['memo'],
 ];
 setChatEntry($save);
+setChatToken($inputParams['characterid']);
 
 
-/* goto文はコードが煩雑になるため使用するべきではないが、
+/**
+ * goto文はコードが煩雑になるため使用するべきではないが、
  * ソースコードが複雑になるため、画面表示phpのページ出力開始ラベルのみ使用する。
  */
 outputPage:
@@ -169,46 +212,63 @@ outputPage:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title><?php echo h($chatroom['title']); ?></title>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <!-- DB参照値用 -->
+  <?php echo renderDbCssVariables($chatroom); ?>
+  <!-- チャット画面用CSS -->
+  <?php echo renderCssLinkUrl($chatroom); ?>
+  <!-- チャット画面のみ設定 -->
+  <style>
+    li.entries-item {
+      cursor: pointer;
+    }
+  </style>
   <!-- レスポンシブ用 -->
-  <!-- 直接記載があるため下部に移動 -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <!-- DB登録のCSS記載 -->
+  <?php if (usedStr($chatroom['roomcss'])) echo '<style>' . h($chatroom['roomcss']) . '</style>'; ?>
   <!-- script -->
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(CHAT_ROOM_SRC_LINK); ?>/js/chatlog-sync.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(CHAT_ROOM_SRC_LINK); ?>/js/chatheartbeat-sync.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
-<div id="id-roomchat-content-wrap" class="content-wrap">
+<div id="id-roomtop-content-wrap" class="content-wrap"><!-- roomtopと共通 -->
 
-  <header class="header">
-    <nav class="header-menu">
-      <ul class="header-item-group">
-        <li class="header-item">
-          <a href="./editlist.php" target="log">発言編集</a>
+  <header id="id-roomtop-header" class="roomtop-header"><!-- roomtopと共通 -->
+    <nav class="roomtop-header-menu">
+      <ul class="roomtop-header-item-group">
+        <?php if (CHAT_ROOM_SHOW_ONLINE) { ?>
+          <li class="roomtop-header-item onlinecount-wrap">閲覧者：<span id="id-onlinecount"></span>人</li>
+        <?php } ?>
+        <li class="roomtop-header-item">
+          <?php /* アクセス先で本人確認しているため GET で良い */ ?>
+          <a href="<?php echo h($ROOMDIR_SRC_LINK); ?>chatinroomlogdl.php?id=<?php echo h($inputParams['characterid']); ?>">現行ログDL</a>
         </li>
-        <li class="header-item">
-          <span class="link new-window-submit">ログ別窓表示</span>
-          <form name="new-window-form" class="hidden-form" action="./log.php" target="_blank" method="GET">
-            <input type="hidden" name="lognum" value="">
-            <input type="hidden" name="logsec" value="">
+        <li class="roomtop-header-item">
+          <span class="link form-submit">発言編集</span>
+          <form name="edit-form" class="hidden-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>editlist.php" method="POST" target="_blank">
+            <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
+            <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
           </form>
         </li>
-        <li class="header-item">
+        <li class="roomtop-header-item">
           <span class="link form-submit">退室メッセージを表示させずに退室</span>
-          <form name="exit-form" class="hidden-form" action="./roomexit.php" method="POST">
-            <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
-            <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
+          <form name="exit-form" class="hidden-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>roomexit.php" method="POST">
+            <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
+            <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
             <input type="hidden" name="inoutmesflg" value="0">
           </form>
         </li>
-        <li class="header-item">
+        <li class="roomtop-header-item">
           <span class="link form-submit">退室</span>
-          <form name="exit-form" class="hidden-form" action="./roomexit.php" method="POST">
-            <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
-            <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
+          <form name="exit-form" class="hidden-form" action="<?php echo h($ROOMDIR_SRC_LINK); ?>roomexit.php" method="POST">
+            <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
+            <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
             <input type="hidden" name="inoutmesflg" value="1">
           </form>
         </li>
@@ -216,186 +276,280 @@ outputPage:
     </nav>
   </header>
 
-  <div class="chat-form-wrap">
-    <div class="form-wrap">
-      <input type="hidden" id="backup-mes" value="">
-      <form name="chat-form" id="chat-form" action="" target="log" method="POST">
-        <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
-        <input type="hidden" name="entrykey" value="<?php echo h($myChatentry['entrykey']); ?>">
-        <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
-        <ul class="form-row name-setting-wrap">
-          <li class="form-col-title">名前</li>
-          <li class="form-col-item">
-            <?php echo h($character['fullname']); ?>
-          </li>
-          <li class="form-col-title">ささやき宛先</li>
-          <li class="form-col-item">
-            <div class="form-row-item-group">
+  <div id="id-roomchat-content-wrap" class="roomchat-content-wrap">
+    <div class="chat-form-wrap">
+      <div class="form-wrap">
+        <input type="hidden" id="id-backup-mes" class="backup-mes" value="">
+        <form name="chat-form" id="id-chat-form" class="chat-form" action="" target="log" method="POST">
+          <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
+          <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
+          <input type="hidden" name="entrykey" value="<?php echo h($myChatentry['entrykey']); ?>">
+          <ul class="form-row name-setting-wrap">
+            <li class="form-col-title">名前</li>
+            <li class="form-col-item">
+              <?php echo h($character['fullname']); ?>
+            </li>
+            <?php if (CHAT_WHISPER_MODE == 1) { /* ささやき使用の場合 */ ?>
+              <li class="form-col-title">ささやき宛先</li>
+              <li class="form-col-item">
+                <div class="form-row-item-group">
+                  <div class="select-wrap">
+                    <select name="whisperid">
+                      <option value="">なし</option>
+                    </select>
+                  </div>
+                </div>
+              </li>
+            <?php } ?>
+          </ul>
+          <ul class="form-row color-setting-wrap">
+            <li class="form-col-title">文字色</li>
+            <li class="form-col-item">
+              <div class="form-row-item-group">
+                <input type="text" name="color" value="<?php echo h($inputParams['color']); ?>" maxlength="7">
+                <input type="color" class="select-color" value="<?php echo h($inputParams['color']); ?>">
+              </div>
+            </li>
+            <li class="form-col-title">背景色</li>
+            <li class="form-col-item">
+              <div class="form-row-item-group">
+                <input type="text" name="bgcolor" value="<?php echo h($inputParams['bgcolor']); ?>" maxlength="7">
+                <input type="color" class="select-bgcolor" value="<?php echo h($inputParams['bgcolor']); ?>">
+              </div>
+            </li>
+          </ul>
+          <ul class="form-row message-wrap">
+            <li class="form-col-title">発言</li>
+            <li class="form-col-item">
+              <div class="form-col-item-group">
+                <div class="htmltag-mark"></div>
+                <textarea name="message" maxlength="3000" placeholder="Ctrl+Enterで発言可能"></textarea>
+                <div class="form-col-note form-col-note-message">最大 3000 文字。<a href="<?php echo h(MANUAL_SEC_LINK); ?>htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></div>
+              </div>
+            </li>
+          </ul>
+          <ul class="form-row memo-wrap">
+            <li class="form-col-title">備考</li>
+            <li class="form-col-item">
+              <input type="text" name="memo" value="<?php echo h($inputParams['memo']); ?>" maxlength="200">
+              <div class="form-col-note">最大 200 文字</div>
+            </li>
+          </ul>
+        </form>
+      </div>
+      <div class="form-wrap">
+        <div name="reload-form" id="id-reload-form" class="reload-form"><?php /* class名はformだった名残 */ ?>
+          <ul class="form-row log-setting-wrap">
+            <li class="form-col-title">ログ行数</li>
+            <li class="form-col-item">
               <div class="select-wrap">
-                <select name="whisperid">
-                  <option value="">なし</option>
+                <select name="lognum" id="id-lognum">
+                  <option value="25">25行</option>
+                  <option value="50">50行</option>
+                  <option value="100">100行</option>
                 </select>
               </div>
-            </div>
-          </li>
-        </ul>
-        <ul class="form-row color-setting-wrap">
-          <li class="form-col-title">文字色</li>
-          <li class="form-col-item">
-            <div class="form-row-item-group">
-              <input type="text" name="color" value="<?php echo h($inputParams['color']); ?>" maxlength="7">
-              <input type="color" class="select-color" value="<?php echo h($inputParams['color']); ?>">
-            </div>
-          </li>
-          <li class="form-col-title">背景色</li>
-          <li class="form-col-item">
-            <div class="form-row-item-group">
-              <input type="text" name="bgcolor" value="<?php echo h($inputParams['bgcolor']); ?>" maxlength="7">
-              <input type="color" class="select-bgcolor" value="<?php echo h($inputParams['bgcolor']); ?>">
-            </div>
-          </li>
-        </ul>
-        <ul class="form-row message-wrap">
-          <li class="form-col-title">発言</li>
-          <li class="form-col-item">
-            <div class="form-col-item-group">
-              <div class="htmltag-mark"></div>
-              <textarea name="message" maxlength="3000" placeholder="Ctrl+Enterで発言可能"></textarea>
-              <div class="form-col-note form-col-note-message">最大 3000 文字。<a href="../../../../manual/src/htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></div>
-            </div>
-          </li>
-        </ul>
-        <ul class="form-row memo-wrap">
-          <li class="form-col-title">備考</li>
-          <li class="form-col-item">
-            <input type="text" name="memo" value="<?php echo h($inputParams['memo']); ?>" maxlength="200">
-            <div class="form-col-note">最大 200 文字</div>
-          </li>
-        </ul>
-      </form>
-    </div>
-    <div class="form-wrap">
-      <form name="reload-form" id="reload-form" action="./log.php" target="log" method="GET">
-        <ul class="form-row log-setting-wrap">
-          <li class="form-col-title">ログ行数</li>
-          <li class="form-col-item">
-            <div class="select-wrap">
-              <select name="lognum">
-                <option value="25">25行</option>
-                <option value="50">50行</option>
-                <option value="100">100行</option>
-              </select>
-            </div>
-          </li>
-          <li class="form-col-title">リロード時間</li>
-          <li class="form-col-item">
-            <div class="select-wrap">
-              <select name="logsec">
-                <option value="25">25秒</option>
-                <option value="60">60秒</option>
-                <option value="0">0秒（手動）</option>
-              </select>
-            </div>
-          </li>
-        </ul>
-      </form>
-      <div class="form-button-wrap chat-button-wrap">
-        <button type="button" class="chat-button">発言</button>
-        <button type="button" class="restore-button">発言復元</button>
-        <button type="button" class="color-set-button">設定色変更</button>
-        <button type="button" class="whisperid-set-button">ささやき宛先更新</button>
-        <button type="button" class="reload-button">リロード</button>
-        <button type="button" class="change-display-button">表示切替</button>
-      </div>
-      <div class="mes-wrap">
-        <div id="result-mes"><!-- エラーメッセージ表示箇所 --></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="random-wrap">
-    <div class="random-border-wrap">
-      <h3 class="dice-title">ダイス</h3>
-      <div class="form-wrap dice-form-wrap">
-        <form name="dice-form" class="dice-form" action="" method="POST">
-          <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
-          <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
-          <div class="dice-wrap">
-            <input type="text" name="dice" value="" maxlength="6" placeholder="1d6 など">
-            <div class="form-col-note">最大 10d100 （100面ダイス10個）</div>
-          </div>
-          <div class="form-button-wrap dice-button-wrap">
-            <button type="button" class="dice-button">ダイスを振る</button>
-          </div>
-        </form>
+            </li>
+            <li class="form-col-title">リロード時間</li>
+            <li class="form-col-item">
+              <div class="select-wrap">
+                <select name="logsec" id="id-logsec">
+                  <option value="25000">25秒</option><?php /* 25000 = 25秒 */ ?>
+                  <option value="60000">60秒</option><?php /* 60000 = 60秒 */ ?>
+                  <option value="0">0秒（手動）</option>
+                </select>
+              </div>
+            </li>
+            <li class="form-col-title">ベル通知</li>
+            <li class="form-col-item">
+              <div class="select-wrap">
+                <select name="usebell" id="id-usebell">
+                  <option value="1">ON</option>
+                  <option value="0">OFF</option>
+                </select>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="form-button-wrap chat-button-wrap">
+          <button type="button" class="chat-button">発言</button>
+          <button type="button" class="restore-button">発言復元</button>
+          <button type="button" class="color-set-button">設定色変更</button>
+          <?php if (CHAT_WHISPER_MODE == 1) { /* ささやき使用の場合 */ ?>
+            <button type="button" class="whisperid-set-button">ささやき宛先更新</button>
+          <?php } ?>
+          <button type="button" class="reload-button">リロード</button>
+          <button type="button" class="change-display-button">表示切替</button>
+        </div>
+        <div class="result-mes-wrap">
+          <div id="id-result-mes"><!-- エラーメッセージ表示箇所 --></div>
+        </div>
       </div>
     </div>
 
-    <?php if ($chatroom['omi1flg'] || $chatroom['omi2flg'] || $chatroom['omi3flg']) { /* おみくじがひとつでも設定されていれば表示 */ ?>
+    <div class="random-wrap">
       <div class="random-border-wrap">
-        <h3 class="omi-title">おみくじ</h3>
-          <form name="omi-form" id="omi-form" action="" method="POST">
-            <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
-            <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
-            <input type="hidden" name="omikujiid" value="">
+        <h3 class="dice-title">ダイス</h3>
+        <div class="form-wrap dice-form-wrap">
+          <form name="dice-form" class="dice-form" action="" method="POST">
+            <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
+            <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
+            <div class="dice-wrap">
+              <input type="text" name="dice" value="" maxlength="200" placeholder="1d6 など">
+              <div class="form-omi-note"><a href="<?php echo h(MANUAL_SEC_LINK); ?>diceinfo.php" target="_blank">使用可能な形式についてはこちら。</a></div>
+            </div>
+            <div class="form-button-wrap dice-button-wrap">
+              <button type="button" class="dice-button">ダイスを振る</button>
+            </div>
           </form>
-        <?php if ($chatroom['omi1flg']) { ?>
-          <div class="form-wrap omi1-form-wrap">
-            <div class="form-button-wrap omi1-button-wrap">
-              <button type="button" class="omi-button" value="<?php echo h(OMIKUJI1_ID);?>"><?php echo h($chatroom['omi1name']); ?></button>
-            </div>
-          </div>
-        <?php } ?>
-        <?php if ($chatroom['omi2flg']) { ?>
-          <div class="form-wrap omi2-form-wrap">
-            <div class="form-button-wrap omi2-button-wrap">
-              <button type="button" class="omi-button" value="<?php echo h(OMIKUJI2_ID);?>"><?php echo h($chatroom['omi2name']); ?></button>
-            </div>
-          </div>
-        <?php } ?>
-        <?php if ($chatroom['omi3flg']) { ?>
-          <div class="form-wrap omi3-form-wrap">
-            <div class="form-button-wrap omi3-button-wrap">
-              <button type="button" class="omi-button" value="<?php echo h(OMIKUJI3_ID);?>"><?php echo h($chatroom['omi3name']); ?></button>
-            </div>
-          </div>
-        <?php } ?>
-      </div>
-    <?php } ?>
-
-    <?php if ($chatroom['deck1flg']) { /* 山札が設定されていれば表示 */ ?>
-      <div class="random-border-wrap">
-        <h3 class="deck-title">山札</h3>
-        <form name="deck-form" id="deck-form" action="" method="POST">
-          <input type="hidden" name="token" value="<?php echo h(getChatToken()); ?>">
-          <input type="hidden" name="characterid" value="<?php echo h($myChatentry['characterid']); ?>">
-        </form>
-        <div class="form-button-wrap deck1-button-wrap">
-          <button type="button" class="deck-button"><?php echo h($chatroom['deck1name']); ?></button>
-        </div>
-        <div class="form-button-wrap deck1-button-wrap">
-          <button type="button" class="deck-reset-button">山札リセット</button>
         </div>
       </div>
-    <?php } ?>
 
+      <?php if ($chatroom['omi1flg'] || $chatroom['omi2flg'] || $chatroom['omi3flg']) { /* おみくじがひとつでも設定されていれば表示 */ ?>
+        <div class="random-border-wrap">
+          <h3 class="omi-title">おみくじ</h3>
+            <form name="omi-form" id="omi-form" action="" method="POST">
+              <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
+              <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
+              <input type="hidden" name="omikujiid" value="">
+            </form>
+          <?php if ($chatroom['omi1flg']) { ?>
+            <div class="form-wrap omi1-form-wrap">
+              <div class="form-button-wrap omi1-button-wrap">
+                <button type="button" class="omi-button <?php if ($chatroom['omi1type']) echo h('drawonly-button');?>" value="<?php echo h(OMIKUJI1_ID);?>"><?php echo h($chatroom['omi1name']); ?></button>
+              </div>
+            </div>
+          <?php } ?>
+          <?php if ($chatroom['omi2flg']) { ?>
+            <div class="form-wrap omi2-form-wrap">
+              <div class="form-button-wrap omi2-button-wrap">
+                <button type="button" class="omi-button <?php if ($chatroom['omi2type']) echo h('drawonly-button');?>" value="<?php echo h(OMIKUJI2_ID);?>"><?php echo h($chatroom['omi2name']); ?></button>
+              </div>
+            </div>
+          <?php } ?>
+          <?php if ($chatroom['omi3flg']) { ?>
+            <div class="form-wrap omi3-form-wrap">
+              <div class="form-button-wrap omi3-button-wrap">
+                <button type="button" class="omi-button <?php if ($chatroom['omi3type']) echo h('drawonly-button');?>" value="<?php echo h(OMIKUJI3_ID);?>"><?php echo h($chatroom['omi3name']); ?></button>
+              </div>
+            </div>
+          <?php } ?>
+          <?php if ($chatroom['omi1type'] || $chatroom['omi2type'] || $chatroom['omi3type']) { /* ドローのみアナウンスの場合 */ ?>
+            <div class="form-deck-note">枠ありボタンはささやきで表示されます</div>
+          <?php } ?>
+        </div>
+      <?php } ?>
+
+      <?php if ($chatroom['deck1flg']) { /* 山札が設定されていれば表示 */ ?>
+        <div class="random-border-wrap">
+          <h3 class="deck-title">山札</h3>
+          <form name="deck-form" id="deck-form" action="" method="POST">
+            <input type="hidden" name="token" value="<?php echo h(getChatToken($inputParams['characterid'])); ?>">
+            <input type="hidden" name="characterid" value="<?php echo h($inputParams['characterid']); ?>">
+          </form>
+          <div class="form-button-wrap deck1-button-wrap">
+            <button type="button" class="deck-button <?php if ($chatroom['deck1type']) echo h('drawonly-button');?>"><?php echo h($chatroom['deck1name']); ?></button>
+          </div>
+          <div class="form-button-wrap deck1-button-wrap">
+            <button type="button" class="deck-reset-button">山札リセット</button>
+          </div>
+          <?php if ($chatroom['deck1type']) { /* ドローのみアナウンスの場合 */ ?>
+            <div class="form-deck-note">枠ありボタンはささやきで表示されます</div>
+          <?php } ?>
+        </div>
+      <?php } ?>
+
+    </div>
   </div>
 
-  <div class="chatroom-frame-wrap">
-    <iframe id="log-top" name="log" title="ルームログ"
-      src="./log.php">
-    </iframe>
+  <div class="content-log-wrap">
+    <header class="chatroom-header-wrap">
+      <h3 class="chatroom-header-title">
+        <?php if ($chatroom['secrettype'] == CHAT_ROOM_SECRET) { ?>【秘匿】<?php } ?><?php if ($chatroom['secrettype'] == CHAT_ROOM_KEYWORD) { ?>【KEYWORD】<?php } ?><?php echo h($chatroom['title']); ?>
+        <div class="chatroom-header-guide">
+          <?php echo h($chatroom['guide']); ?>
+        </div>
+      </h3>
+      <div class="chatroom-item-wrap">
+        <ul class="chatroom-item-group">
+          <li class="chatroom-item-title">ログ表示</li>
+          <li class="chatroom-item"><span id="id-info-lognum">100</span>行</li>
+        </ul>
+        <ul class="chatroom-item-group">
+          <li class="chatroom-item-title">ログ更新</li>
+          <li class="chatroom-item"><span id="id-info-logsec">60</span>秒</li>
+        </ul>
+      </div>
+    </header>
+
+    <div class="entries-wrap">
+      <h5 class="entries-title">参加者：</h5>
+      <ul id="id-chat-entries" class="entries-item-group"></ul><?php /* id="id-chat-entries" は変更しないこと。ログ一覧で使うため */ ?>
+    </div>
+    <input type="hidden" id="id-domminid" value="0">
+    <input type="hidden" id="id-dommaxid" value="0">
+    <input type="hidden" id="id-syncmodifiedts" value="0">
+    <input type="hidden" id="id-characterid" value="<?php echo h($inputParams['characterid']); ?>">
+    <div id="id-log-error" class="log-error"></div>
+    <div id="id-log-wrap" class="log-wrap">
+    </div>
   </div>
 
 </div>
+<!-- チャット画面のみ設定 -->
+<style>
+  li.entries-item {
+    cursor: pointer;
+  }
+</style>
+<script>
+  jQuery(document).on('click', '#id-chat-entries li.entries-item', function() {
+    var characterId = jQuery(this).data('characterid');
+    var url = '<?php echo h(NAMELIST_VIEW_LINK); ?>' + '?id=' + characterId + '&from=log';
+    window.open(url);
+  });
+</script>
+<script>
+// js 内使用変数
+var CHATLOG_API = "<?php echo h($ROOMDIR_SRC_LINK); ?>chatloglist.php";
+var BELL_FILE_LINK = "<?php echo h(ASSETS_LINK); ?>/sound/<?php echo h(CHAT_SOUND_FILE); ?>";
+
+const bellAudio = new Audio(BELL_FILE_LINK);
+bellAudio.volume = 0.5;
+
+// ログ取得起動
+jQuery(function() {
+
+  syncHiddenIdsFromDom();
+  chatReload();
+
+  var logsec = parseInt(jQuery('#id-logsec').val(), 10);
+  if (Number.isNaN(logsec) || logsec <= 0) logsec = 60000;
+
+  startChatTimer(logsec);
+
+});
+
+</script>
 <script>
 jQuery(function(){
-  var resultElm = jQuery('div#result-mes');
-  var backupElm = jQuery('input#backup-mes');
+  var resultElm = jQuery('div#id-result-mes');
+  var backupElm = jQuery('input#id-backup-mes');
   var textMesElm = jQuery('textarea[name="message"]');
   var reloadBtElm = jQuery('button.reload-button');
   var chatBtElm = jQuery('button.chat-button');
   var whisperidElm = jQuery('select[name="whisperid"]');
+
+  // リロード
+  reloadBtElm.on('click', function(){
+    syncHiddenIdsFromDom();
+    chatReload();
+
+    var logsec = parseInt(jQuery('#id-logsec').val(), 10);
+    if (Number.isNaN(logsec) || logsec < 0) logsec = 60000;
+
+    startChatTimer(logsec);
+  });
 
   // 復元
   jQuery('button.restore-button').on('click', function(){
@@ -412,7 +566,7 @@ jQuery(function(){
 
   // 発言
   chatBtElm.on('click', function(){
-    var sendData = jQuery('form#chat-form').serialize();
+    var sendData = jQuery('form#id-chat-form').serialize();
     var message = textMesElm.val();
 
     if (!message) {
@@ -429,7 +583,7 @@ jQuery(function(){
     textMesElm.val('');
 
     jQuery.ajax({
-      url: './chat.php',
+      url: '<?php echo h($ROOMDIR_SRC_LINK); ?>chat.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',
@@ -451,7 +605,8 @@ jQuery(function(){
 
   // Ctrl + Enter 発言
   textMesElm.on('keydown', function(event){
-    if(event.ctrlKey === true && event.which === 13){
+    if((event.ctrlKey || event.metaKey) && event.key === 'Enter'){
+      event.preventDefault();
       chatBtElm.trigger('click');
     }
   });
@@ -460,14 +615,14 @@ jQuery(function(){
   jQuery('button.change-display-button').on('click', function(){
     if (jQuery('div.random-wrap').css('display') == 'block') {
       // 隠す
-      jQuery('div.content-wrap').css('grid-template-columns', '1fr 0em');
-      jQuery('textarea[name="message"]').css('width', '85vw');
-      jQuery('#id-roomchat-content-wrap').css('grid-template-rows', '2em 16em 1fr');
+      jQuery('textarea[name="message"]').css('width', 'calc(100vw - 10rem)');
+      jQuery('div.roomchat-content-wrap').css('grid-template-columns', '1fr 0rem');
+      jQuery('#id-roomtop-content-wrap').css('grid-template-rows', '2rem 16rem 1fr');
     } else {
       // 表示
-      jQuery('div.content-wrap').css('grid-template-columns', '1fr 18em');
-      jQuery('textarea[name="message"]').css('width', '30em');
-      jQuery('#id-roomchat-content-wrap').css('grid-template-rows', '2em 28em 1fr');
+      jQuery('textarea[name="message"]').css('width', 'calc(100vw - 25rem)');
+      jQuery('div.roomchat-content-wrap').css('grid-template-columns', '1fr 16rem');
+      jQuery('#id-roomtop-content-wrap').css('grid-template-rows', '2rem 28rem 1fr');
     }
 
     jQuery('button.color-set-button').toggle();
@@ -477,17 +632,12 @@ jQuery(function(){
     jQuery('div.random-wrap').toggle();
   });
 
-  // リロード
-  reloadBtElm.on('click', function(){
-    var reloadForm = jQuery('form#reload-form');
-    reloadForm.submit();
-  });
-
+<?php if (CHAT_WHISPER_MODE == 1) { /* ささやき使用の場合 */ ?>
   // ささやきリスト更新
   jQuery('button.whisperid-set-button').on('click', function(){
-    var sendData = jQuery('form#chat-form').serialize();
+    var sendData = jQuery('form#id-chat-form').serialize();
     jQuery.ajax({
-      url: './whisperlist.php',
+      url: '<?php echo h($ROOMDIR_SRC_LINK); ?>updatewhisperlist.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',
@@ -517,12 +667,13 @@ jQuery(function(){
       chatBtElm.text('発言');
     }
   });
+<?php } ?>
 
   // 設定色変更
   jQuery('button.color-set-button').on('click', function(){
-    var sendData = jQuery('form#chat-form').serialize();
+    var sendData = jQuery('form#id-chat-form').serialize();
     jQuery.ajax({
-      url: './setcolor.php',
+      url: '<?php echo h($ROOMDIR_SRC_LINK); ?>setcolor.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',
@@ -546,7 +697,7 @@ jQuery(function(){
   jQuery('button.dice-button').on('click', function(){
     var sendData = jQuery('form[name="dice-form"]').serialize();
     jQuery.ajax({
-      url: './dice.php',
+      url: '<?php echo h($ROOMDIR_SRC_LINK); ?>dice.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',
@@ -574,7 +725,7 @@ jQuery(function(){
 
     var sendData = omiForm.serialize();
     jQuery.ajax({
-      url: './omikuji.php',
+      url: '<?php echo h($ROOMDIR_SRC_LINK); ?>omikuji.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',
@@ -601,7 +752,7 @@ jQuery(function(){
 
     var sendData = omiForm.serialize();
     jQuery.ajax({
-      url: './deck.php',
+      url: '<?php echo h($ROOMDIR_SRC_LINK); ?>deck.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',
@@ -628,7 +779,7 @@ jQuery(function(){
 
     var sendData = omiForm.serialize();
     jQuery.ajax({
-      url: './deckreset.php',
+      url: '<?php echo h($ROOMDIR_SRC_LINK); ?>deckreset.php',
       type: 'POST',
       data: sendData,
       dataType: 'json',
@@ -661,189 +812,18 @@ jQuery(function(){
 
 });
 </script>
-<style>
-/* 共通 */
-a {
-  color: <?php echo h($chatroom['color']); ?>;
-}
-body {
-  color: <?php echo h($chatroom['color']); ?>;
-  background-color: <?php echo h($chatroom['bgcolor']); ?>;
-}
-div.content-wrap {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 99vh;
-}
-ul, li {
-  list-style-type: none;
-}
-/* ヘッダー */
-header.header {
-  display: flex;
-  justify-content: flex-end;
-  font-size: 0.8em;
-  color: <?php echo h($chatroom['bgcolor']); ?>;
-  background-color: <?php echo h($chatroom['color']); ?>;
-}
-ul.header-item-group {
-  display: flex;
-  margin: 0.5em;
-}
-li.header-item {
-  padding: 0 1em;
-  list-style-type: none;
-}
-li.header-item>a {
-  color: <?php echo h($chatroom['bgcolor']); ?>;
-}
-/* インラインフレーム */
-div.chatroom-frame-wrap {
-  border-top: solid 4px;
-}
-</style>
-<style>
-/* レイアウト */
-div.content-wrap {
-  display: grid;
-  grid-template-columns: 1fr 18em;
-  grid-template-rows: 2em 28em 1fr;
-}
-header.header {
-  grid-column: 1 / 3;
-  grid-row: 1 / 2;
-}
-div.chat-form-wrap {
-  grid-column: 1 / 2;
-  grid-row: 2 / 3;
-  overflow: auto;
-}
-div.random-wrap {
-  grid-column: 2 / 3;
-  grid-row: 2 / 3;
-  overflow: auto;
-}
-div.chatroom-frame-wrap {
-  grid-column: 1 / 3;
-  grid-row: 3 / 4;
-}
-</style>
-<style>
-/* 入力 */
-input[name="color"],
-input[name="bgcolor"] {
-  width: 8em;
-}
-input[name="memo"] {
-  width: 30em;
-}
-input[name="dice"] {
-  width: 7em;
-}
-select[name="whisperid"],
-select[name="lognum"],
-select[name="logsec"] {
-  width: 8em;
-}
-textarea[name="message"] {
-  resize: auto;
-  width: 30em;
-  height: 4em;
-}
-/* 通信メッセージ */
-div.mes-wrap {
-  display: flex;
-  justify-content: center;
-}
-/* ボタン */
-div.chat-button-wrap {
-  display: flex;
-  justify-content: center;
-}
-div.chat-button-wrap>button {
-  margin: 0.5em;
-}
-/* チャットフォーム */
-div.chat-form-wrap {
-  margin-bottom: 0;
-  padding: 1em;
+<?php if (CHAT_ROOM_SHOW_ONLINE) { ?>
+  <script>
+  // js 内使用変数
+  var CHAT_ONLINE_COUNT_API = "<?php echo h($ROOMDIR_SRC_LINK); ?>chatheartbeat.php";
+  var beatsec = 30000;
 
-  display: flex;
-  flex-direction: column;
-}
-ul.form-row {
-  border-bottom: dotted 1px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-li.form-col-title:not(:first-child) {
-  margin-left: 2em;
-}
-li.form-col-title {
-  width: 7em;
-  min-width: 7em;
-  margin: 0.5em 0;
-}
-li.form-col-item {
-  margin: 0.5em 0;
-  width: 10em;
-}
-li.form-col-item-name {
-  width: 25em;
-}
-div.form-row-item-group {
-  display: flex;
-  align-content: center;
-  width: 13em;
-}
-div.form-col-item-group {
-  display: flex;
-  flex-direction: column;
-}
-div.form-col-note {
-  font-size: 0.8em;
-  opacity: 0.6;
-  width: 20em;
-}
-div.form-col-note-message {
-  width: 30em;
-}
-/* ダイス おみくじ 山札 */
-div.random-border-wrap {
-  margin: 1em 0 0 0;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-form.dice-form {
-  margin:  0 0 0 1.2em;
-}
-h3.deck-title,
-h3.omi-title,
-h3.dice-title {
-  font-size: 1.2em;
-  font-weight: bold;
-  border-bottom: dotted 1px;
-  width: 12em;
-  margin-bottom: 0.2em;
-}
-button.deck-reset-button,
-button.deck-button,
-button.omi-button,
-input[name="dice"] {
-  width: 14em;
-}
-</style>
-<?php if (usedStr($chatroom['roomcss'])) { ?>
-  <style>
-    /* DB登録のCSS記載 */
-    <?php echo h($chatroom['roomcss']) ?>
-  </style>
+  // DOMとjQueryが使える状態で開始
+  jQuery(function() {
+    startHeartbeatTimer(beatsec);
+  });
+  </script>
 <?php } ?>
-<!-- レスポンシブ用 -->
-<link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+
 </body>
 </html>

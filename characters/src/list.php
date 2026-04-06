@@ -1,9 +1,10 @@
 <?php
-require_once('../../core/src/config.php');
-require_once('../../core/src/functions.php');
-require_once('../../core/src/session.php');
-require_once('../../core/src/database.php');
-require_once('../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/config.php');
+require_once(__DIR__ . '/../../core/src/functions.php');
+require_once(__DIR__ . '/../../core/src/session.php');
+require_once(__DIR__ . '/../../core/src/database.php');
+require_once(__DIR__ . '/../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/logger.php');
 
 $searchParams = array();
 
@@ -106,17 +107,17 @@ outputPage:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title>名簿</title>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- レスポンシブ用 -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- script -->
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
 <div class="content-wrap">
@@ -294,6 +295,14 @@ outputPage:
     </div>
   <?php } ?>
 
+  <?php if (isLogin()) { /* ログイン時 */ ?>
+    <?php if (usedArr($pages)) { /* 登録がある場合に表示 */ ?>
+      <div class="export-wrap">
+        <a href="<?php echo h(CHARACTER_SRC_LINK); ?>export.php" class="link-pseudo-button">一括DL</a>
+      </div>
+    <?php } ?>
+  <?php } ?>
+
     <div class="paging-wrap">
       <?php outputPaging($characters, getNowPage()); ?>
     </div>
@@ -384,7 +393,7 @@ outputPage:
             <?php if (isAdmin()) { ?>
               <td><?php echo h($value['id']); ?></td>
             <?php } ?>
-            <td><a class="character-view-link" href="./view.php?id=<?php echo h($value['id']); ?>"><?php echo h($value['fullname']); ?><a></td>
+            <td><a class="character-view-link" href="<?php echo h(NAMELIST_VIEW_LINK); ?>?id=<?php echo h($value['id']); ?>"><?php echo h($value['fullname']); ?></a></td>
             <td><span style="color: <?php echo h($value['color']); ?>; "><?php echo h($value['color']); ?></span></td>
             <td><span style="color: <?php echo h($value['bgcolor']); ?>; "><?php echo h($value['bgcolor']); ?></span></td>
             <?php if (NAMELIST_GENDER || isAdmin()) { ?>
@@ -458,15 +467,15 @@ outputPage:
     </div>
   <?php } ?>
 
-  <form id="edit-form" class="hidden-form" action="./edit.php" method="GET">
+  <form id="edit-form" class="hidden-form" action="<?php echo h(CHARACTER_SRC_LINK); ?>edit.php" method="GET">
     <input type="hidden" name="id" value="jQueryで入力">
   </form>
 
-  <form id="delete-form" class="hidden-form" action="./delete.php" method="GET">
+  <form id="delete-form" class="hidden-form" action="<?php echo h(CHARACTER_SRC_LINK); ?>delete.php" method="GET">
     <input type="hidden" name="id" value="jQueryで入力">
   </form>
 
-  <form id="letter-form" class="hidden-form" action="../../letters/src/send.php" method="GET">
+  <form id="letter-form" class="hidden-form" action="<?php echo h(LETTER_SEC_LINK); ?>send.php" method="GET">
     <input type="hidden" name="tocharacterid" value="jQueryで入力">
   </form>
 

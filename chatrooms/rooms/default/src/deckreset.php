@@ -2,19 +2,20 @@
 /* ログに発言を出力する。
  * jQuery による POSTリクエストからのアクセスを想定。
  */
-require_once('../../../../core/src/config.php');
-require_once('../../../../core/src/functions.php');
-require_once('../../../../core/src/session.php');
-require_once('../../../../core/src/database.php');
-require_once('../../../../core/src/administrator.php');
-
-require_once('./config.php');
-require_once('./functions.php');
+require_once(__DIR__ .'/../../../../core/src/config.php');
+require_once(__DIR__ .'/../../../../core/src/functions.php');
+require_once(__DIR__ .'/../../../../core/src/session.php');
+require_once(__DIR__ .'/../../../../core/src/database.php');
+require_once(__DIR__ .'/../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/logger.php');
 
 $jsonArray = array();
 $inputParams = array();
 
 $inputParams['characterid'] = inputParam('characterid', 20);
+
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
+sessionLogChatEntryCharacter($inputParams['characterid']);
 
 $jsonArray['code'] = 0;
 $jsonArray['errorMessage'] = '';
@@ -26,13 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 /* 以降はPOST通信を想定。
  */
 // CSRF対策
-checkChatToken();
+checkChatToken($inputParams['characterid']);
 
 // DB接続
-$dbhChatrooms = connectRw(CHAT_ROOMS_DB);
 $dbhCharacters = connectRo(CHARACTERS_DB);
-$dbhChatentries = connectRw(CHAT_ENTRIES_DB);
-$dbhChatlogs = connectRw(CHAT_LOGS_DB);
+$dbhChatrooms = connectRw(__DIR__ .'/' .CHAT_ROOMS_DB);
+$dbhChatentries = connectRw(__DIR__ .'/' .CHAT_ENTRIES_DB);
+$dbhChatlogs = connectRw(__DIR__ .'/' .CHAT_LOGS_DB);
 
 
 $characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
@@ -61,7 +62,7 @@ $myChatentry = $myChatentries[0];
 
 $chatrooms = selectChatroomsConfig($dbhChatrooms);
 if (!usedArr($chatrooms)) {
-  firstAccessChatroom(CHAT_ROOMS_DB);
+  firstAccessChatroom(__DIR__ .'/' .CHAT_ROOMS_DB);
   $chatrooms = selectChatroomsConfig($dbhChatrooms);
 }
 $chatroom = $chatrooms[0];
@@ -108,16 +109,22 @@ updateChatroomsConfig($dbhChatrooms, [
   'deck1text' => $deckText,
 ]);
 
+$messageString = (
+  '<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
+    .'<span class="deck">（' .$chatroom['deck1name'] .'）'
+    .'<span class="deck-arrow">＞</span>' .$character['fullname'] .' が山札をリセットしました。'
+  .'</span>'
+);
+
 // 発言
 $result = insertChatlogs($dbhChatlogs, getUserid(), getUsername(), [
+  'logtype' => LOGTYPE_SYSTEM,
   'entrykey' => $myChatentry['entrykey'],
   'characterid' => $character['id'],
   'fullname' => CHAT_LOG_SYSTEM_NAME,
   'color' => $chatroom['color'],
   'bgcolor' => $chatroom['bgcolor'],
-  'message' => ('<span class="fullname"><span style=" color:' .$myChatentry['color'] .';">' .$character['fullname'] .'</span></span>'
-               .'<span class="deck">（' .$chatroom['deck1name'] .'）＞ ' .'山札をリセットしました。' .'</span>'
-  ),
+  'message' => $messageString,
 ]);
 if (!$result) {
   $jsonArray['code'] = 1;

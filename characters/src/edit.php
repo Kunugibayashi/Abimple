@@ -1,9 +1,12 @@
 <?php
-require_once('../../core/src/config.php');
-require_once('../../core/src/functions.php');
-require_once('../../core/src/session.php');
-require_once('../../core/src/database.php');
-require_once('../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/config.php');
+require_once(__DIR__ . '/../../core/src/functions.php');
+require_once(__DIR__ . '/../../core/src/session.php');
+require_once(__DIR__ . '/../../core/src/database.php');
+require_once(__DIR__ . '/../../core/src/administrator.php');
+require_once(__DIR__ . '/../../core/src/logger.php');
+
+require_once(__DIR__ . '/../../core/src/lib/imagelib.php');
 
 loginOnly();
 
@@ -13,8 +16,10 @@ $inputParams = array();
 
 $inputParams['id'] = inputParam('id', 20);
 $inputParams['fullname'] = inputParam('fullname', 20);
-$inputParams['color'] = inputParam('color', 7);
-$inputParams['bgcolor'] = inputParam('bgcolor', 7);
+$inputParams['color'] = inputParam('color', 7) ?: '#000000';
+$inputParams['bgcolor'] = inputParam('bgcolor', 7) ?: '#ffffff';
+$inputParams['imgfile'] = inputParam('imgfile', 10000) ?: '';
+$inputParams['imgdelchk'] = inputParam('imgdelchk', 1) ?: 0;
 $inputParams['gender'] = inputParam('gender', 10);
 $inputParams['species'] = inputParam('species', 10);
 $inputParams['team'] = inputParam('team', 10);
@@ -34,6 +39,8 @@ $inputParams['free12'] = inputParam('free12', 10000);
 $inputParams['comment'] = inputParam('comment', 100);
 $inputParams['url'] = inputParam('url', 1000);
 $inputParams['detail'] = inputParam('detail', 10000);
+
+logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
   // CSRF対策
@@ -69,7 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 
   goto outputPage;
 }
-/* 以降はPOST通信を想定。
+/**
+ * 以降はPOST通信を想定。
  */
 // CSRF対策
 checkToken();
@@ -91,8 +99,45 @@ $character = $characters[0];
 // 本人確認
 identityUser($character['userid'], $character['username']);
 
+// 画僧編集
+if (NAMELIST_UPLOAD_IMAGE || isAdmin()) {
+  // 削除
+  if ( (usedStr($inputParams['imgdelchk']) && $inputParams['imgdelchk'] == 1)
+    || (usedStr($character['imgfile']) && isset($_FILES['uploadfile']))
+  ) {
+    // チェックがある場合
+    // または、画像アップロード済みでファイル指定がされた場合
+    $delresult = deleteImageFile(CHARACTER_IMAGE_PATH, $character['imgfile']);
+    if (!usedArr($delresult) && $delresult['code'] != 0) {
+      $errors[] = '画像の削除に失敗しました。';
+      $errors[] = $delresult['errorMessage'];
+      goto outputPage;
+    }
+
+    $inputParams['imgfile'] = '';
+  }
+
+  // 画像アップロードがONの場合、画像アップロード処理
+  if ((NAMELIST_UPLOAD_IMAGE || isAdmin()) && isset($_FILES['uploadfile']) && $_FILES['uploadfile']['error'] !== UPLOAD_ERR_NO_FILE) {
+    // 画像ファイル名作成
+    $bytes = random_bytes(16);
+    $imgFilename = bin2hex($bytes); // 32文字
+
+    $imgresult = uploadImageFile(
+      $_FILES['uploadfile'], CHARACTER_IMAGE_PATH, $imgFilename, NAMELIST_IMAGE_FILESIZE
+    );
+    if (usedArr($imgresult) && $imgresult['code'] != 0) {
+      $errors[] = '画像のアップロードに失敗しました。';
+      $errors[] = $imgresult['errorMessage'];
+      goto outputPage;
+    }
+    $inputParams['imgfile'] = $imgresult['fileName'];
+  }
+}
+
 // キャラクター更新
 $updateCharacter = $inputParams;
+unset($updateCharacter['imgdelchk']); // 画面とのやりとりのみの値を抜く
 updateCharacters($dbhCharacters, $character['id'], $updateCharacter);
 $success = '更新が完了しました。';
 
@@ -113,17 +158,17 @@ outputPage:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width">
   <title>名簿更新</title>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="icon"/>
-  <link href="<?php echo h(SITE_ROOT); ?>/favicon.ico" type="image/x-icon" rel="shortcut icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="icon"/>
+  <link href="<?php echo h(SITE_LINK); ?>favicon.ico" type="image/x-icon" rel="shortcut icon"/>
   <!-- 共通CSS -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/base.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/<?php echo h(SITE_TEMPLATE); ?>.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>assets/css/user-edit.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- レスポンシブ用 -->
-  <link rel="stylesheet" href="<?php echo h(SITE_ROOT); ?>/core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
+  <link rel="stylesheet" href="<?php echo h(SITE_LINK); ?>core/css/responsive.css?up=<?php echo h(SITE_UPDATE); ?>"/>
   <!-- script -->
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-3.6.0.min.js"></script>
-  <script src="<?php echo h(SITE_ROOT); ?>/core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-3.6.0.min.js"></script>
+  <script src="<?php echo h(SITE_LINK); ?>core/js/jquery-abmple.js?up=<?php echo h(SITE_UPDATE); ?>"></script>
 </head>
 <body>
 <div class="content-wrap">
@@ -159,7 +204,7 @@ outputPage:
 
   <?php if (!usedStr($success) && usedArr($inputParams) && usedStr($inputParams['id'])) { /* 処理が成功でない & データがある場合は表示 */ ?>
     <div class="form-wrap">
-      <form name="characters-form" class="characters-form" action="./edit.php" method="POST">
+      <form name="characters-form" class="characters-form" action="<?php echo h(CHARACTER_SRC_LINK); ?>edit.php" method="POST" enctype="multipart/form-data">
         <input type="hidden" name="token" value="<?php echo h(getToken()); ?>">
         <input type="hidden" name="id" value="<?php echo h($inputParams['id']); ?>">
         <ul class="form-row">
@@ -191,6 +236,25 @@ outputPage:
           </li>
           <li class="form-col-note">文字色コードを入力。右側アイコンで色選択できます。</li>
         </ul>
+        <?php if (NAMELIST_UPLOAD_IMAGE || isAdmin()) { ?>
+          <ul class="form-row">
+            <li class="form-col-title">名簿画像<div class="optional-mark"></div></li>
+            <?php if (isset($character) && usedStr($character['imgfile'])) { ?>
+              <?php
+                $dt = new DateTime($character['modified']);
+                $ver = $dt->format('YmdHis');
+                $profileimagelink = CHARACTER_SRC_LINK .'profileimage.php?f=' .$character['imgfile'] .'&v=' .$ver;
+              ?>
+              <li class="form-col-item">
+                <div class="profile-image-edit-wrap"><img class="profile-image-edit" src="<?php echo h($profileimagelink); ?>"></div>
+                <label><input type="checkbox" id="id-imgdelchk" name="imgdelchk" value="1" />画像ファイルを削除する</label>
+              </li>
+            <?php } ?>
+            <li class="form-col-item">
+              <input type="file" name="uploadfile" id="id-uploadfile" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
+            </li>
+            <li class="form-col-note">画像サイズは最大 <?php echo h(NAMELIST_IMAGE_FILESIZE / 1024 / 1024); ?> MBです。削除せずにファイルを選択した場合は上書きされます。</li>
+        <?php } ?>
         <?php if (NAMELIST_GENDER || isAdmin()) { ?>
           <ul class="form-row">
             <li class="form-col-title"><?php echo h(NAMELIST_GENDER_NAME); ?><div class="optional-mark"></div></li>
@@ -347,28 +411,28 @@ outputPage:
           <ul class="form-row">
             <li class="form-col-title"><?php echo h(NAMELIST_FREE10_NAME); ?><div class="optional-mark"></div><div class="htmltag-mark"></div></li>
             <li class="form-col-item"><textarea name="free10" maxlength="10000"><?php echo h($inputParams['free10']); ?></textarea></li>
-            <li class="form-col-note">最大 10000 文字。<a href="../../manual/src/htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
+            <li class="form-col-note">最大 10000 文字。<a href="<?php echo h(MANUAL_SEC_LINK); ?>htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
           </ul>
         <?php } ?>
         <?php if (NAMELIST_FREE11 || isAdmin()) { ?>
           <ul class="form-row">
             <li class="form-col-title"><?php echo h(NAMELIST_FREE11_NAME); ?><div class="optional-mark"></div><div class="htmltag-mark"></div></li>
             <li class="form-col-item"><textarea name="free11" maxlength="10000"><?php echo h($inputParams['free11']); ?></textarea></li>
-            <li class="form-col-note">最大 10000 文字。<a href="../../manual/src/htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
+            <li class="form-col-note">最大 10000 文字。<a href="<?php echo h(MANUAL_SEC_LINK); ?>htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
           </ul>
         <?php } ?>
         <?php if (NAMELIST_FREE12 || isAdmin()) { ?>
           <ul class="form-row">
             <li class="form-col-title"><?php echo h(NAMELIST_FREE12_NAME); ?><div class="optional-mark"></div><div class="htmltag-mark"></div></li>
             <li class="form-col-item"><textarea name="free12" maxlength="10000"><?php echo h($inputParams['free12']); ?></textarea></li>
-            <li class="form-col-note">最大 10000 文字。<a href="../../manual/src/htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
+            <li class="form-col-note">最大 10000 文字。<a href="<?php echo h(MANUAL_SEC_LINK); ?>htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
           </ul>
         <?php } ?>
         <?php if (NAMELIST_DETAIL || isAdmin()) { ?>
           <ul class="form-row">
             <li class="form-col-title"><?php echo h(NAMELIST_DETAIL_NAME); ?><div class="optional-mark"></div><div class="htmltag-mark"></div></li>
             <li class="form-col-item"><textarea name="detail" maxlength="10000"><?php echo h($inputParams['detail']); ?></textarea></li>
-            <li class="form-col-note">最大 10000 文字。<a href="../../manual/src/htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
+            <li class="form-col-note">最大 10000 文字。<a href="<?php echo h(MANUAL_SEC_LINK); ?>htmltag.php" target="_blank">使用可能なHTMLタグについてはこちら。</a></li>
           </ul>
         <?php } ?>
         <div class="form-button-wrap">

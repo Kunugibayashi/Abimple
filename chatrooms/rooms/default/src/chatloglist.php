@@ -1,0 +1,204 @@
+<?php
+require_once(__DIR__ .'/../../../../core/src/config.php');
+require_once(__DIR__ .'/../../../../core/src/functions.php');
+require_once(__DIR__ .'/../../../../core/src/session.php');
+require_once(__DIR__ .'/../../../../core/src/database.php');
+require_once(__DIR__ .'/../../../../core/src/administrator.php');
+require_once(__DIR__ .'/../../../../core/src/logger.php');
+
+require_once(__DIR__ .'/../../../src/chatlogexport.php');
+
+$inputParams = array();
+$jsonArray = array();
+
+$inputParams['characterid'] = inputParam('characterid', 20);
+$inputParams['lognum'] = (int) (inputParam('lognum', 5) ? inputParam('lognum', 5) : '100');
+$inputParams['lognum'] = round($inputParams['lognum']);
+$inputParams['lognum'] = min([$inputParams['lognum'], 10000]);
+$inputParams['lognum'] = max([$inputParams['lognum'], 25]);
+
+$inputParams['domminid'] = inputParam('domminid', 20); // 小さい方。int最大桁
+$inputParams['dommaxid'] = inputParam('dommaxid', 20); // 大きい方。int最大桁
+$inputParams['syncmodifiedts'] = inputParam('syncmodifiedts', 20);
+
+// 日付ではない場合は 0 に変換
+$tmpsync = trim((string)$inputParams['syncmodifiedts']);
+if (!usedStr($tmpsync)  || strtotime($tmpsync) === false) {
+  $inputParams['syncmodifiedts'] = 0;
+}
+
+// デバッグ用ログ。頻繁に出力されるため必要時のみ。
+// logDebug('inputParams = ' .json_encode($inputParams, JSON_UNESCAPED_UNICODE));
+// sessionLogChatEntryCharacter($inputParams['characterid']);
+
+// 戻り値初期値
+$jsonArray['code'] = 0;
+$jsonArray['errorMessage'] = '';
+$jsonArray['isringbell'] = 0;
+$jsonArray['dommaxid'] = 0;
+$jsonArray['syncmodifiedts'] = 0;
+$jsonArray['chatentry'] = '';
+$jsonArray['appendlog'] = [];
+$jsonArray['updatelog'] = [];
+
+// DB接続
+$dbhCharacters = connectRo(CHARACTERS_DB);
+$dbhChatrooms = connectRo(__DIR__ .'/' .CHAT_ROOMS_DB);
+$dbhChatentries = connectRo(__DIR__ .'/' .CHAT_ENTRIES_DB);
+$dbhChatlogs = connectRo(__DIR__ .'/' .CHAT_LOGS_DB);
+$dbhChatsecrets = connectRo(__DIR__ .'/' .CHAT_SECRETS_DB);
+
+$chatrooms = selectChatroomsConfig($dbhChatrooms);
+if (!usedArr($chatrooms)) {
+  firstAccessChatroom(__DIR__ .'/' .CHAT_ROOMS_DB);
+  $chatrooms = selectChatroomsConfig($dbhChatrooms);
+}
+$chatroom = $chatrooms[0];
+
+// 公開ルームでない場合
+if ($chatroom['secrettype'] != CHAT_ROOM_OPEN) {
+  $chatsecrets = selectChatsecrets($dbhChatsecrets);
+  if (!usedArr($chatsecrets)) {
+    firstAccessChatsecrets(__DIR__ .'/' .CHAT_SECRETS_DB);
+    $chatsecrets = selectChatsecrets($dbhChatsecrets);
+  }
+  $dbKeyword = $chatsecrets[0]['keyword'];
+  $sessionKeyword = getSecretKeyword();
+  if (!usedStr($dbKeyword) || !usedStr($sessionKeyword) || $dbKeyword != $sessionKeyword) {
+    $jsonArray['code'] = 1;
+    $jsonArray['errorMessage'] = '入室キーワードを入力してください。';
+    goto outputPage;
+  }
+}
+
+// 入室者取得
+$chatentries = selectEqualChatentries($dbhChatentries);
+// 入室者がいない場合も何らかの表示を行うため整形処理をする
+$stringHtml = renderChatentries($chatentries);
+$jsonArray['chatentry'] = $stringHtml;
+
+// 追加用ログ
+// 入室時はささやきを含めてログを取得する
+if (usedStr($inputParams['characterid']) && isChatEntry($inputParams['characterid'])) {
+  // 本人確認をする
+  $characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
+  if (!usedArr($characters)) {
+    // 不正アクセス
+    $jsonArray['code'] = 1;
+    $jsonArray['errorMessage'] = '名簿が存在しません。';
+    goto outputPage;
+  }
+  $character = $characters[0];
+  // 本人確認
+  identityUser($character['userid'], $character['username']);
+
+  $isinroom = 1;
+  $appendlogs = selectEqualAppendChatlogs(
+    $dbhChatlogs,
+    $inputParams['lognum'],
+    $inputParams['dommaxid'],
+    $isinroom,
+    $inputParams['characterid'],
+  );
+} else {
+  $isinroom = 0;
+  $appendlogs = selectEqualAppendChatlogs(
+    $dbhChatlogs,
+    $inputParams['lognum'],
+    $inputParams['dommaxid'],
+    $isinroom,
+    null,
+  );
+}
+// ログがない場合は整形処理をしない
+if (usedArr($appendlogs)) {
+  // 最新データの目印を保持
+  $jsonArray['dommaxid'] = $appendlogs[0]['id'];
+  $jsonArray['syncmodifiedts'] = $appendlogs[0]['created'];
+
+  // 最新のログが自分の発言でない場合はベルを鳴らす
+  $myCharacterid = (int)($inputParams['characterid'] ?? 0);
+  $logCharacterid = (int)($appendlogs[0]['characterid'] ?? 0);
+  if ($myCharacterid !== $logCharacterid) {
+    $jsonArray['isringbell'] = 1;
+  }
+
+  foreach ($appendlogs as $key => $chatline) {
+    $stringHtml = renderChatLog($chatline, $chatroom);
+    $jsonArray['appendlog'][] = [
+      'id' => $chatline['id'],
+      'loghtml' => $stringHtml,
+    ];
+  }
+}
+
+
+// 編集時更新用ログ
+// 初期取得時は処理をしない
+if ((int)$inputParams['dommaxid'] === 0 || (int)$inputParams['domminid'] === 0) {
+  goto outputPage;
+}
+// 入室時はささやきを含めてログを取得する
+if (usedStr($inputParams['characterid']) && isChatEntry($inputParams['characterid'])) {
+  // 本人確認をする
+  $characters = selectCharactersId($dbhCharacters, $inputParams['characterid']);
+  if (!usedArr($characters)) {
+    // 不正アクセス
+    $jsonArray['code'] = 1;
+    $jsonArray['errorMessage'] = '名簿が存在しません。';
+    goto outputPage;
+  }
+  $character = $characters[0];
+  // 本人確認
+  identityUser($character['userid'], $character['username']);
+
+  $isinroom = 1;
+  $updatelogs = selectEqualUpdateChatlogs(
+    $dbhChatlogs,
+    $inputParams['lognum'],
+    $inputParams['dommaxid'],
+    $inputParams['domminid'],
+    $inputParams['syncmodifiedts'],
+    $isinroom,
+    $inputParams['characterid'],
+  );
+} else {
+  $isinroom = 0;
+  $updatelogs = selectEqualUpdateChatlogs(
+    $dbhChatlogs,
+    $inputParams['lognum'],
+    $inputParams['dommaxid'],
+    $inputParams['domminid'],
+    $inputParams['syncmodifiedts'],
+    $isinroom,
+    null,
+  );
+}
+// ログがない場合は整形処理をしない
+if (usedArr($updatelogs)) {
+  // 最新データの日付を保持
+  $syncTs = $jsonArray['syncmodifiedts'];
+  $updateTs = $updatelogs[0]['modified'];
+  if ($syncTs === null || $updateTs > $syncTs) {
+    $jsonArray['syncmodifiedts'] = $updateTs;
+  }
+
+  foreach ($updatelogs as $key => $chatline) {
+    $stringHtml = renderChatLog($chatline, $chatroom);
+    $jsonArray['updatelog'][] = [
+      'id' => $chatline['id'],
+      'loghtml' => $stringHtml,
+    ];
+  }
+}
+
+
+/* goto文はコードが煩雑になるため使用するべきではないが、
+ * ソースコードが複雑になるため、出力開始ラベルのみ使用する。
+ */
+outputPage:
+
+$json =  json_encode($jsonArray, JSON_UNESCAPED_UNICODE);
+setJsonHeader();
+echo($json);
+exit;
