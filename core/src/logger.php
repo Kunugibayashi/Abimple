@@ -8,7 +8,7 @@
  * 1:デバッグ
  * 0:ログを表示しない
  */
-define('LOG_LEVEL', 1);
+define('LOG_LEVEL', 2);
 /* ログレベル */
 define('ERROR', 4);
 define('WARN',  3);
