@@ -66,6 +66,7 @@ function writeLog($level, $message) {
         || $function === 'selectEqualChatentries'
         || $function === 'insertChatlogs'
         || $function === 'selectOnlineCount'
+        || $function === 'updateChatonlines'
         || $function === 'insertChatonlines'
       )
     ) {

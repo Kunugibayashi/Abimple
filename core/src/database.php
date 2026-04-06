@@ -1053,32 +1053,42 @@ function createChatonlines($dbh) {
   }
 }
 
-function insertChatonlines($dbh, $sessionid, $userid, $modified, $params = array()) {
-  $sql = '
-    INSERT INTO chatonlines (
-      sessionid,
-      userid,
-      modified
-  ';
-  $sql = setInsertColumnArryParam($sql, $params);
-  $sql = $sql .'
-    ) VALUES (
-      :sessionid,
-      :userid,
-      :modified
-  ';
-  $sql = setInsertVluesArryParam($sql, $params);
-  $sql = $sql .'
-    )
-    ON CONFLICT(sessionid) DO UPDATE SET
-      userid   = excluded.userid,
-      modified = excluded.modified
-  ';
+function updateChatonlines($dbh, $sessionid, $userid, $params = array()) {
+  $sql = "
+    UPDATE chatonlines
+    SET
+      userid = :userid,
+      modified = DATETIME('now', 'localtime')
+  ";
+  $sql = setUpdateArryParam($sql, $params);
+  $sql = $sql ."
+    WHERE
+      sessionid = :sessionid
+  ";
 
   $stmt = myPrepare($dbh, $sql, $params);
   $stmt->bindValue(':sessionid', $sessionid);
   $stmt->bindValue(':userid', $userid);
-  $stmt->bindValue(':modified', $modified);
+  $stmt = setEqualArryBindValue($stmt, $params);
+  $stmt->execute();
+  $rows = $dbh->changes();
+  return $rows;
+}
+
+function insertChatonlines($dbh, $params = array()) {
+  $sql = '
+    INSERT INTO chatonlines (
+  ';
+  $sql = setInsertColumnArryParam($sql, $params);
+  $sql = $sql .'
+    ) VALUES (
+  ';
+  $sql = setInsertVluesArryParam($sql, $params);
+  $sql = $sql .'
+    )
+  ';
+
+  $stmt = myPrepare($dbh, $sql, $params);
   $stmt = setEqualArryBindValue($stmt, $params);
   $results = $stmt->execute();
   return $results;

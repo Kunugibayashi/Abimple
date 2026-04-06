@@ -21,11 +21,16 @@ $dbhChatonlines = connectRw(__DIR__ .'/' .CHAT_ONLINES_DB);
 $sessionid = session_id();
 $userid = (int)getUserid() ?: 0;
 
-$modified = date('Y-m-d H:i:s');
 $modifiedlimit = date('Y-m-d H:i:s', strtotime('-60 seconds'));
 
-// アクセスを登録
-insertChatonlines($dbhChatonlines, $sessionid, $userid, $modified);
+// アップデートして更新が0件の場合はアクセスを登録
+$updateRows = updateChatonlines($dbhChatonlines, $sessionid, $userid);
+if ($updateRows == 0) {
+  insertChatonlines($dbhChatonlines, [
+    'sessionid' => $sessionid,
+    'userid' => $userid
+  ]);
+}
 
 // カウント数を取得
 $onlinecounts = selectOnlineCount($dbhChatonlines, $modifiedlimit);
