@@ -52,7 +52,7 @@
     });
   }
 
-  // 新規ログを末尾追加し、limit超過の古いログを削除
+  // 新規ログを先頭追加し、limit超過の古いログを削除
   function applyappend(list, lognum) {
     if (!Array.isArray(list) || list.length === 0) return;
 
@@ -62,6 +62,9 @@
     var frag = document.createDocumentFragment();
 
     list.forEach(function(item) {
+      // すでに存在するIDなら追加しない
+      if (jQuery('#id-chatlog-' + item.id).length > 0) return;
+
       var div = document.createElement('div');
       div.id = 'id-chatlog-' + item.id;
       div.innerHTML = item.loghtml;
@@ -77,7 +80,11 @@
   }
 
   // サーバから差分ログを取得して update → append を適用
+  var isChatReloading = false;
   function chatReload() {
+    if (isChatReloading) return;
+    isChatReloading = true;
+
     var domminid = parseInt(jQuery('#id-domminid').val(), 10);
     var dommaxid = parseInt(jQuery('#id-dommaxid').val(), 10);
     var syncmodifiedts = jQuery('#id-syncmodifiedts').val();
@@ -106,6 +113,7 @@
       url: CHATLOG_API,
       type: 'GET',
       dataType: 'json',
+      cache: false,
       data: {
         characterid: characterid,
         domminid: domminid,
@@ -136,6 +144,9 @@
       }
 
       syncHiddenIdsFromDom();
+    }).always(function() {
+      // 成否に関わらず終了時にフラグを下ろす
+      isChatReloading = false;
     });
   }
 
