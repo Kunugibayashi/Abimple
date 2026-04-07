@@ -124,9 +124,10 @@
     }).done(function(data) {
       if (!data) return;
       if (data.code !== 0) {
-        jQuery('#id-log-error').text(data.errorMessage)
+        jQuery('#id-log-error').text(data.errorMessage);
         return;
       };
+      jQuery('#id-log-error').text('');
 
       var chatentry = data.chatentry || '';
       var updatelist = data.updatelog || [];

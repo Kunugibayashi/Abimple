@@ -84,7 +84,7 @@ define('CHAT_MULTI_ENTRY_MODE', 1);
  * CCSデザイン時は以下を指定して下さい。毎回読み込みが行われます。
  * define('SITE_UPDATE', time());
  */
-define('SITE_UPDATE', '202604060000');
+define('SITE_UPDATE', '202604070001');
 
 /**
  * ベル音。
